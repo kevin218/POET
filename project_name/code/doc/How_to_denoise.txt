@@ -1,0 +1,183 @@
+instructions made by: Jasmina
+on                  : March 5th, 2012
+code made by        : Kevin
+-------------------------------------
+
+
+Denoising(TIDE) works the best for the short exposure (<2s) and small apertures data sets. For data sets with exposure time 2s and larger, denoising produces inconsistent results, so avoid doing denoising on these datasets.
+
+For now, we are performing denoising only for centering. We find the best centers using denoised data, and then we run photometry with original noisy data.
+
+The procedure is as follows:
+
+In the photom.pcf control file, you need to have this line:
+
+denphot    False     # Use denoised data for photometry?
+
+Then start working on photometry by running:
+
+poet.py p1
+poet.py p2
+
+Open denoise.pcf inside the run directory. This is the control file for your denoising.
+This is how the control file denoise.pcf look like:
+
+"""
+# $Author: kevin $
+# $Revision: 547 $
+# $Date: 2011-08-19 17:21:06 -0400 (Fri, 19 Aug 2011) $
+# $HeadURL: file:///home/esp01/svn/code/python/branches/patricio/photpipe/run/denoise.pcf $
+# $Id: denoise.pcf 547 2011-08-19 21:21:06Z kevin $
+
+@
+wavelet     bior5.5 #rbio3.9        #Type of wavelet(s) to use
+threshold   bayesshrink             #Method(s) for computing wavelet threshold
+numlvls     1 2 3 4                 #Number of levels to denoise
+
+ncpu        10                      #Number of CPUs to use.
+srcest      15.0,15.0               #Modify source estimate (brightest pixel)
+"""
+
+bior5.5 #rbio3.9   # those are two methods that are used for denoising
+By our experience the bior5.5 works better so for now, use that one.
+
+bayesshrink # is the only method we use to compute wavelet threshold, so there is no other to choose
+
+numlvls     # defines the frequency
+1 is the highest frequency noise   # we assume that this level is all noise
+2 is the one bellow the highest one
+3 is bellow
+4 is bellow
+
+ncpu   # is the number of processor that you use, set as much as you want, it is pretty fast with 10
+
+srcest # NEED TO BE THE EXACT CENTER that you find on the plot fig101, that is produced after poet.py p2
+You will see the red cross on that plot. Ignore the pixel position that this red cross gives you if that is NOT the brightest pixel on the plot. Put in srcest the exact position of the brightest pixel on this plot.
+
+After you set that control file, then run the denoising as:
+ 
+poet.py pd
+
+This run will create 4 directories:
+bior5.5_bayesshrink_L1
+bior5.5_bayesshrink_L2
+bior5.5_bayesshrink_L3
+bior5.5_bayesshrink_L4
+(during the run do not worry about the DOUBLE SCALLARS error!)
+
+Next you need to study the plots and decide which denoise level is the best for you. How to do that:
+
+#######
+CHECK 1 - comparing sigma values on the before an after denoising plots
+#######
+
+==> L1 level directory
+It has plots with L1 and L2 ( it always plots one level above)
+The plots show the first 200 frames, assuming that the noise will be the same for the rest of the data. The plots show the chosen pixel (from srcest) and the flux of that pixel over time.
+Each plot shows the sigma value of the particular level.
+
+Example (values given on the plot 300):
+
+before denoising
+---------------------
+L1 sigma = 176
+L2 sigma = 328
+
+after denoising
+---------------------
+L1 sigma = 5
+L2 sigma = 327
+
+From this we can see that after L1 level denoising is performed, the L1 sigma value dropped to value of 5, which means that all that we see before denoising was used is NOISE.
+Theory says that the lowest level is dominated by noise!
+Sigma value for the lowest level gives the value of the noise 
+
+==> L2 level directory
+Again you see two plots. 300 and 301. The first one shows the values of sigma before denoising, and the second one values of sigma after L2 level denoising is performed.
+
+Example:
+
+before denoising
+-------------------
+L1 sigma = 176
+L2 sigma = 328
+L3 sigma = 691
+
+after denoising
+------------------
+L1 sigma = 4
+L2 sigma = 246
+L3 sigma = 690
+
+
+L2 = 246 L3=690
+What we can see is that L2 level is changed from L2 = 328 ==> L2 = 246, which is around 40%. So 40% of the data is due to the noise.
+
+==> L3 level directory
+
+before denoising
+-------------------
+L1 sigma = 176
+L2 sigma = 328
+L3 sigma = 691
+
+after denoising
+------------------
+L1 sigma = 4
+L2 sigma = 246
+L3 sigma = 654
+L4 sigma = 1188
+
+
+We can observe that the L3 before and after denoising change only from 691 => 654. It changes only for couple of %. The change is very small, and we can conclude that the L2 level discarded more noise, than L3, so the best level to choose, in which to perform the photometry is L2 level.
+
+
+#######
+CHECK 2 - comparing curvatures on the plot 302
+#######
+
+The other way to check whether denoising performed well, is to check plot 302.
+You don't want the denoised data to lose its original curvature
+Your goal is just to smooth the original scatter, but not to lose any real variations!
+
+#######
+CHECK 3 - checking the values in the "planet name".log file
+#######
+
+
+You will find the lines similar to these below:
+
+Noise uncertainty: 175
+Level 1 threshold: 977
+Level 2 threshold: 111
+Level 3 threshold: 46
+Level 4 threshold: 26
+
+
+If the number for the level you are looking at (which is now level 3) is very small like 46 in our case, it means it doesn't change much, so you can STOP there!
+That is your denosing level! So pick L2, (or L3)!
+
+
+#######
+CHECK 4 - plotting residuals
+#######
+
+
+If you plot residuals vs time, or frame number
+event.fit.norm.residuals vs time/frame/bin number
+you have to see uncorrelated residuals around some value , not sinusoidal residuals or any curvature
+
+
+######### Photometry continues....
+
+After you conclude which level of denoising you want, you run p3, p4, and p5 in the following way:
+
+poet.py p3 /bior5.5_bayesshrink_L3/
+poet.py p4 bior5.5_bayesshrink_L3/fgc/
+poet.py p5 bior5.5_bayesshrink_L3/fgc/ap2500715
+
+
+After you have finished denoising, you should test the bin size again, because now we have better centering.
+
+Also always run photometry without TIDE (denoising) and compare SDNR for your best ramp models, confirming that the chosen denoised level is lower.
+

@@ -1,0 +1,3 @@
+Please do not run python setup.py install, as this will try and insert
+a module in the site-packages directory, obviously not the desired
+behaivor. Use the script build.sh
