@@ -1,0 +1,166 @@
+# $Author: patricio $
+# $Revision: 285 $
+# $Date: 2010-06-18 17:59:25 -0400 (Fri, 18 Jun 2010) $
+# $HeadURL: file:///home/esp01/svn/code/python/branches/patricio/photpipe/doc/howto-run-poet $
+# $Id: howto-run-poet 285 2010-06-18 21:59:25Z patricio $
+
+
+HOW TO RUN THE 1ST HALF OF POET PIPELINE
+----------------------------------------
+
+Written by Patricio Cubillos, Jun 17, 2010. pcubillos@fulbrightmail.org
+edited:      Jul 12, 2010. patricio.
+edited:      Dec 14, 2010, patricio.
+Last edited: Mar 07, 2011, patricio.
+
+If you find a bug, report it. !!
+
+For these instructions, I use the exoplanet TrES-1b in channel 5 first visit,
+whose eventname is tr001bs51, as an example.
+
+
+Every time you start a new event:
+
+Go to the project directory and create a new folder in the events directory.
+The event name should follow the naming convention 
+(see /home/esp01/doc/spitzer_events). For Example:
+  cd /home/esp01/events/
+  mkdir tr001bs51/
+  svn co file:///home/esp01/svn/code/python/branches/patricio/photpipe/ tr001bs51/
+
+
+Edit the Control Files:
+-----------------------
+
+Read The Manual!: /home/event/eventname/doc/README_poetcf
+
+Open the Event Control File (.../run/eventname.pcf) and edit the values
+according to your event. There is no need to rename the name of this file. 
+
+Open center.pcf and photom.pcf to set the parameters for centering and
+photometry control files.
+
+
+NON-INTERACTIVE: (from shell)
+---------------- ------------
+
+Go to the run/ directory and execute:
+chmod 755 poet.py
+to make the file executable.
+
+To run each step of the pipeline (Initiate, Badpixels, Centering,
+Photometry and Checks) excecute in the shell terminal (always from the
+directory '.../run/'):
+
+poet.py p1
+poet.py p2
+poet.py p3
+poet.py p4 centerdir
+poet.py p5 centerdir/photomdir
+
+The 'dir' argument is the directory of the data saved in the previous
+step. For example: if p3 (centering) creates and stores the results in
+the folder 'fgc/'. p4 (photometry) should be run:
+poet.py p4 fgc
+
+
+Notes:
+------
+
+- After running each step, the pipeline will produce data files (ended
+with '.h5'), files containing the event parameters (ended with
+'.dat'), log files (.log), and sometimes figures.
+
+- poet_3center.py creates a folder with the name of the centering
+method (if it doesn't already exists), stores the results, and copies
+the pcf files to that folder.
+
+- poet_4photometry.py also creates a folder, which name will depends on
+the photometry parameters. e.g: for aperture photometry, photap=4.25,
+skyin=5.0, skyout=9.0 the name of the folder will be: ap4250509.
+
+- In the end the event directory will adopt a structure like:
+/home/esp01/event/run/centerdir/photomdir/
+
+- After running p5, you are ready to run phase II.
+
+
+Multithreading:
+---------------
+
+By Modifying center.pcf and photom.pcf  the user can run several set
+of parameters at once (using 1 processor for each run). There are two
+ways of running multiple runs:
+
+1.- Different blocks of set of parameters can be defined using the '@'
+character. The name of the output folder can be set by writing a
+string after the @ character. e.g. To run two photometries with
+default skymed and with median skymed, edit photom.pcf as:
+"""
+@
+photap      4.50
+skyin       5.0 
+skyout     10.0
+...   
+skymed  False
+...
+
+@ mediansky
+photap      4.50
+skyin       5.0
+skyout     10.0
+...
+skymed  True
+...
+"""
+
+This will run the two set of parameters and store them in the folders:
+eventname/run/centerdir/ap4500510
+eventname/run/centerdir/ap4500510_mediansky
+
+2.- The parameters 'method' in centerpcf and 'photap', 'skyin', and
+'skyout' in photom.pcf can have several values. The code will make a
+run for each one of these values. e.g. To run several star apertures
+at once, edit photom.pcf as:
+"""
+@
+photap      3.00 3.25 3.50 3.75 4.00
+skyin       5.0
+skyout     10.0
+...
+"""
+
+This will run 5 set of parameters, one for each value of photap, while
+the other parameters will be the same for each run. The output folders
+will be:
+eventname/run/centerdir/ap3000510
+eventname/run/centerdir/ap3250510
+eventname/run/centerdir/ap3500510
+eventname/run/centerdir/ap3750510
+eventname/run/centerdir/ap4000510
+
+Note, when running multiple runs, not all values are going to be
+printed to screen (only in the log file).
+
+Even if you are running only 1 set of parameters, don't erase the initial
+'@' at the beginning of center.pcf and photom.pcf.
+
+
+Re-running:
+-----------
+
+- Lets say the user already run photometry with some parameters, if he
+wants to run photometry with a different set of parameters, there is
+no need to run previous steps, but the photom.pcf file he needs to
+edit is the one in the centering directory.
+
+- Re-running a step that was already done, will override the output
+  files.
+
+
+Checks:
+-------
+
+The file run/checks.py allows the user to load the event, and
+check/manipulate the values of the different parameters. Also there is
+a routine to visualize the centering results, image by image.
