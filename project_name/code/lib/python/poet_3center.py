@@ -56,6 +56,7 @@ def centering(event, pcf, centerdir):
 
   # Centering bad pixel mask:
   centermask = np.ones((event.ny, event.nx))
+  print (event.ymask)
   if event.ymask is not None:
     ymask = np.asarray(event.ymask, int)
     xmask = np.asarray(event.xmask, int)
@@ -237,7 +238,7 @@ def run_centering(eventname, control, cwd=None):
 def do_center(start, end, event, centermask, log, x, y, flux, sky, goodfit):
 
   # Initialize a Timer to report progress:
-  if start == 0:  # Only for the first chunk
+  if start == 0:  # Only for the fisrt chunk
     clock = t.Timer(event.npos*end,
                     progress=np.array([0.05, 0.1, 0.2, 0.3, 0.4,  0.5,
                                        0.6,  0.7, 0.8, 0.9, 0.99, 1.1]))
@@ -253,16 +254,13 @@ def do_center(start, end, event, centermask, log, x, y, flux, sky, goodfit):
     # Recalculate star/end, Care not to go out of bounds:
     end   = np.amin([end,   event.nimpos[pos]])
     start = np.amin([start, event.nimpos[pos]]) # is this necessary?
-
     if event.noctr:   # Just use the mean x,y in this case
       y[pos*event.npos+start:pos*event.npos+end] = event.targpos[0, pos]
       x[pos*event.npos+start:pos*event.npos+end] = event.targpos[1, pos]
-
     else:
       for im in np.arange(start, end):
         # Index in the share memory arrays:
-        ind = pos * event.npos + im #int(pos * event.npos + im)
-
+        ind = int(pos * event.npos + im)
         try:
           if event.weights:   # weight by uncertainties in fitting?
             uncd = event.uncd[im,:,:,pos]
@@ -272,7 +270,6 @@ def do_center(start, end, event, centermask, log, x, y, flux, sky, goodfit):
           im = int(im)
           pos = int(pos)
           ind = int(ind)
-          #This part needs to be checked
           position, extra = cd.centerdriver(event.method, data[im,:,:,pos],
                                  event.targpos[:,pos], event.ctrim,
                                  event.cradius, event.csize,
@@ -281,7 +278,8 @@ def do_center(start, end, event, centermask, log, x, y, flux, sky, goodfit):
                                  expand=event.expand,
                                  psf=event.psfim, psfctr=event.psfctr)
 
-          y[ind], x[ind] = int(position)
+          y[ind], x[ind] = position
+
           if event.method == "ipf" or event.method == "bpf":
             flux[ind] = extra[0]
             sky [ind] = extra[1]
