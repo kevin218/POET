@@ -7,18 +7,16 @@ Requirements
 
 # Quick Start Guide:
 1. git clone url
-2. Change project_name to the desired name of your project.
-3. In the project_name folder, create two directories named analyses and data. 
-The data directory is where the downloaded exoplanet data will exist. ex. Wa077bo21/S19.2.0/files
-The analyses directory is where commands will be executed. ex. Wa077bo21/run/poet.py
-  
-4. Place the following into your bash profile:
-  export PYTHONPATH=$PYTHONPATH:/home/username/....../projectname/code/lib/python
-  export PYTHONPATH=$PYTHONPATH:/home/username/...../projectname/code/python/pipeline/trunk
-  
-5. To run the first half of the POET pipeline, run the following code from withing the run directory. 
-6.  python poet.py p1
-7.  python poet.py p2
-8.  python poet.py p3
-9.  python poet.py p4 fgc
-10. python poet.py p5 fgc/ap2500715/
+2. Place the following into your bash profile: 
+    'export PYTHONPATH=$PYTHONPATH:/home/username/.../code/lib'
+3. Copy '.../code/run' and its contents into your analysis folder and modify the POET control files (.pcf)
+4. Read the documentation in '.../code/doc'
+5. To run the first half of the POET pipeline, run the following sample code from within the run directory:
+    'python poet.py p1'
+    'python poet.py p2'
+    'python poet.py p3'
+    'python poet.py p4 fgc'
+    'python poet.py p5 fgc/ap2500715/'
+6. To run the second half of the POET pipeline, copy 'run_interactive.py' into '.../fgc/ap2500715/{newFolder}'
+7. Create the 'ancil' directory in '.../fgc/ap2500715/{newFolder}' and copy 'eg00-initvals.txt' and 'eg00_params.py' into the directory
+8. Open a Python3 session and follow the instructions inside 'run_interactive.py'
