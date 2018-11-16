@@ -8,7 +8,7 @@ Requirements
 # Quick Start Guide:
 1. git clone url
 2. Place the following into your bash profile: 
-    `export PYTHONPATH=$PYTHONPATH:/home/username/.../code/lib`
+    * `export PYTHONPATH=$PYTHONPATH:/home/username/.../code/lib`
 3. Copy .../code/run and its contents into your analysis folder and modify the POET control files (.pcf)
 4. Read the documentation in .../code/doc
 5. To run the first half of the POET pipeline, run the following sample code from within the run directory:
