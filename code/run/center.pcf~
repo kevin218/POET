@@ -1,0 +1,45 @@
+# $Author: patricio $
+# $Revision: 668 $
+# $Date: 2012-07-23 10:22:59 -0400 (Mon, 23 Jul 2012) $
+# $HeadURL: file:///home/esp01/svn/code/python/poet/trunk/run/center.pcf $
+# $Id: center.pcf 668 2012-07-23 14:22:59Z patricio $
+
+@
+method     fgc     # Choose:  fgc: Fit gauss function.
+                   #          col: Center of light fitting.
+                   #          lag: Least asymmetry gaussian.
+                   #          lac: Least asymmetry col.
+                   #          ipf: interpolate-PSF fitting.
+                   #          bpf: binning-PSF fitting.
+
+ccores      7      # Number of cores per centering
+denoised    False
+srcest      np.array([[15],[15]])
+
+# Data control variables:
+noctr       False     # if True, don't center and use center of mean image.
+ctrim       4         # Radius of trimmed box around the star. No trim if 0.
+weights     False     # Use uncertainties as weights for fit.
+
+# Background fit: 0: No fit (use median); 1: Fit a constant; 2: Fit a plane.
+fitbg       1
+
+# Least asymmetry parameters:
+cradius     7.0     
+csize       4.0     
+
+# PSF control variables
+psfctrim    20       # ctrim for PSF, usually 5x expanded.
+psfcrad     35.0     # Least asymmetry parameters:
+psfcsize    20.0
+
+# Mask specific pixels for centering:
+# Enter pairs of pixel coordinates
+ymask    None    # No spaces in between! e.g.:   y1,y2,y3,y4,y5
+xmask    None    # No spaces in between! e.g.:   x1,x2,x3,x4,x5
+
+# PSF fitting:
+newpsf      None   # Re define the PSF:  e.g.  /home/.../some_PSF.fits
+expand      5      # resample factor: 5 for SST PSF, custom for TinyTim PSF
+nopsfctr    False  # Do Not do centering on the PSF. If True the PSF center 
+                   # will be center of the PSF_frame.

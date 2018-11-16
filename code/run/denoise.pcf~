@@ -1,0 +1,17 @@
+# $Author: kevin $
+# $Revision: 547 $
+# $Date: 2011-08-19 17:21:06 -0400 (Fri, 19 Aug 2011) $
+# $HeadURL: file:///home/esp01/svn/code/python/poet/trunk/run/denoise.pcf $
+# $Id: denoise.pcf 547 2011-08-19 21:21:06Z kevin $
+
+@
+wavelet     bior5.5 #rbio3.9        #Type of wavelet(s) to use
+threshold   bayesshrink             #Method(s) for computing wavelet threshold
+numlvls     1 2 3 4                 #Number of levels to denoise
+
+ncpu        10                      #Number of CPUs to use.
+srcest      15.0,15.0               #Modify source estimate (brightest pixel)
+
+
+
+

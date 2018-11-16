@@ -1,0 +1,33 @@
+# $Author: patricio $
+# $Revision: 668 $
+# $Date: 2012-07-23 10:22:59 -0400 (Mon, 23 Jul 2012) $
+# $HeadURL: file:///home/esp01/svn/code/python/poet/trunk/run/photom.pcf $
+# $Id: photom.pcf 668 2012-07-23 14:22:59Z patricio $
+
+@
+phottype   aper      # aper or optimal
+ncores     4         # Number of processors used (for each aperture!)
+denphot    False     # Use denoised data for photometry?
+
+# Aperture photometry parameters
+photap      0.2      # Photometry aperture radius
+skyin       7.0      # Inner sky annulus radius
+skyout      15.0     # Outer sky annulus radius
+skyfrac     0.1      # Required sky fraction of good pixels
+skymed      False    # The sky estimation:   True:median,  False:mean.
+verbose     True     # Print outputs.
+apscale     1        # Interpolation rescaling factor.cd
+psfexpand   5        # PSF-data pixel scale ratio.
+
+# Optimal photometry parameters:
+dooptimal   False
+otrim       8        # Radius of trimmed box around the target.
+
+# Noise pixel parameter
+isbeta      True   # Photometric extraction aperture scales with noise pixel parameter
+betahw      1       # Half-width of box size around centroid for beta
+ispsf       False
+
+# Pixel-level Decorrelation
+ispld       True     # run routines needed for pixel-level decorrelation
+pldhw       1        # Half-width of box size around centroid for pixel-level decorrelation
