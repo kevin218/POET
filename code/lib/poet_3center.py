@@ -115,6 +115,8 @@ def centering(event, pcf, centerdir):
   event.npos = int(event.npos)
   x       = Array("d", np.zeros(event.npos * event.maxnimpos))
   y       = Array("d", np.zeros(event.npos * event.maxnimpos))
+  sx      = Array("d", np.zeros(event.npos * event.maxnimpos))
+  sy      = Array("d", np.zeros(event.npos * event.maxnimpos))
   flux    = Array("d", np.zeros(event.npos * event.maxnimpos))
   sky     = Array("d", np.zeros(event.npos * event.maxnimpos))
   goodfit = Array("d", np.zeros(event.npos * event.maxnimpos))
@@ -129,7 +131,7 @@ def centering(event, pcf, centerdir):
     start =  nc    * chunksize # Starting index to process
     end   = (nc+1) * chunksize # Ending   index to process
     proc = Process(target=do_center, args=(start, end, event, centermask, log,
-                                      x, y, flux, sky, goodfit))
+                                      x, y, sx, sy, flux, sky, goodfit))
     processes.append(proc)
     proc.start()
   # Make sure all processes finish their work:
@@ -139,10 +141,13 @@ def centering(event, pcf, centerdir):
   # Put the results in the event. I need to reshape them:
   event.fp.x         = np.asarray(x      ).reshape(event.npos,event.maxnimpos)
   event.fp.y         = np.asarray(y      ).reshape(event.npos,event.maxnimpos)
+  if event.method in ["fgc"]:
+    event.fp.sx      = np.asarray(sx     ).reshape(event.npos,event.maxnimpos)
+    event.fp.sy      = np.asarray(sy     ).reshape(event.npos,event.maxnimpos)
   # If PSF fit:
   if event.method in ["ipf", "bpf"]:
     event.fp.flux    = np.asarray(flux   ).reshape(event.npos,event.maxnimpos)
-    event.fp.psfsky     = np.asarray(sky    ).reshape(event.npos,event.maxnimpos)
+    event.fp.psfsky  = np.asarray(sky    ).reshape(event.npos,event.maxnimpos)
     event.fp.goodfit = np.asarray(goodfit).reshape(event.npos,event.maxnimpos)
   # ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -235,7 +240,7 @@ def run_centering(eventname, control, cwd=None):
     p.start()
 
 
-def do_center(start, end, event, centermask, log, x, y, flux, sky, goodfit):
+def do_center(start, end, event, centermask, log, x, y, sx, sy, flux, sky, goodfit):
 
   # Initialize a Timer to report progress:
   if start == 0:  # Only for the fisrt chunk
@@ -280,6 +285,9 @@ def do_center(start, end, event, centermask, log, x, y, flux, sky, goodfit):
 
           y[ind], x[ind] = position
 
+          if event.method == "fgc":
+            sy[ind] = extra[0]
+            sx[ind] = extra[1]
           if event.method == "ipf" or event.method == "bpf":
             flux[ind] = extra[0]
             sky [ind] = extra[1]
@@ -287,6 +295,7 @@ def do_center(start, end, event, centermask, log, x, y, flux, sky, goodfit):
             goodfit[ind] = 1
         except:
           y[ind], x[ind] = event.targpos[:, pos]
+          sy[ind], sx[ind] = 0.0, 0.0
           flux[ind], sky[ind] = 0.0, 0.0
           goodfit[ind] = 0
           log.writelog("Centering failed in im, pos: %5i"%im + ", %2i"%pos)

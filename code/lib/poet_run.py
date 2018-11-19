@@ -66,6 +66,8 @@ def poetRestore(filedir='..', topdir=None, clip=None):
             event[i].time       = event[i].time[:,start:end]
             event[i].y          = event[i].y[:,start:end]
             event[i].x          = event[i].x[:,start:end]
+            event[i].sy         = event[i].sy[:,start:end]
+            event[i].sx         = event[i].sx[:,start:end]
             event[i].juldat     = event[i].juldat[:,start:end]
             event[i].bjdutc     = event[i].bjdutc[:,start:end]
             event[i].bjdtdb     = event[i].bjdtdb[:,start:end]
@@ -99,10 +101,18 @@ def poetRestore(filedir='..', topdir=None, clip=None):
             event[i].initvalsfile = ancildir + event[i].eventname + '-initvals.txt'
             # Copy eg00params
             if os.path.isfile(event[i].paramsfile) == False:
-                shutil.copy(ancildir + 'eg00_params.py', event[i].paramsfile)
+                print("Missing file: "+event[i].paramsfile)
+                try:
+                    shutil.copy(ancildir + 'eg00_params.py', event[i].paramsfile)
+                except:
+                    print("Missing file: "+ancildir + 'eg00_params.py')
             # Copy eg00-initvals
             if os.path.isfile(event[i].initvalsfile) == False:
-                shutil.copy(ancildir + 'eg00-initvals.txt', event[i].initvalsfile)
+                print("Missing file: "+event[i].initvalsfile)
+                try:
+                    shutil.copy(ancildir + 'eg00-initvals.txt', event[i].initvalsfile)
+                except:
+                    print("Missing file: "+ancildir + 'eg00-initvals.txt')
     return event
 
 #OVERWRITE event SAVEFILE AFTER RUNNING p5checks in POET
@@ -120,7 +130,7 @@ def p6model(event=None, newdir=True, filedir='..', topdir=None, clip=None, idl=F
     
     """
     import p6model as p6
-    #reload(p6)
+    reload(p6)
     #global numevents, nummodels, isinteractive
     if event == None:
         if idl == False:
@@ -473,6 +483,8 @@ def binparams(ev, binsize=64):
         aperr   = np.zeros(nbins)
         x       = np.zeros(nbins)
         y       = np.zeros(nbins)
+        sx      = np.zeros(nbins)
+        sy      = np.zeros(nbins)
         good    = np.ones(nbins, dtype=int)
         pos     = np.zeros(nbins)
         frmvis  = np.zeros(nbins)
@@ -493,6 +505,8 @@ def binparams(ev, binsize=64):
                 aperr[j]    = np.sqrt(1 / sum(1/ev[i].aperr[0,isgood]**2))
                 x[j]        = np.mean(ev[i].x[0,isgood])
                 y[j]        = np.mean(ev[i].y[0,isgood])
+                sx[j]       = np.mean(ev[i].sx[0,isgood])
+                sy[j]       = np.mean(ev[i].sy[0,isgood])
                 #good[j]     = np.min(ev[i].good[0,isgood])
                 pos[j]      = np.mean(ev[i].pos[0,isgood])
                 frmvis[j]   = np.mean(ev[i].frmvis[0,isgood])
@@ -508,6 +522,8 @@ def binparams(ev, binsize=64):
         ev[i].aperr     = np.copy(aperr)
         ev[i].x         = np.copy(x)
         ev[i].y         = np.copy(y)
+        ev[i].sx        = np.copy(sx)
+        ev[i].sy        = np.copy(sy)
         ev[i].good      = np.copy(good)
         ev[i].pos       = np.copy(pos)
         ev[i].frmvis    = np.copy(frmvis)

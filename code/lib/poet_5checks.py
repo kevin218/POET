@@ -59,6 +59,8 @@ def checks(eventname, period=None, ephtime=None, cwd=None):
   event.filenames = event.fp.filename
   event.x         = event.fp.x
   event.y         = event.fp.y
+  event.sx        = event.fp.sx
+  event.sy        = event.fp.sy
   event.time      = event.fp.time
   event.pos       = event.fp.pos
   event.frmvis    = event.fp.frmvis
@@ -197,9 +199,8 @@ def checks(eventname, period=None, ephtime=None, cwd=None):
                str(event.ephtimeerr) + ' JD')
 
 
-  fmt1 = ['bo','go','yo','ro','ko','co','mo','bs','gs','ys','rs','ks','cs','ms']
+  fmt1 = ['C0o','C1o','C2o','ro','ko','co','mo','bs','gs','ys','rs','ks','cs','ms']
   fmt2 = ['b,','g,','y,','r,']
-  fmt3 = ['b.','g.','y.','r.']
 
   plt.figure(501)
   plt.clf()
@@ -210,6 +211,8 @@ def checks(eventname, period=None, ephtime=None, cwd=None):
   plt.figure(504)
   plt.clf()
   plt.figure(505)
+  plt.clf()
+  plt.figure(506)
   plt.clf()
 
 
@@ -234,6 +237,8 @@ def checks(eventname, period=None, ephtime=None, cwd=None):
     rad    = np.sqrt(x**2 + y**2)
     xx     = np.sort(x)
     yy     = np.sort(y)
+    sxx    = np.sort(event.sx[0])
+    syy    = np.sort(event.sy[0])
     rr     = np.sort(rad)
     xaplev = aplev[np.argsort(x)]
     yaplev = aplev[np.argsort(y)]
@@ -244,6 +249,8 @@ def checks(eventname, period=None, ephtime=None, cwd=None):
     nbins     = int(120/event.npos)
     binxx     = np.zeros(nbins)
     binyy     = np.zeros(nbins)
+    binsxx    = np.zeros(nbins)
+    binsyy    = np.zeros(nbins)
     binrr     = np.zeros(nbins)
     binxaplev = np.zeros(nbins)
     binyaplev = np.zeros(nbins)
@@ -259,6 +266,8 @@ def checks(eventname, period=None, ephtime=None, cwd=None):
         end          = int(1.*(i+1)*nobj/nbins)
         binxx[i]     = np.mean(xx[start:end])
         binyy[i]     = np.mean(yy[start:end])
+        binsxx[i]    = np.mean(sxx[start:end])
+        binsyy[i]    = np.mean(syy[start:end])
         binrr[i]     = np.mean(rr[start:end])
         binxaplev[i] = np.median(xaplev[start:end])
         binyaplev[i] = np.median(yaplev[start:end])
@@ -269,7 +278,7 @@ def checks(eventname, period=None, ephtime=None, cwd=None):
         binphase[i]  = np.mean(phase[start:end])
         binaplev[i]  = np.median(aplev[start:end])
         binapstd[i]  = np.std(aplev[start:end]) / np.sqrt(end-start)
-
+    
     # PLOT 1: flux
     plt.figure(501)
     plt.errorbar(binphase, binaplev, binapstd, fmt=fmt1[pos],
@@ -347,11 +356,27 @@ def checks(eventname, period=None, ephtime=None, cwd=None):
       plt.xlabel(xlabel)
       plt.ylabel('Flux')
 
+    # PLOT 6: width-flux
+    plt.figure(506)
+    plt.subplot(2,1,1)
+    plt.title(event.planetname + ' Gaussian Width vs. Binned Flux')
+    plt.errorbar(binsyy, binyaplev, binyapstd, fmt=fmt1[pos],
+                 label=('width %i y'%(pos)))
+    plt.ylabel('Flux')
+    plt.legend(loc='best')
+    plt.subplot(2,1,2)
+    plt.errorbar(binsxx, binxaplev, binxapstd, fmt=fmt1[pos],
+                 label=('width %i x'%(pos)))
+    plt.xlabel('Gaussian Width')
+    plt.ylabel('Flux')
+    plt.legend(loc='best')
+
   figname1 = str(event.eventname) + "-fig501.png"
   figname2 = str(event.eventname) + "-fig502.png"
   figname3 = str(event.eventname) + "-fig503.png"
   figname4 = str(event.eventname) + "-fig504.png"
   figname5 = str(event.eventname) + "-fig505.png"
+  figname6 = str(event.eventname) + "-fig506.png"
 
   plt.figure(501)
   plt.savefig(figname1)
@@ -366,6 +391,8 @@ def checks(eventname, period=None, ephtime=None, cwd=None):
            marker=',', label='all points')
   plt.legend(loc='best')
   plt.savefig(figname5)
+  plt.figure(506)
+  plt.savefig(figname6)
 
   # Saving
   me.saveevent(event, event.eventname + "_p5c")
@@ -383,6 +410,7 @@ def checks(eventname, period=None, ephtime=None, cwd=None):
   log.writelog(" " + cwd + figname3)
   log.writelog(" " + cwd + figname4)
   log.writelog(" " + cwd + figname5)
+  log.writelog(" " + cwd + figname6)
   log.writeclose('\nEnd Checks: ' + time.ctime())
 
   return event

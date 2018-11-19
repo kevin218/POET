@@ -1137,6 +1137,28 @@ def setupmodel(model, ind):
         myfuncs.append(mc.sexticipc)
         saveext.append('6ipc')
         functype.append('ippoly')
+    elif model[i] == 'cubicgw':
+        #DEFINE INDICES
+        ind.tx1    = ind.size
+        ind.tx2    = ind.size + 1
+        ind.tx3    = ind.size + 2
+        ind.ty1    = ind.size + 3
+        ind.ty2    = ind.size + 4
+        ind.ty3    = ind.size + 5
+        ind.tc     = ind.size + 6
+        ind.size  += 7
+        #DEFINE NAMES
+        parname.insert(ind.tx1,    'Intra-pixel, Linear Term in x')
+        parname.insert(ind.tx2,    'Intra-pixel, Quadratic Term in x')
+        parname.insert(ind.tx3,    'Intra-pixel, Cubic Term in x')
+        parname.insert(ind.ty1,    'Intra-pixel, Linear Term in y')
+        parname.insert(ind.ty2,    'Intra-pixel, Quadratic Term in y')
+        parname.insert(ind.ty3,    'Intra-pixel, Cubic Term in y')
+        parname.insert(ind.tc,    'Intra-pixel, Constant Term')
+        #DEFINE INTRA-PIXEL MODEL
+        myfuncs.append(mc.cubicgw)
+        saveext.append('3gw')
+        functype.append('ippoly')
     elif model[i] == 'ballardip':
         #DEFINE INDICES
         ind.sigmay    = ind.size

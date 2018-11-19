@@ -2497,6 +2497,42 @@ def sexticipc(ipparams, position, etc = []):
                        y2x*y**2*x + x2y*x**2*y + y2*y**2 + x2*x**2 + xy*x*y + y1*y + x1*x + c
 
 
+def cubicgw(ipparams, width, etc = []):
+   """
+  This function fits the variation in Gaussian-measured PRF half-widths using a 2D cubic.
+
+  Parameters
+  ----------
+    x1: linear coefficient in x
+    x2: quadratic coefficient in x
+    x3: cubic coefficient in x
+    y1: linear coefficient in y
+    y2: quadratic coefficient in y
+    y3: cubic coefficient in y
+    c : constant
+
+  Returns
+  -------
+    returns the flux values for the intra-pixel model
+
+  Revisions
+  ---------
+  2018-11-16	Kevin Stevenson, STScI  
+			    kbs@stsci.edu
+		        Original version
+   """
+
+   x1       = ipparams[0]
+   x2       = ipparams[1]
+   x3       = ipparams[2]
+   y1       = ipparams[3]
+   y2       = ipparams[4]
+   y3       = ipparams[5]
+   c        = ipparams[6]
+   sy, sx   = width
+
+   return x1*sx + x2*sx**2 + x3*sx**3 + y1*sy + y2*sy**2 + y3*sy**3 + c
+
 def ballardip(ipparams, position, etc=[]):
     """
   This function fits the intra-pixel sensitivity effect using the method described by Ballard et al. (2010).
