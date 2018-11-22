@@ -7,6 +7,8 @@ import smoothing
 #reload(smoothing)
 from trquad import trquad
 
+from numpy import *
+
 def setupmodel(model, ind):
    """
    This function sets up the indeces and parameter names for the given model, also defined in this file.

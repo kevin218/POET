@@ -17,10 +17,9 @@ ext_mod = []
 inc = [get_include()]
 
 for i in range(len(files)):
-    exec('mod'+str(i)+'=Extension("'+files[i].rstrip('.c')+'",sources=["c_code/'+files[i]+'"],include_dirs=inc,extra_compile_args=["-fopenmp"],extra_link_args=["-lgomp"])')
+    # exec('mod'+str(i)+'=Extension("'+files[i].rstrip('.c')+'",sources=["c_code/'+files[i]+'"],include_dirs=inc,extra_compile_args=["-fopenmp"],extra_link_args=["-lgomp"])')
+    # exec('ext_mod.append(mod'+str(i)+')')
+    exec('mod{}=Extension("{}",sources=["c_code/{}"],include_dirs=inc)'.format(i, files[i].rstrip('.c'), files[i]))#extra_compile_args=["-fopenmp"],extra_link_args=["-lgomp"]
+    exec('ext_mod.append(mod{})'.format(i))
 
-    exec('ext_mod.append(mod'+str(i)+')')
-
-
-setup (name='models_c',version='1.0',description='Models in c for mcmc',
-       ext_modules = ext_mod)
+setup(name='models_c',version='1.0',description='Models in c for mcmc', ext_modules = ext_mod)

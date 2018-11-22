@@ -74,11 +74,46 @@ static char llramp_doc[]="\
                 Updated to C extension\n\
 ";
 
-static PyMethodDef llramp_methods[] = {
+static PyMethodDef module_methods[] = {
   {"llramp",(PyCFunction)llramp,METH_VARARGS|METH_KEYWORDS,llramp_doc},{NULL}};
 
-void initllramp(void)
+static char module_docstring[] =
+    "This module is used to calcuate the llramp";
+
+PyMODINIT_FUNC
+#if PY_MAJOR_VERSION >= 3
+    PyInit_llramp(void)
+#else
+    initllramp(void)
+#endif
 {
-  Py_InitModule("llramp",llramp_methods);
-  import_array();
+#if PY_MAJOR_VERSION >= 3
+    PyObject *module;
+    static struct PyModuleDef moduledef = {
+    PyModuleDef_HEAD_INIT,
+    "llramp",             /* m_name */
+    module_docstring,    /* m_doc */
+    -1,                  /* m_size */
+    module_methods,      /* m_methods */
+    NULL,                /* m_reload */
+    NULL,                /* m_traverse */
+    NULL,                /* m_clear */
+    NULL,                /* m_free */
+    };
+#endif
+
+#if PY_MAJOR_VERSION >= 3
+    module = PyModule_Create(&moduledef);
+    if (!module)
+    return NULL;
+    /* Load `numpy` functionality. */
+    import_array();
+    return module;
+#else
+    PyObject *m = Py_InitModule3("llramp", module_methods, module_docstring);
+    if (m == NULL)
+    return;
+    /* Load `numpy` functionality. */
+    import_array();
+#endif
 }

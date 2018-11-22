@@ -69,11 +69,46 @@ static char re2ramp_doc[]="\
                 Converted to C\n\
 ";
 
-static PyMethodDef re2ramp_methods[] = {
+static PyMethodDef module_methods[] = {
   {"re2ramp",(PyCFunction)re2ramp,METH_VARARGS|METH_KEYWORDS,re2ramp_doc},{NULL}};
 
-void initre2ramp(void)
+static char module_docstring[] =
+    "This module is used to calcuate the re2ramp";
+
+PyMODINIT_FUNC
+#if PY_MAJOR_VERSION >= 3
+    PyInit_re2ramp(void)
+#else
+    initre2ramp(void)
+#endif
 {
-  Py_InitModule("re2ramp",re2ramp_methods);
-  import_array();
+#if PY_MAJOR_VERSION >= 3
+    PyObject *module;
+    static struct PyModuleDef moduledef = {
+    PyModuleDef_HEAD_INIT,
+    "re2ramp",             /* m_name */
+    module_docstring,    /* m_doc */
+    -1,                  /* m_size */
+    module_methods,      /* m_methods */
+    NULL,                /* m_reload */
+    NULL,                /* m_traverse */
+    NULL,                /* m_clear */
+    NULL,                /* m_free */
+    };
+#endif
+
+#if PY_MAJOR_VERSION >= 3
+    module = PyModule_Create(&moduledef);
+    if (!module)
+    return NULL;
+    /* Load `numpy` functionality. */
+    import_array();
+    return module;
+#else
+    PyObject *m = Py_InitModule3("re2ramp", module_methods, module_docstring);
+    if (m == NULL)
+    return;
+    /* Load `numpy` functionality. */
+    import_array();
+#endif
 }

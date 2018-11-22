@@ -454,12 +454,46 @@ double rf(double x, double y, double z)
 
 static char occultquad_doc[] = "LK 9/12/12";
 
-static PyMethodDef occultquad_methods[] = {
+static PyMethodDef module_methods[] = {
   {"occultquad", occultquad,METH_VARARGS,occultquad_doc},{NULL}};
 
-void initoccultquad(void)
-{
-  Py_InitModule("occultquad", occultquad_methods);
-  import_array();
-}
+static char module_docstring[] =
+    "This module is used to calcuate the occultquad";
 
+PyMODINIT_FUNC
+#if PY_MAJOR_VERSION >= 3
+    PyInit_occultquad(void)
+#else
+    initoccultquad(void)
+#endif
+{
+#if PY_MAJOR_VERSION >= 3
+    PyObject *module;
+    static struct PyModuleDef moduledef = {
+    PyModuleDef_HEAD_INIT,
+    "occultquad",             /* m_name */
+    module_docstring,    /* m_doc */
+    -1,                  /* m_size */
+    module_methods,      /* m_methods */
+    NULL,                /* m_reload */
+    NULL,                /* m_traverse */
+    NULL,                /* m_clear */
+    NULL,                /* m_free */
+    };
+#endif
+
+#if PY_MAJOR_VERSION >= 3
+    module = PyModule_Create(&moduledef);
+    if (!module)
+    return NULL;
+    /* Load `numpy` functionality. */
+    import_array();
+    return module;
+#else
+    PyObject *m = Py_InitModule3("occultquad", module_methods, module_docstring);
+    if (m == NULL)
+    return;
+    /* Load `numpy` functionality. */
+    import_array();
+#endif
+}

@@ -64,11 +64,46 @@ static char seramp_doc[]="\
                 natelust at linux dot com\n\
 ";
 
-static PyMethodDef seramp_methods[] = {
+static PyMethodDef module_methods[] = {
   {"seramp",(PyCFunction)seramp,METH_VARARGS|METH_KEYWORDS,seramp_doc},{NULL}};
 
-void initseramp(void)
+static char module_docstring[] =
+  "This module is used to calcuate the seramp";
+
+PyMODINIT_FUNC
+#if PY_MAJOR_VERSION >= 3
+  PyInit_seramp(void)
+#else
+  initseramp(void)
+#endif
 {
-  Py_InitModule("seramp",seramp_methods);
+#if PY_MAJOR_VERSION >= 3
+  PyObject *module;
+  static struct PyModuleDef moduledef = {
+  PyModuleDef_HEAD_INIT,
+  "seramp",             /* m_name */
+  module_docstring,    /* m_doc */
+  -1,                  /* m_size */
+  module_methods,      /* m_methods */
+  NULL,                /* m_reload */
+  NULL,                /* m_traverse */
+  NULL,                /* m_clear */
+  NULL,                /* m_free */
+  };
+#endif
+
+#if PY_MAJOR_VERSION >= 3
+  module = PyModule_Create(&moduledef);
+  if (!module)
+  return NULL;
+  /* Load `numpy` functionality. */
   import_array();
+  return module;
+#else
+  PyObject *m = Py_InitModule3("seramp", module_methods, module_docstring);
+  if (m == NULL)
+  return;
+  /* Load `numpy` functionality. */
+  import_array();
+#endif
 }

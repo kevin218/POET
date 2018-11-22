@@ -283,12 +283,46 @@ static char bilinint_doc[]="\
                 Convert to c extension function\n\
 ";
 
-static PyMethodDef bilinint_methods[] = {
+static PyMethodDef module_methods[] = {
   {"bilinint",(PyCFunction)bilinint,METH_VARARGS|METH_KEYWORDS,bilinint_doc},{NULL}};
 
-void initbilinint(void)
-{
-  Py_InitModule("bilinint",bilinint_methods);
-  import_array();
+static char module_docstring[] =
+  "This module is used to calcuate the bilinear interpolation quickly";
 
+PyMODINIT_FUNC
+#if PY_MAJOR_VERSION >= 3
+    PyInit_bilinint(void)
+#else
+    initbilinint(void)
+#endif
+{
+	#if PY_MAJOR_VERSION >= 3
+		PyObject *module;
+		static struct PyModuleDef moduledef = {
+			PyModuleDef_HEAD_INIT,
+			"bilinint",             /* m_name */
+			module_docstring,    /* m_doc */
+			-1,                  /* m_size */
+			module_methods,      /* m_methods */
+			NULL,                /* m_reload */
+			NULL,                /* m_traverse */
+			NULL,                /* m_clear */
+			NULL,                /* m_free */
+		};
+	#endif
+
+	#if PY_MAJOR_VERSION >= 3
+		module = PyModule_Create(&moduledef);
+		if (!module)
+			return NULL;
+		/* Load `numpy` functionality. */
+		import_array();
+		return module;
+	#else
+	    PyObject *m = Py_InitModule3("bilinint", module_methods, module_docstring);
+		if (m == NULL)
+			return;
+		/* Load `numpy` functionality. */
+		import_array();
+	#endif
 }

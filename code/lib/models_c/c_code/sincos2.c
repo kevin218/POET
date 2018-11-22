@@ -102,11 +102,46 @@ static char sincos2_doc[] = "\
 \n\
 ";
 
-static PyMethodDef sincos2_methods[] = {
+static PyMethodDef module_methods[] = {
   {"sincos2",(PyCFunction)sincos2,METH_VARARGS|METH_KEYWORDS,sincos2_doc},{NULL}};
 
-void initsincos2(void)
+static char module_docstring[] =
+    "This module is used to calcuate the sincos2";
+
+PyMODINIT_FUNC
+#if PY_MAJOR_VERSION >= 3
+    PyInit_sincos2(void)
+#else
+    initsincos2(void)
+#endif
 {
-  Py_InitModule("sincos2",sincos2_methods);
-  import_array();
+#if PY_MAJOR_VERSION >= 3
+    PyObject *module;
+    static struct PyModuleDef moduledef = {
+        PyModuleDef_HEAD_INIT,
+        "sincos2",             /* m_name */
+        module_docstring,    /* m_doc */
+        -1,                  /* m_size */
+        module_methods,      /* m_methods */
+        NULL,                /* m_reload */
+        NULL,                /* m_traverse */
+        NULL,                /* m_clear */
+        NULL,                /* m_free */
+    };
+#endif
+
+#if PY_MAJOR_VERSION >= 3
+    module = PyModule_Create(&moduledef);
+    if (!module)
+        return NULL;
+    /* Load `numpy` functionality. */
+    import_array();
+    return module;
+#else
+    PyObject *m = Py_InitModule3("sincos2", module_methods, module_docstring);
+    if (m == NULL)
+        return;
+    /* Load `numpy` functionality. */
+    import_array();
+#endif
 }

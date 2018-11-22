@@ -2,9 +2,12 @@
 
 
 import os, sys
-sys.path.append('/home/kevin/Documents/STScI/code/POET/POET/code/lib/python')
-sys.path.append('/home/kevin/Documents/STScI/code/POET/POET/code/lib/python/models_c/py_func')
-sys.path.remove("/home/kevin/Documents/esp01/code/lib/python")
+sys.path.append(os.getcwd() + '../../code/lib/python')
+sys.path.append(os.getcwd() + '/py_func')
+sys.path.append(os.getcwd().replace('models_c',''))
+
+if "/home/kevin/Documents/esp01/code/lib/python" in sys.path:
+    sys.path.remove("/home/kevin/Documents/esp01/code/lib/python")
 
 os.environ['OMP_NUM_THREADS']='1'
 import models_c as mc
@@ -118,23 +121,24 @@ tup1             = [0, 0, 0.0, 0.0]
 issmoothing      = False
 
 ### bilinit()
-
 posflux = [y, x, aplev, wbfipmask, binfluxmask, kernel, \
           tup1, binloc, griddist,  \
           xygrid[0].shape, issmoothing]
-
-yp  =  mp.bilinint(ipparams, posflux, etc)
-yc = mc.bilinint(ipparams, posflux, etc)
-
-if sum(abs(yp-yc)) < 1e-10:
-    print("Bilinint:   PASS")
-else:
-    print("Bilinint:   FAIL", sum(abs(yp-yc)))
+try:
+    yp = mp.bilinint(ipparams, posflux, etc)
+    yc = mc.bilinint(ipparams, posflux, etc)
+    
+    if sum(abs(yp-yc)) < 1e-10:
+        print("Bilinint:   PASS")
+    else:
+        print("Bilinint:   FAIL", sum(abs(yp-yc)))
+except:
+    print("Bilinint:   FAIL")
 
 ### expramp()
 rampparams = np.array((goal, m, t0))
 
-yp  = mp.expramp(rampparams, t, [])
+yp = mp.expramp(rampparams, t, [])
 yc = mc.expramp(rampparams, t, [])
 
 if sum(abs(yp-yc)) < 1e-10:
@@ -267,18 +271,20 @@ if sum(abs(yp-yc)) < 1e-10:
 else:
     print ("Mandeltr:  FAIL", sum(abs(yp-yc)))
 
+try:
+    ### nnint()
+    # Variables in 'posflux', 'ipparams' in bilinint()
 
-### nnint()
-# Variables in 'posflux', 'ipparams' in bilinint()
+    yp  = mp.nnint(ipparams, posflux, etc)
+    yc = mc.nnint(ipparams, posflux, etc)
+    #print(yp-yc)
 
-yp  = mp.nnint(ipparams, posflux, etc)
-yc = mc.nnint(ipparams, posflux, etc)
-#print(yp-yc)
-
-if sum(abs(yp-yc)) < 1e-10:
-    print("Nnint:      PASS")
-else:
-    print("Nnint:      FAIL", sum(abs(yp-yc)))
+    if sum(abs(yp-yc)) < 1e-10:
+        print("Nnint:      PASS")
+    else:
+        print("Nnint:      FAIL", sum(abs(yp-yc)))
+except:
+    print("Nnint:      FAIL")
 
 ### ortho()
 '''
