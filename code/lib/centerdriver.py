@@ -83,8 +83,9 @@ def centerdriver(method, data, guess, trim, radius, size,
 
   # Get the center with one of the methods:
   if   method == 'fgc':
-    y, x = g.fitgaussian(img, yxguess=loc, mask=msk, weights=weights,
-                         fitbg=fitbg, maskg=maskstar)[0][2:4]
+    sy, sx, y, x = g.fitgaussian(img, yxguess=loc, mask=msk, weights=weights,
+                         fitbg=fitbg, maskg=maskstar)[0][0:4]
+    extra   = sy, sx    #Gaussian 1-sigma half-widths
   elif method == 'col':
     y, x = ctr.col(img)
   elif method == 'lag':

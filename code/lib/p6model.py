@@ -155,6 +155,8 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
         fit[j].phaseuc  = event[j].phase [np.where(event[j].good == 1)]
         fit[j].yuc      = event[j].y     [np.where(event[j].good == 1)]
         fit[j].xuc      = event[j].x     [np.where(event[j].good == 1)]
+        fit[j].syuc     = event[j].sy    [np.where(event[j].good == 1)]
+        fit[j].sxuc     = event[j].sx    [np.where(event[j].good == 1)]
         fit[j].time     = event[j].time  [np.where(event[j].good == 1)]
         fit[j].bjdcor   = event[j].bjdcor[np.where(event[j].good == 1)]
         fit[j].juldat   = event[j].juldat[np.where(event[j].good == 1)]
@@ -182,6 +184,8 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
             fit[j].sigmauc  = fit[j].sigmauc[isort]
             fit[j].yuc      = fit[j].yuc[isort]
             fit[j].xuc      = fit[j].xuc[isort]
+            fit[j].syuc     = fit[j].syuc[isort]
+            fit[j].sxuc     = fit[j].sxuc[isort]
             fit[j].time     = fit[j].time[isort]
             fit[j].posuc    = fit[j].posuc[isort]
             fit[j].frmvisuc = fit[j].frmvisuc[isort]
@@ -292,6 +296,8 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
         xround          = np.round(np.median(fit[j].xuc))
         fit[j].y        = fit[j].yuc - yround
         fit[j].x        = fit[j].xuc - xround
+        fit[j].sy       = fit[j].syuc
+        fit[j].sx       = fit[j].sxuc
         print("Positions are with respect to (y,x): " + str(int(yround)) + ", " + str(int(xround)), file=printout)
         #DETERMINE PIXEL QUADRANT BASED ON ydiv & xdiv BOUNDARY CONDITIONS
         for i in range(fit[j].nobjuc):
@@ -398,11 +404,14 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
         #FINDME: may not need with new pipeline.
         if hasattr(event[j], 'apdata'):
             fit[j].apdata   = np.copy(fit[j].apdatauc[fit[j].isclipmask])
-        fit[j].position = np.array([fit[j].y[fit[j].isclipmask], 
-                                    fit[j].x[fit[j].isclipmask], 
-                                    fit[j].quadrant[fit[j].isclipmask]])
-        fit[j].nobj     = fit[j].flux.size
-        fit[j].positionuc = np.array([fit[j].y, fit[j].x, fit[j].quadrant])
+        fit[j].position     = np.array([fit[j].y[fit[j].isclipmask], 
+                                        fit[j].x[fit[j].isclipmask], 
+                                        fit[j].quadrant[fit[j].isclipmask]])
+        fit[j].gausswidth   = np.array([fit[j].sy[fit[j].isclipmask], 
+                                        fit[j].sx[fit[j].isclipmask]])
+        fit[j].nobj         = fit[j].flux.size
+        fit[j].positionuc   = np.array([fit[j].y, fit[j].x, fit[j].quadrant])
+        fit[j].gausswidthuc = np.array([fit[j].sy, fit[j].sx])
         
         #DETERMINE BIN LOCATION FOR EACH POSITION
         fit[j].isipmapping = False
@@ -724,7 +733,11 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
             #    funcxuc.append(fit[j].P_hatuc)
             #    fit[j].etc.append([])
             elif functype[i] == 'ippoly':
-                if fit[j].model[k] == 'ipspline':
+                if fit[j].model[k] == 'cubicgw':
+                    funcx.  append(fit[j].gausswidth)
+                    funcxuc.append(fit[j].gausswidthuc)
+                    fit[j].etc.append([])
+                elif fit[j].model[k] == 'ipspline':
                     funcx.  append(fit[j].position)
                     funcxuc.append(fit[j].positionuc)
                     #CREATE KNOTS FOR IPSPLINE

@@ -54,6 +54,7 @@ def init_models():
             ["cubicip", "a\tb\tc\td\te\tf\tg\th\ti\tj\n", np.zeros((4, 10))],
             ["sexticip", "y6\tx6\ty5\tx5\ty4\tx4\ty3\tx3\ty2\tx2\ty1\tx1\tc\n", np.zeros((4, 13))],
             ["sexticipc", "y6\tx6\ty5\tx5\ty4\tx4\ty3\tx3\ty2x\tx2y\ty2\tx2\txy\ty1\tx1\tc\n", np.zeros((4, 16))],["posfluxlinip", "p0\tp1\tp2\tp3\tp4\tp5\tp6\tp7\tp8\ty0\tx0\ty1\tx1\ty2\tx2\ty3\tx3\ty4\tx4\ty5\tx5\ty6\tx6\ty7\tx7\ty8\tx8\n", np.zeros((4, 27))],
+            ["cubicgw", "x1\tx2\tx3\ty1\ty2\ty3\tc\n", np.zeros((4, 7))],
             ["ballardip", "sigmay\tsigmax\tnbins\n", np.zeros((4, 3))],
             ["medianip", "rad\n", np.zeros((4, 1))],
             ["nnint", "minpts\n", np.zeros((4, 1))],
