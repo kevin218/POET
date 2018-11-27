@@ -8,6 +8,10 @@
 #define IND2(a,i,j) *((double *)(a->data+i*a->strides[0]+j*a->strides[1]))
 #define IND2_int(a,i,j) *((int *)(a->data+i*a->strides[0]+j*a->strides[1]))
 
+#if PY_MAJOR_VERSION >= 3
+    #define PyInt_AS_LONG PyLong_AS_LONG
+#endif
+
 static PyObject *bilinint(PyObject *self, PyObject *args, PyObject *keywds);
 
 static PyObject *bilinint(PyObject *self, PyObject *args, PyObject *keywds)
@@ -68,8 +72,8 @@ static PyObject *bilinint(PyObject *self, PyObject *args, PyObject *keywds)
   counter = 0;
   meanbinflux = 0;
   //remind keving to make all wbfipmask things arrays
-#pragma omp parallel for shared(lck,meanbinflux,counter) private(j,tempwbfip,\
-                                arsize,temp_mean,temp_std,temp_int)
+  // shared(lck,meanbinflux,counter) 
+  #pragma omp parallel for private(j,tempwbfip,arsize,temp_mean,temp_std,temp_int)
   for(i = 0; i<dis;i++)
     {
       if(IND_int(binfluxmask,i) == 1)

@@ -67,9 +67,9 @@ static PyObject *nnint(PyObject *self, PyObject *args, PyObject *keywds)
 
   counter = 0;
   meanbinflux = 0;
-  //remind keving to make all wbfipmask things arrays
-#pragma omp parallel for shared(lck,meanbinflux,counter) private(j,tempwbfip,\
-                                arsize,temp_mean,temp_std,temp_int)
+  // remind kevin to make all wbfipmask things arrays
+  // shared(lck,meanbinflux,counter) 
+  #pragma omp parallel for private(j,tempwbfip, arsize,temp_mean,temp_std,temp_int)
   for(i = 0; i<dis;i++)
     {
       if(IND_int(binfluxmask,i) == 1)

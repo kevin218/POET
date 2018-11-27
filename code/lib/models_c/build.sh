@@ -7,8 +7,13 @@ then
     exit
 fi
 
-# python2.7 setup.py build_ext --inplace
-python setup.py build_ext --inplace
+if [ "$1" == "python2" ]
+then
+    python2.7 setup.py build_ext --inplace
+else
+    python setup.py build_ext --inplace
+fi
+
 rename_so_files.sh
 mv -f *.so ext_func/
 rm -rf build/
