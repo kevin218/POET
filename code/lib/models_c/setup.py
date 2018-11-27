@@ -11,7 +11,7 @@ files = os.listdir('c_code/')
 #For python 3, also appears to work for Python 2
 files = list(filter(lambda x: not re.search('.+[.]c[~]$',x),files))
 files = list(filter(lambda x: not re.search('[.#].+[.]c$',x),files))
-files.remove(".svn")
+# files.remove(".svn")
 
 ext_mod = []
 inc = [get_include()]
