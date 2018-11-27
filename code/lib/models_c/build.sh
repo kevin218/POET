@@ -11,10 +11,11 @@ if [ "$1" == "python2" ]
 then
     python2.7 setup.py build_ext --inplace
 else
-    python setup.py build_ext --inplace
-    rename_so_files.sh
+    python3 setup.py build_ext --inplace
+    ./rename_so_files.sh
 fi
 
+mkdir -p ext_func/
 mv -f *.so ext_func/
 rm -rf build/
 echo "~~You made it!~~"
