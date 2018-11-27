@@ -43,11 +43,46 @@ static PyObject *seqramp(PyObject *self, PyObject *args, PyObject *keywds)
   return PyArray_Return(y);
 }
 
-static PyMethodDef seqramp_methods[] = {
+static PyMethodDef module_methods[] = {
   {"seqramp",(PyCFunction)seqramp,METH_VARARGS|METH_KEYWORDS},{NULL}};
 
-void initseqramp(void)
+static char module_docstring[] =
+"This module is used to calcuate the seqramp";
+
+PyMODINIT_FUNC
+#if PY_MAJOR_VERSION >= 3
+    PyInit_seqramp(void)
+#else
+    initseqramp(void)
+#endif
 {
-  Py_InitModule("seqramp",seqramp_methods);
-  import_array();
+#if PY_MAJOR_VERSION >= 3
+    PyObject *module;
+    static struct PyModuleDef moduledef = {
+    PyModuleDef_HEAD_INIT,
+    "seqramp",             /* m_name */
+    module_docstring,    /* m_doc */
+    -1,                  /* m_size */
+    module_methods,      /* m_methods */
+    NULL,                /* m_reload */
+    NULL,                /* m_traverse */
+    NULL,                /* m_clear */
+    NULL,                /* m_free */
+    };
+#endif
+
+#if PY_MAJOR_VERSION >= 3
+    module = PyModule_Create(&moduledef);
+    if (!module)
+    return NULL;
+    /* Load `numpy` functionality. */
+    import_array();
+    return module;
+#else
+    PyObject *m = Py_InitModule3("seqramp", module_methods, module_docstring);
+    if (m == NULL)
+    return;
+    /* Load `numpy` functionality. */
+    import_array();
+#endif
 }

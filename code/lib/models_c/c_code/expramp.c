@@ -45,11 +45,46 @@ static PyObject *expramp(PyObject *self, PyObject *args, PyObject *keywds)
 }
 
 
-static PyMethodDef expramp_methods[] = {
+static PyMethodDef module_methods[] = {
   {"expramp",(PyCFunction)expramp,METH_VARARGS|METH_KEYWORDS},{NULL}};
 
-void initexpramp(void)
+static char module_docstring[] =
+"This module is used to calcuate the expramp";
+
+PyMODINIT_FUNC
+#if PY_MAJOR_VERSION >= 3
+PyInit_expramp(void)
+#else
+initexpramp(void)
+#endif
 {
-  Py_InitModule("expramp",expramp_methods);
-  import_array();
+#if PY_MAJOR_VERSION >= 3
+PyObject *module;
+static struct PyModuleDef moduledef = {
+PyModuleDef_HEAD_INIT,
+"expramp",             /* m_name */
+module_docstring,    /* m_doc */
+-1,                  /* m_size */
+module_methods,      /* m_methods */
+NULL,                /* m_reload */
+NULL,                /* m_traverse */
+NULL,                /* m_clear */
+NULL,                /* m_free */
+};
+#endif
+
+#if PY_MAJOR_VERSION >= 3
+module = PyModule_Create(&moduledef);
+if (!module)
+return NULL;
+/* Load `numpy` functionality. */
+import_array();
+return module;
+#else
+PyObject *m = Py_InitModule3("expramp", module_methods, module_docstring);
+if (m == NULL)
+return;
+/* Load `numpy` functionality. */
+import_array();
+#endif
 }

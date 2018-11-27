@@ -8,6 +8,10 @@
 #define IND2(a,i,j) *((double *)(a->data+i*a->strides[0]+j*a->strides[1]))
 #define IND2_int(a,i,j) *((int *)(a->data+i*a->strides[0]+j*a->strides[1]))
 
+#if PY_MAJOR_VERSION >= 3
+    #define PyInt_AS_LONG PyLong_AS_LONG
+#endif
+
 static PyObject *bilinint(PyObject *self, PyObject *args, PyObject *keywds);
 
 static PyObject *bilinint(PyObject *self, PyObject *args, PyObject *keywds)
@@ -68,8 +72,8 @@ static PyObject *bilinint(PyObject *self, PyObject *args, PyObject *keywds)
   counter = 0;
   meanbinflux = 0;
   //remind keving to make all wbfipmask things arrays
-#pragma omp parallel for shared(lck,meanbinflux,counter) private(j,tempwbfip,\
-                                arsize,temp_mean,temp_std,temp_int)
+  // shared(lck,meanbinflux,counter) 
+  #pragma omp parallel for private(j,tempwbfip,arsize,temp_mean,temp_std,temp_int)
   for(i = 0; i<dis;i++)
     {
       if(IND_int(binfluxmask,i) == 1)
@@ -283,12 +287,46 @@ static char bilinint_doc[]="\
                 Convert to c extension function\n\
 ";
 
-static PyMethodDef bilinint_methods[] = {
+static PyMethodDef module_methods[] = {
   {"bilinint",(PyCFunction)bilinint,METH_VARARGS|METH_KEYWORDS,bilinint_doc},{NULL}};
 
-void initbilinint(void)
-{
-  Py_InitModule("bilinint",bilinint_methods);
-  import_array();
+static char module_docstring[] =
+  "This module is used to calcuate the bilinear interpolation quickly";
 
+PyMODINIT_FUNC
+#if PY_MAJOR_VERSION >= 3
+    PyInit_bilinint(void)
+#else
+    initbilinint(void)
+#endif
+{
+	#if PY_MAJOR_VERSION >= 3
+		PyObject *module;
+		static struct PyModuleDef moduledef = {
+			PyModuleDef_HEAD_INIT,
+			"bilinint",             /* m_name */
+			module_docstring,    /* m_doc */
+			-1,                  /* m_size */
+			module_methods,      /* m_methods */
+			NULL,                /* m_reload */
+			NULL,                /* m_traverse */
+			NULL,                /* m_clear */
+			NULL,                /* m_free */
+		};
+	#endif
+
+	#if PY_MAJOR_VERSION >= 3
+		module = PyModule_Create(&moduledef);
+		if (!module)
+			return NULL;
+		/* Load `numpy` functionality. */
+		import_array();
+		return module;
+	#else
+	    PyObject *m = Py_InitModule3("bilinint", module_methods, module_docstring);
+		if (m == NULL)
+			return;
+		/* Load `numpy` functionality. */
+		import_array();
+	#endif
 }

@@ -49,12 +49,46 @@ static char chisq_doc[]="\
                  Initial version, as c extension\n\
 ";
 
-static PyMethodDef chisq_methods[] = {
+static PyMethodDef module_methods[] = {
   {"chisq", chisq,METH_VARARGS,chisq_doc},{NULL}};
 
-void initchisq(void)
-{
-  Py_InitModule("chisq", chisq_methods);
-  import_array();
-}
+static char module_docstring[] =
+    "This module is used to calcuate the chisq";
 
+PyMODINIT_FUNC
+#if PY_MAJOR_VERSION >= 3
+    PyInit_chisq(void)
+#else
+    initchisq(void)
+#endif
+{
+    #if PY_MAJOR_VERSION >= 3
+        PyObject *module;
+        static struct PyModuleDef moduledef = {
+            PyModuleDef_HEAD_INIT,
+            "chisq",             /* m_name */
+            module_docstring,    /* m_doc */
+            -1,                  /* m_size */
+            module_methods,      /* m_methods */
+            NULL,                /* m_reload */
+            NULL,                /* m_traverse */
+            NULL,                /* m_clear */
+            NULL,                /* m_free */
+        };
+    #endif
+
+    #if PY_MAJOR_VERSION >= 3
+        module = PyModule_Create(&moduledef);
+        if (!module)
+            return NULL;
+        /* Load `numpy` functionality. */
+        import_array();
+        return module;
+    #else
+        PyObject *m = Py_InitModule3("chisq", module_methods, module_docstring);
+        if (m == NULL)
+            return;
+        /* Load `numpy` functionality. */
+        import_array();
+    #endif
+}

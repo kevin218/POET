@@ -67,9 +67,9 @@ static PyObject *nnint(PyObject *self, PyObject *args, PyObject *keywds)
 
   counter = 0;
   meanbinflux = 0;
-  //remind keving to make all wbfipmask things arrays
-#pragma omp parallel for shared(lck,meanbinflux,counter) private(j,tempwbfip,\
-                                arsize,temp_mean,temp_std,temp_int)
+  // remind kevin to make all wbfipmask things arrays
+  // shared(lck,meanbinflux,counter) 
+  #pragma omp parallel for private(j,tempwbfip, arsize,temp_mean,temp_std,temp_int)
   for(i = 0; i<dis;i++)
     {
       if(IND_int(binfluxmask,i) == 1)
@@ -204,11 +204,46 @@ static char nnint_doc[]="\
                 converted to c extension function\n\
 ";
 
-static PyMethodDef nnint_methods[] = {
+static PyMethodDef module_methods[] = {
   {"nnint",(PyCFunction)nnint,METH_VARARGS|METH_KEYWORDS,nnint_doc},{NULL}};
 
-void initnnint(void)
+static char module_docstring[] =
+    "This module is used to calcuate the nnint";
+
+PyMODINIT_FUNC
+#if PY_MAJOR_VERSION >= 3
+    PyInit_nnint(void)
+#else
+    initnnint(void)
+#endif
 {
-  Py_InitModule("nnint",nnint_methods);
-  import_array();
+    #if PY_MAJOR_VERSION >= 3
+        PyObject *module;
+        static struct PyModuleDef moduledef = {
+            PyModuleDef_HEAD_INIT,
+            "nnint",             /* m_name */
+            module_docstring,    /* m_doc */
+            -1,                  /* m_size */
+            module_methods,      /* m_methods */
+            NULL,                /* m_reload */
+            NULL,                /* m_traverse */
+            NULL,                /* m_clear */
+            NULL,                /* m_free */
+        };
+    #endif
+
+    #if PY_MAJOR_VERSION >= 3
+        module = PyModule_Create(&moduledef);
+        if (!module)
+            return NULL;
+        /* Load `numpy` functionality. */
+        import_array();
+        return module;
+    #else
+        PyObject *m = Py_InitModule3("nnint", module_methods, module_docstring);
+        if (m == NULL)
+            return;
+        /* Load `numpy` functionality. */
+        import_array();
+    #endif
 }

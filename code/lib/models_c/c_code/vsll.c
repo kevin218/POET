@@ -77,11 +77,46 @@ static char vsll_doc[]="\
                 Updated to C extension\n\
 ";
 
-static PyMethodDef vsll_methods[] = {
+static PyMethodDef module_methods[] = {
   {"vsll",(PyCFunction)vsll,METH_VARARGS|METH_KEYWORDS,vsll_doc},{NULL}};
 
-void initvsll(void)
+static char module_docstring[] =
+"This module is used to calcuate the vsll";
+
+PyMODINIT_FUNC
+#if PY_MAJOR_VERSION >= 3
+PyInit_vsll(void)
+#else
+initvsll(void)
+#endif
 {
-  Py_InitModule("vsll",vsll_methods);
-  import_array();
+#if PY_MAJOR_VERSION >= 3
+	PyObject *module;
+	static struct PyModuleDef moduledef = {
+		PyModuleDef_HEAD_INIT,
+		"vsll",             /* m_name */
+		module_docstring,    /* m_doc */
+		-1,                  /* m_size */
+		module_methods,      /* m_methods */
+		NULL,                /* m_reload */
+		NULL,                /* m_traverse */
+		NULL,                /* m_clear */
+		NULL,                /* m_free */
+	};
+#endif
+
+#if PY_MAJOR_VERSION >= 3
+	module = PyModule_Create(&moduledef);
+	if (!module)
+		return NULL;
+	/* Load `numpy` functionality. */
+	import_array();
+	return module;
+#else
+    PyObject *m = Py_InitModule3("vsll", module_methods, module_docstring);
+	if (m == NULL)
+		return;
+	/* Load `numpy` functionality. */
+	import_array();
+#endif
 }

@@ -99,12 +99,46 @@ static char ellpic_bulirsch_doc[]="\
                 Converted from Python\n\
 ";
 
-static PyMethodDef ellpic_bulirsch_methods[] = {
+static PyMethodDef module_methods[] = {
   {"ellpic_bulirsch", ellpic_bulirsch,METH_VARARGS,ellpic_bulirsch_doc},{NULL}};
 
-void initellpic_bulirsch(void)
-{
-  Py_InitModule("ellpic_bulirsch", ellpic_bulirsch_methods);
-  import_array();
-}
+static char module_docstring[] =
+"This module is used to calcuate the ellpic_bulirsch";
 
+PyMODINIT_FUNC
+#if PY_MAJOR_VERSION >= 3
+PyInit_ellpic_bulirsch(void)
+#else
+initellpic_bulirsch(void)
+#endif
+{
+#if PY_MAJOR_VERSION >= 3
+PyObject *module;
+static struct PyModuleDef moduledef = {
+PyModuleDef_HEAD_INIT,
+"ellpic_bulirsch",             /* m_name */
+module_docstring,    /* m_doc */
+-1,                  /* m_size */
+module_methods,      /* m_methods */
+NULL,                /* m_reload */
+NULL,                /* m_traverse */
+NULL,                /* m_clear */
+NULL,                /* m_free */
+};
+#endif
+
+#if PY_MAJOR_VERSION >= 3
+module = PyModule_Create(&moduledef);
+if (!module)
+return NULL;
+/* Load `numpy` functionality. */
+import_array();
+return module;
+#else
+PyObject *m = Py_InitModule3("ellpic_bulirsch", module_methods, module_docstring);
+if (m == NULL)
+return;
+/* Load `numpy` functionality. */
+import_array();
+#endif
+}

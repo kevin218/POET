@@ -125,12 +125,47 @@ static char trnlldsp_doc[] ="\
                 Converted to C\n\
 ";
 
-static PyMethodDef trnlldsp_methods[]={
-  {"trnlldsp",(PyCFunction)trnlldsp,METH_VARARGS|METH_KEYWORDS,trnlldsp_doc},	\
-  {NULL}};
+static PyMethodDef module_methods[]={
+  {"trnlldsp",(PyCFunction)trnlldsp,METH_VARARGS|METH_KEYWORDS,trnlldsp_doc},{NULL}};
 
-void inittrnlldsp(void)
+static char module_docstring[] =
+    "This module is used to calcuate the trnlldsp";
+
+PyMODINIT_FUNC
+#if PY_MAJOR_VERSION >= 3
+    PyInit_trnlldsp(void)
+#else
+    inittrnlldsp(void)
+#endif
 {
-  Py_InitModule("trnlldsp",trnlldsp_methods);
-  import_array();
+#if PY_MAJOR_VERSION >= 3
+    PyObject *module;
+    static struct PyModuleDef moduledef = {
+    	PyModuleDef_HEAD_INIT,
+    	"trnlldsp",             /* m_name */
+    	module_docstring,    /* m_doc */
+    	-1,                  /* m_size */
+    	module_methods,      /* m_methods */
+    	NULL,                /* m_reload */
+    	NULL,                /* m_traverse */
+    	NULL,                /* m_clear */
+    	NULL,                /* m_free */
+    };
+#endif
+
+#if PY_MAJOR_VERSION >= 3
+    module = PyModule_Create(&moduledef);
+    if (!module)
+    	return NULL;
+    /* Load `numpy` functionality. */
+    import_array();
+    return module;
+#else
+    PyObject *m = Py_InitModule3("trnlldsp", module_methods, module_docstring);
+    if (m == NULL)
+    	return;
+    
+    /* Load `numpy` functionality. */
+    import_array();
+#endif
 }

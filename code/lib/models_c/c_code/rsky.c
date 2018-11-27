@@ -68,12 +68,46 @@ denoted r_sky = sqrt(x^2 + y^2) in the Seager Exoplanets book\n\
 this quantity is denoted d.\n\
 K 4/27/12 ";
 
-static PyMethodDef rsky_methods[] = {
+static PyMethodDef module_methods[] = {
   {"rsky", rsky,METH_VARARGS,rsky_doc},{NULL}};
 
-void initrsky(void)
-{
-  Py_InitModule("rsky", rsky_methods);
-  import_array();
-}
+static char module_docstring[] =
+    "This module is used to calcuate the rsky";
 
+PyMODINIT_FUNC
+#if PY_MAJOR_VERSION >= 3
+    PyInit_rsky(void)
+#else
+    initrsky(void)
+#endif
+{
+#if PY_MAJOR_VERSION >= 3
+    PyObject *module;
+    static struct PyModuleDef moduledef = {
+    PyModuleDef_HEAD_INIT,
+    "rsky",             /* m_name */
+    module_docstring,    /* m_doc */
+    -1,                  /* m_size */
+    module_methods,      /* m_methods */
+    NULL,                /* m_reload */
+    NULL,                /* m_traverse */
+    NULL,                /* m_clear */
+    NULL,                /* m_free */
+    };
+#endif
+
+#if PY_MAJOR_VERSION >= 3
+    module = PyModule_Create(&moduledef);
+    if (!module)
+    return NULL;
+    /* Load `numpy` functionality. */
+    import_array();
+    return module;
+#else
+    PyObject *m = Py_InitModule3("rsky", module_methods, module_docstring);
+    if (m == NULL)
+    return;
+    /* Load `numpy` functionality. */
+    import_array();
+#endif
+}

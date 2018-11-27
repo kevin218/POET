@@ -2,15 +2,21 @@
 
 
 import os, sys
-sys.path.append('/home/kevin/Documents/STScI/code/POET/POET/code/lib/python')
-sys.path.append('/home/kevin/Documents/STScI/code/POET/POET/code/lib/python/models_c/py_func')
-sys.path.remove("/home/kevin/Documents/esp01/code/lib/python")
+sys.path.append(os.getcwd() + '../../code/lib/python')
+sys.path.append(os.getcwd() + '/py_func')
+sys.path.append(os.getcwd().replace('models_c',''))
+
+if "/home/kevin/Documents/esp01/code/lib/python" in sys.path:
+    sys.path.remove("/home/kevin/Documents/esp01/code/lib/python")
 
 os.environ['OMP_NUM_THREADS']='1'
 import models_c as mc
 import models as mp
 import numpy as np
 #import matplotlib.pyplot as plt
+
+import warnings
+warnings.filterwarnings('ignore')
 
 #Ramp parameters
 t      = np.arange(0,1,0.0001)
@@ -118,29 +124,30 @@ tup1             = [0, 0, 0.0, 0.0]
 issmoothing      = False
 
 ### bilinit()
-
 posflux = [y, x, aplev, wbfipmask, binfluxmask, kernel, \
           tup1, binloc, griddist,  \
           xygrid[0].shape, issmoothing]
-
-yp  =  mp.bilinint(ipparams, posflux, etc)
-yc = mc.bilinint(ipparams, posflux, etc)
-
-if sum(abs(yp-yc)) < 1e-10:
-    print("Bilinint:   PASS")
-else:
-    print("Bilinint:   FAIL", sum(abs(yp-yc)))
+try:
+    yp = mp.bilinint(ipparams, posflux, etc)
+    yc = mc.bilinint(ipparams, posflux, etc)
+    
+    if np.allclose(yp, yc):
+        print("Bilinint:   PASS")
+    else:
+        print("Bilinint:   FAIL", np.np.nansum(abs(yp-yc)/yp))
+except:
+    print("Bilinint:   FAIL to load")
 
 ### expramp()
 rampparams = np.array((goal, m, t0))
 
-yp  = mp.expramp(rampparams, t, [])
+yp = mp.expramp(rampparams, t, [])
 yc = mc.expramp(rampparams, t, [])
 
-if sum(abs(yp-yc)) < 1e-10:
+if np.allclose(yp, yc):
     print("Expramp:    PASS")
 else:
-    print("Expramp:    FAIL", sum(abs(yp-yc)))
+    print("Expramp:    FAIL", np.np.nansum(abs(yp-yc)/yp))
 
 
 ### fallingexp()
@@ -151,10 +158,10 @@ rampparams = np.array((goal, m, t0))
 yp  = mp.fallingexp(rampparams, t, [])
 yc = mc.fallingexp(rampparams, t, [])
 
-if sum(abs(yp-yc)) < 1e-10:
+if np.allclose(yp, yc):
     print("Fallingexp: PASS")
 else:
-    print("Fallingexp: FAIL", sum(abs(yp-yc)))
+    print("Fallingexp: FAIL", np.np.nansum(abs(yp-yc)/yp))
 
 
 ### felramp()
@@ -165,10 +172,10 @@ rampparams = np.array((goal, m, t0, a, t1))
 yp  = mp.felramp(rampparams, t, [])
 yc = mc.felramp(rampparams, t, [])
 
-if sum(abs(yp-yc)) < 1e-10:
+if np.allclose(yp, yc):
     print("Felramp:    PASS")
 else:
-    print("Felramp:    FAIL", sum(abs(yp-yc)))
+    print("Felramp:    FAIL", np.np.nansum(abs(yp-yc)/yp))
 
 
 ### linramp()
@@ -179,10 +186,10 @@ rampparams = np.array((a, b, t0))
 yp  = mp.linramp(rampparams, t, [])
 yc = mc.linramp(rampparams, t, [])
 
-if sum(abs(yp-yc)) < 1e-10:
+if np.allclose(yp, yc):
     print("Linramp:    PASS")
 else:
-    print("Linramp:    FAIL", sum(abs(yp-yc)))
+    print("Linramp:    FAIL", np.np.nansum(abs(yp-yc)/yp))
 
 
 ### llramp()
@@ -193,10 +200,10 @@ rampparams = np.array((t0, a, b, c, t1))
 yp  = mp.llramp(rampparams, t, [])
 yc = mc.llramp(rampparams, t, [])
 
-if sum(abs(yp-yc)) < 1e-10:
+if np.allclose(yp, yc):
     print("Llramp:     PASS")
 else:
-    print("Llramp:     FAIL", sum(abs(yp-yc)))
+    print("Llramp:     FAIL", np.np.nansum(abs(yp-yc)/yp))
 
 
 ### log4qramp()
@@ -207,10 +214,10 @@ rampparams = np.array((t0, a, b, c, d, e, f, g, t1))
 yp  = mp.log4qramp(rampparams, t, [])
 yc = mc.log4qramp(rampparams, t, [])
 
-if sum(abs(yp-yc)) < 1e-10:
+if np.allclose(yp, yc):
     print("Log4qramp:  PASS")
 else:
-    print("Log4qramp:  FAIL", sum(abs(yp-yc)))
+    print("Log4qramp:  FAIL", np.np.nansum(abs(yp-yc)/yp))
 
 
 ### logramp()
@@ -221,10 +228,10 @@ rampparams = np.array((t0, a, b, c, d, e))
 yp  = mp.logramp(rampparams, t, [])
 yc = mc.logramp(rampparams, t, [])
 
-if sum(abs(yp-yc)) < 1e-10:
+if np.allclose(yp, yc):
     print("Logramp:    PASS")
 else:
-    print("Logramp:    FAIL", sum(abs(yp-yc)))
+    print("Logramp:    FAIL", np.np.nansum(abs(yp-yc)/yp))
 
 
 ### lqramp()
@@ -235,10 +242,10 @@ rampparams = np.array((t0, a, b, c, d, t1))
 yp  = mp.lqramp(rampparams, t, [])
 yc = mc.lqramp(rampparams, t, [])
 
-if sum(abs(yp-yc)) < 1e-10:
+if np.allclose(yp, yc):
     print("Lqramp:     PASS")
 else:
-    print("Lqramp:     FAIL", sum(abs(yp-yc)))
+    print("Lqramp:     FAIL", np.np.nansum(abs(yp-yc)/yp))
 
 
 ### mandelecl()
@@ -248,10 +255,10 @@ eclparams = np.array((midpt, width, depth, t12, t34, flux))
 yp  = mp.mandelecl(eclparams, t, [])
 yc = mc.mandelecl(eclparams, t, [])
 
-if sum(abs(yp-yc)) < 1e-10:
+if np.allclose(yp, yc):
     print("Mandelecl:  PASS")
 else:
-    print("Mandelecl:  FAIL", sum(abs(yp-yc)))
+    print("Mandelecl:  FAIL", np.np.nansum(abs(yp-yc)/yp))
 
 
 ### mandeltr()
@@ -262,23 +269,25 @@ params = np.array((midpt, rprs, cosi, ars, flux, p))
 yp  = mp.mandeltr(params, t, [])
 yc = mc.mandeltr(params, t, [])
 
-if sum(abs(yp-yc)) < 1e-10:
+if np.allclose(yp, yc):
     print("Mandeltr:   PASS")
 else:
-    print ("Mandeltr:  FAIL", sum(abs(yp-yc)))
+    print ("Mandeltr:  FAIL", np.np.nansum(abs(yp-yc)/yp))
 
+try:
+    ### nnint()
+    # Variables in 'posflux', 'ipparams' in bilinint()
 
-### nnint()
-# Variables in 'posflux', 'ipparams' in bilinint()
+    yp  = mp.nnint(ipparams, posflux, etc)
+    yc = mc.nnint(ipparams, posflux, etc)
+    #print(yp-yc)
 
-yp  = mp.nnint(ipparams, posflux, etc)
-yc = mc.nnint(ipparams, posflux, etc)
-#print(yp-yc)
-
-if sum(abs(yp-yc)) < 1e-10:
-    print("Nnint:      PASS")
-else:
-    print("Nnint:      FAIL", sum(abs(yp-yc)))
+    if np.allclose(yp, yc):
+        print("Nnint:      PASS")
+    else:
+        print("Nnint:      FAIL", np.np.nansum(abs(yp-yc)/yp))
+except:
+    print("Nnint:      FAIL to load")
 
 ### ortho()
 '''
@@ -289,10 +298,10 @@ origin   = np.zeros(4) + 10
 yp  = mp.orthoInvtrans(params, invtrans, origin)
 yc = mc.orthoInvTrans(params, invtrans, origin)
 
-if sum(abs(yp-yc)) < 1e-10:
+if np.allclose(yp, yc):
     print("ortho:      PASS")
 else:
-    print("ortho:      FAIL", sum(abs(yp-yc)))
+    print("ortho:      FAIL", np.np.nansum(abs(yp-yc)/yp))
 '''
 ### quadip()
 
@@ -302,10 +311,10 @@ position = np.array((y, x, q))
 yp  = mp.quadip(ipparams, position, [])
 yc = mc.quadip(ipparams, position, [])
 
-if sum(abs(yp-yc)) < 1e-10:
+if np.allclose(yp, yc):
     print("Quadip:     PASS")
 else:
-    print("Quadip:     FAIL", sum(abs(yp-yc)))
+    print("Quadip:     FAIL", np.np.nansum(abs(yp-yc)/yp))
 
 
 ### quadramp()
@@ -316,10 +325,10 @@ rampparams = np.array((a, b, c, t0))
 yp  = mp.quadramp(rampparams, t, [])
 yc = mc.quadramp(rampparams, t, [])
 
-if sum(abs(yp-yc)) < 1e-10:
+if np.allclose(yp, yc):
     print("Quadramp:   PASS")
 else:
-    print("Quadramp:   FAIL", sum(abs(yp-yc)))
+    print("Quadramp:   FAIL", np.np.nansum(abs(yp-yc)/yp))
 
 
 ### re2ramp()
@@ -330,10 +339,10 @@ rampparams = np.array((goal, a, m1, t1, b, m2, t2))
 yp  = mp.re2ramp(rampparams, t, [])
 yc = mc.re2ramp(rampparams, t, [])
 
-if sum(abs(yp-yc)) < 1e-10:
+if np.allclose(yp, yc):
     print("Re2ramp:    PASS")
 else:
-    print("Re2ramp:    FAIL", sum(abs(yp-yc)))
+    print("Re2ramp:    FAIL", np.np.nansum(abs(yp-yc)/yp))
 
 
 ### relramp()
@@ -344,10 +353,10 @@ rampparams = np.array((goal, m, t0, a, b, t1))
 yp  = mp.relramp(rampparams, t, [])
 yc = mc.relramp(rampparams, t, [])
 
-if sum(abs(yp-yc)) < 1e-10:
+if np.allclose(yp, yc):
     print("Relramp:    PASS")
 else:
-    print("Relramp:    FAIL", sum(abs(yp-yc)))
+    print("Relramp:    FAIL", np.np.nansum(abs(yp-yc)/yp))
 
 
 ### reqramp()
@@ -358,10 +367,10 @@ rampparams = np.array((goal, m, t0, a, b, c, t1))
 yp  = mp.relramp(rampparams, t, [])
 yc = mc.relramp(rampparams, t, [])
 
-if sum(abs(yp-yc)) < 1e-10:
+if np.allclose(yp, yc):
     print("Reqramp:    PASS")
 else:
-    print("Reqramp:    FAIL", sum(abs(yp-yc)))
+    print("Reqramp:    FAIL", np.np.nansum(abs(yp-yc)/yp))
 
 
 ### risingexp()
@@ -372,10 +381,10 @@ rampparams = np.array((goal, m, t0))
 yp  = mp.risingexp(rampparams, t, [])
 yc = mc.risingexp(rampparams, t, [])
 
-if sum(abs(yp-yc)) < 1e-10:
+if np.allclose(yp, yc):
     print("Risingexp:  PASS")
 else:
-    print("Risingexp:  FAIL", sum(abs(yp-yc)))
+    print("Risingexp:  FAIL", np.np.nansum(abs(yp-yc)/yp))
 
 
 ### seramp()
@@ -384,10 +393,10 @@ rampparams = np.array((goal, m, m*t0, -1))
 yp  = mp.seramp(rampparams, t, [])
 yc = mc.seramp(rampparams, t, [])
 
-if sum(abs(yp-yc)) < 1e-10:
+if np.allclose(yp, yc):
     print("Seramp:     PASS")
 else:
-    print("Seramp:     FAIL", sum(abs(yp-yc)))
+    print("Seramp:     FAIL", np.np.nansum(abs(yp-yc)/yp))
 
 ### selramp()
 rampparams = np.array((goal, m, m*t0, a, t1, -1))
@@ -395,10 +404,10 @@ rampparams = np.array((goal, m, m*t0, a, t1, -1))
 yp  = mp.selramp(rampparams, t, [])
 yc = mc.selramp(rampparams, t, [])
 
-if sum(abs(yp-yc)) < 1e-10:
+if np.allclose(yp, yc):
     print("Selramp:    PASS")
 else:
-    print("Selramp:    FAIL", sum(abs(yp-yc)))
+    print("Selramp:    FAIL", np.np.nansum(abs(yp-yc)/yp))
 
 ### seqramp()
 rampparams = np.array((goal, m, m*t0, a, b, t1, -1))
@@ -406,10 +415,10 @@ rampparams = np.array((goal, m, m*t0, a, b, t1, -1))
 yp  = mp.seqramp(rampparams, t, [])
 yc = mc.seqramp(rampparams, t, [])
 
-if sum(abs(yp-yc)) < 1e-10:
+if np.allclose(yp, yc):
     print("Reqramp:    PASS")
 else:
-    print("Reqramp:    FAIL", sum(abs(yp-yc)))
+    print("Reqramp:    FAIL", np.np.nansum(abs(yp-yc)/yp))
 
 ### se2ramp()
 rampparams = np.array((goal, m, m*t0, -1, m2, m2*t2, -1))
@@ -417,10 +426,10 @@ rampparams = np.array((goal, m, m*t0, -1, m2, m2*t2, -1))
 yp  = mp.se2ramp(rampparams, t, [])
 yc = mc.se2ramp(rampparams, t, [])
 
-if sum(abs(yp-yc)) < 1e-10:
+if np.allclose(yp, yc):
     print("Se2ramp:    PASS")
 else:
-    print("Se2ramp:    FAIL", sum(abs(yp-yc)))
+    print("Se2ramp:    FAIL", np.np.nansum(abs(yp-yc)/yp))
 
 '''
 ### trquad()
@@ -431,10 +440,10 @@ params = np.array((midpt, rprs, cosi, ars, flux, p, c1, c2))
 #yp  = mp.trquad(params, t, [])
 yc = mc.trquad(params, t, [])
 
-if sum(abs(yp-yc)) < 1e-10:
+if np.allclose(yp, yc):
     print("Trquad:   PASS")
 else:
-    print("Trquad:   FAIL", sum(abs(yp-yc)))
+    print("Trquad:   FAIL", np.np.nansum(abs(yp-yc)/yp))
 '''
 ### trnlldsp()
 # Variables 'midpt', 'flux' in mandelecl, 'rprs', 'cosi', 'ars', 'p' in mandeltr, 't' in expramp()
@@ -444,10 +453,10 @@ params = np.array((midpt, rprs, cosi, ars, flux, p, c1, c2, c3, c4))
 yp  = mp.trnlldsp(params, t, [])
 yc = mc.trnlldsp(params, t, [])
 
-if sum(abs(yp-yc)) < 1e-10:
+if np.allclose(yp, yc):
     print("Trnlldsp:   PASS")
 else:
-    print("Trnlldsp:   FAIL", sum(abs(yp-yc)))
+    print("Trnlldsp:   FAIL", np.np.nansum(abs(yp-yc)/yp))
 
 
 ### vsll()
@@ -459,10 +468,10 @@ visparams = np.array((t0, a, b, c, t1))
 yp  = mp.vsll(visparams, [t, knots], [])
 yc = mc.vsll(visparams, [t, knots], [])
 
-if sum(abs(yp-yc)) < 1e-10:
+if np.allclose(yp, yc):
     print("Vsll:       PASS")
 else:
-    print("Vsll:       FAIL", sum(abs(yp-yc)))
+    print("Vsll:       FAIL", np.np.nansum(abs(yp-yc)/yp))
 
 ### rotation()
 
@@ -471,10 +480,10 @@ rotparams = np.array((a, b, c))
 yp  = mp.rotation(rotparams, [t,t], [])
 yc  = mc.rotation(rotparams, [t,t], [])
 
-if sum(abs(yp-yc)) < 1e-10:
+if np.allclose(yp, yc):
     print("Rotation:   PASS")
 else:
-    print("Rotation:   FAIL", sum(abs(yp-yc)))
+    print("Rotation:   FAIL", np.np.nansum(abs(yp-yc)/yp))
 
 ### ellke()
 
@@ -496,10 +505,10 @@ k   = np.arange(0.1,1.,0.1)
 yp  = mp.ellpic_bulirsch(k,k)
 yc  = mc.ellpic_bulirsch(k,k)
 
-if sum(abs(yp-yc)) < 1e-10:
+if np.allclose(yp, yc):
     print("E_bulirsch: PASS")
 else:
-    print("E_bulirsch: FAIL", sum(abs(yp-yc)))
+    print("E_bulirsch: FAIL", np.np.nansum(abs(yp-yc)/yp))
 
 ### chisq()
 
@@ -523,8 +532,8 @@ sincos2params = np.array((a, b, c, d, e, f, g, h, 1., 1., 0.5, 0.02, 0.005))
 yp  = mp.sincos2(sincos2params, t, [])
 yc  = mc.sincos2(sincos2params, t, [])
 
-if sum(abs(yp-yc)) < 1e-10:
+if np.allclose(yp, yc):
     print("Sincos2:    PASS")
 else:
-    print("Sincos2:    FAIL", sum(abs(yp-yc)))
+    print("Sincos2:    FAIL", np.np.nansum(abs(yp-yc)/yp))
 

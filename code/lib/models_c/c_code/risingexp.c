@@ -63,11 +63,46 @@ static char risingexp_doc[]="\
                 natelust at linux dot com\n\
 ";
 
-static PyMethodDef risingexp_methods[] = {
+static PyMethodDef module_methods[] = {
   {"risingexp",(PyCFunction)risingexp,METH_VARARGS|METH_KEYWORDS,risingexp_doc},{NULL}};
 
-void initrisingexp(void)
+static char module_docstring[] =
+    "This module is used to calcuate the risingexp";
+
+PyMODINIT_FUNC
+#if PY_MAJOR_VERSION >= 3
+    PyInit_risingexp(void)
+#else
+    initrisingexp(void)
+#endif
 {
-  Py_InitModule("risingexp",risingexp_methods);
-  import_array();
+#if PY_MAJOR_VERSION >= 3
+    PyObject *module;
+    static struct PyModuleDef moduledef = {
+    PyModuleDef_HEAD_INIT,
+    "risingexp",             /* m_name */
+    module_docstring,    /* m_doc */
+    -1,                  /* m_size */
+    module_methods,      /* m_methods */
+    NULL,                /* m_reload */
+    NULL,                /* m_traverse */
+    NULL,                /* m_clear */
+    NULL,                /* m_free */
+    };
+#endif
+
+#if PY_MAJOR_VERSION >= 3
+    module = PyModule_Create(&moduledef);
+    if (!module)
+    return NULL;
+    /* Load `numpy` functionality. */
+    import_array();
+    return module;
+#else
+    PyObject *m = Py_InitModule3("risingexp", module_methods, module_docstring);
+    if (m == NULL)
+    return;
+    /* Load `numpy` functionality. */
+    import_array();
+#endif
 }

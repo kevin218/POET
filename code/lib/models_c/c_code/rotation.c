@@ -49,7 +49,7 @@ static char rotation_doc[] = "\
     ----------\n\
     a:	        Flux offset\n\
     b:	        Airmass multiplier\n\
-    offset:	    Rotation offset in degrees\n\
+    offset:	    rotation offset in degrees\n\
     airmass:	Array of airmass points\n\
     rotation:	Array of airmass points\n\
 \n\
@@ -67,11 +67,46 @@ static char rotation_doc[] = "\
 \n\
 ";
 
-static PyMethodDef rotation_methods[] = {
+static PyMethodDef module_methods[] = {
   {"rotation",(PyCFunction)rotation,METH_VARARGS|METH_KEYWORDS,rotation_doc},{NULL}};
 
-void initrotation(void)
+static char module_docstring[] =
+    "This module is used to calcuate the rotation";
+
+PyMODINIT_FUNC
+#if PY_MAJOR_VERSION >= 3
+    PyInit_rotation(void)
+#else
+    initrotation(void)
+#endif
 {
-  Py_InitModule("rotation",rotation_methods);
-  import_array();
+#if PY_MAJOR_VERSION >= 3
+    PyObject *module;
+    static struct PyModuleDef moduledef = {
+    PyModuleDef_HEAD_INIT,
+    "rotation",             /* m_name */
+    module_docstring,    /* m_doc */
+    -1,                  /* m_size */
+    module_methods,      /* m_methods */
+    NULL,                /* m_reload */
+    NULL,                /* m_traverse */
+    NULL,                /* m_clear */
+    NULL,                /* m_free */
+    };
+#endif
+
+#if PY_MAJOR_VERSION >= 3
+    module = PyModule_Create(&moduledef);
+    if (!module)
+    return NULL;
+    /* Load `numpy` functionality. */
+    import_array();
+    return module;
+#else
+    PyObject *m = Py_InitModule3("rotation", module_methods, module_docstring);
+    if (m == NULL)
+    return;
+    /* Load `numpy` functionality. */
+    import_array();
+#endif
 }

@@ -44,11 +44,46 @@ static PyObject *reqramp(PyObject *self, PyObject *args, PyObject *keywds)
   return PyArray_Return(y);
 }
 
-static PyMethodDef reqramp_methods[] = {
+static PyMethodDef module_methods[] = {
   {"reqramp",(PyCFunction)reqramp,METH_VARARGS|METH_KEYWORDS},{NULL}};
 
-void initreqramp(void)
+static char module_docstring[] =
+    "This module is used to calcuate the reqramp";
+
+PyMODINIT_FUNC
+#if PY_MAJOR_VERSION >= 3
+    PyInit_reqramp(void)
+#else
+    initreqramp(void)
+#endif
 {
-  Py_InitModule("reqramp",reqramp_methods);
-  import_array();
+#if PY_MAJOR_VERSION >= 3
+    PyObject *module;
+    static struct PyModuleDef moduledef = {
+    PyModuleDef_HEAD_INIT,
+    "reqramp",             /* m_name */
+    module_docstring,    /* m_doc */
+    -1,                  /* m_size */
+    module_methods,      /* m_methods */
+    NULL,                /* m_reload */
+    NULL,                /* m_traverse */
+    NULL,                /* m_clear */
+    NULL,                /* m_free */
+    };
+#endif
+
+#if PY_MAJOR_VERSION >= 3
+    module = PyModule_Create(&moduledef);
+    if (!module)
+    return NULL;
+    /* Load `numpy` functionality. */
+    import_array();
+    return module;
+#else
+    PyObject *m = Py_InitModule3("reqramp", module_methods, module_docstring);
+    if (m == NULL)
+    return;
+    /* Load `numpy` functionality. */
+    import_array();
+#endif
 }
