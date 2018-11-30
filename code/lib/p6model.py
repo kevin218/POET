@@ -37,6 +37,7 @@ import smoothing
 import correlated_noise as cn
 import plots
 import nasc
+from python_models import setupmodel
 
 def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
     """
@@ -235,7 +236,7 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
             pcounter += len(pars[0])
         
         #SETUP MODELS BY DECLARING FUNCTIONS, FUNCTION TYPES, PARAMETER NAMES, INDICES & SAVE EXTENSIONS
-        func, funct, fit[j].parname, fit[j].i, fit[j].saveext = mc.setupmodel(fit[j].model, fit[j].i)
+        func, funct, fit[j].parname, fit[j].i, fit[j].saveext = setupmodel(fit[j].model, fit[j].i)
         myfuncs  = np.concatenate(( myfuncs, func), 0)
         for i in range(len(funct)):
             functype.append(funct[i])

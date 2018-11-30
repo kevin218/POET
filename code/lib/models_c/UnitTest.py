@@ -123,7 +123,7 @@ kernel           = np.zeros((ysize, xsize))
 tup1             = [0, 0, 0.0, 0.0]
 issmoothing      = False
 
-### bilinit()
+### bilinint()
 posflux = [y, x, aplev, wbfipmask, binfluxmask, kernel, \
           tup1, binloc, griddist,  \
           xygrid[0].shape, issmoothing]
