@@ -83,6 +83,11 @@ static char logramp_doc[]="\
  MODIFICATION HISTORY:\n\
  	Written by:	Kevin Stevenson, UCF  	2008-06-26\n\
 			kevin218@knights.ucf.edu\n\
+	
+    	2018-11-11  Jonathan Fraine, SSI\n\
+                jfraine at spacescience.org\n\
+                Updated c extensions to python3, with support for python2.7\n\
+
 ";
 
 static PyMethodDef module_methods[] = {
