@@ -45,32 +45,32 @@ static PyObject *expramp(PyObject *self, PyObject *args, PyObject *keywds)
 }
 
 
+static char module_docstring[] ="\
+    This function creates a model that fits a ramp using a rising exponential.\n\
+    \n\
+    Parameters\n\
+    ----------\n\
+      goal:  goal as x -> inf\n\
+      m:	   rise exp\n\
+      x0:	   time offset\n\
+      x:	   Array of time/phase points\n\
+    \n\
+    Returns\n\
+    -------\n\
+      This function returns an array of y values by combining an eclipse and a rising exponential\n\
+    \n\
+    Revisions\n\
+    ---------\n\
+    2008-06-16	    Kevin Stevenson, UCF  \n\
+                    kevin218@knights.ucf.edu\n\
+                    Original version\n\n\
+    2018-11-22      Jonathan Fraine, SSI\n\
+                    jfraine at spacescience.org\n\
+                    Updated c extensions to python3, with support for python2.7\n\n\
+";
+
 static PyMethodDef module_methods[] = {
   {"expramp",(PyCFunction)expramp,METH_VARARGS|METH_KEYWORDS,module_docstring},{NULL}};
-
-static char module_docstring[] ="\
-This function creates a model that fits a ramp using a rising exponential.\n\
-\n\
-Parameters\n\
-----------\n\
-  goal:  goal as x -> inf\n\
-  m:	   rise exp\n\
-  x0:	   time offset\n\
-  x:	   Array of time/phase points\n\
-\n\
-Returns\n\
--------\n\
-  This function returns an array of y values by combining an eclipse and a rising exponential\n\
-\n\
-Revisions\n\
----------\n\
-2008-06-16	    Kevin Stevenson, UCF  \n\
-                kevin218@knights.ucf.edu\n\
-                Original version\n\n\
-2018-11-22      Jonathan Fraine, SSI\n\
-                jfraine at spacescience.org\n\
-                Updated c extensions to python3, with support for python2.7\n\n\
-";
 
 PyMODINIT_FUNC
 #if PY_MAJOR_VERSION >= 3

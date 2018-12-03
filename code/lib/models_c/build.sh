@@ -12,7 +12,7 @@ then
     python2.7 setup.py build_ext --inplace
 else
     python3 setup.py build_ext --inplace
-    ./rename_so_files.sh
+    # ./rename_so_files.sh
 fi
 
 mkdir -p ext_func/

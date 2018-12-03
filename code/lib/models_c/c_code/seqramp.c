@@ -43,9 +43,6 @@ static PyObject *seqramp(PyObject *self, PyObject *args, PyObject *keywds)
   return PyArray_Return(y);
 }
 
-static PyMethodDef module_methods[] = {
-  {"seqramp",(PyCFunction)seqramp,METH_VARARGS|METH_KEYWORDS,module_docstring},{NULL}};
-
 static char module_docstring[]="\
     This function NEEDS A DOC_STRING.\n\
     \n\
@@ -67,6 +64,9 @@ static char module_docstring[]="\
                   jfraine at spacescience.org\n\
                   Updated c extensions to python3, with support for python2.7\n\n\
 ";
+
+static PyMethodDef module_methods[] = {
+  {"seqramp",(PyCFunction)seqramp,METH_VARARGS|METH_KEYWORDS,module_docstring},{NULL}};
 
 PyMODINIT_FUNC
 #if PY_MAJOR_VERSION >= 3

@@ -66,7 +66,7 @@ static char module_docstring[] = "\
     denoted r_sky = sqrt(x^2 + y^2) in the Seager Exoplanets book\n\
     (see the section by Murray, and Winn eq. 5).  In the Mandel & Agol (2002) paper,\n\
     this quantity is denoted d.\n\
-    
+    \n\
     Revisions\n\
     ---------\n\
       Created: 2012-09-12  Laura Kreidberg \n\

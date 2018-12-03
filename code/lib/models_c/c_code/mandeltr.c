@@ -68,8 +68,7 @@ static PyObject *mandeltr(PyObject *self, PyObject *args, PyObject *keywd)
   return PyArray_Return(y);
 }
 
-static char module_docstring[] ="\
-   This function computes the primary transit shape using equations provided by Mandel & Agol (2002)\n\
+static char module_docstring[] ="This function computes the primary transit shape using equations provided by Mandel & Agol (2002)\n\
 \n\
   Parameters\n\
   ----------\n\
@@ -90,11 +89,9 @@ static char module_docstring[] ="\
   2010-11-27	Kevin Stevenson, UCF\n\
                 kevin218@knights.ucf.edu\n\
                 Original version\n\
-		
   2010-12-19    Nate Lust, UCF\n\
                 natelust at linux dot com\n\
                 converted function to c\n\
-		
   2018-11-22    Jonathan Fraine, SSI\n\
                 jfraine at spacescience.org\n\
                 Updated c extensions to python3, with support for python2.7\n\

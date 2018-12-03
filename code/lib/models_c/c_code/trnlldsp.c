@@ -117,7 +117,7 @@ static char module_docstring[] ="\
 \n\
   Revisions\n\
   ---------\n\
-  2010-12-15        Kevin Stevenson, UCF  \n\
+  2010-12-15    Kevin Stevenson, UCF  \n\
                 kevin218@knights.ucf.edu\n\
                 Converted to Python\n\
   2010-12-24    Nate Lust, UCF\n\

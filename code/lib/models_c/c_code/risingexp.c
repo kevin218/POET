@@ -57,14 +57,13 @@ static char module_docstring[]="\
   Revisions\n\
   ---------\n\
   2008-06-24	Kevin Stevenson, UCF  \n\
-			kevin218@knights.ucf.edu\n\n\
-		Original version\n\
+			    kevin218@knights.ucf.edu\n\n\
+                Original version\n\
   2010-12-24    Nate Lust, UCF \n\
                 natelust at linux dot com\n\n\
   2018-11-22    Jonathan Fraine, SSI\n\
                 jfraine at spacescience.org\n\
                 Updated c extensions to python3, with support for python2.7\n\n\
-
 ";
 
 static PyMethodDef module_methods[] = {

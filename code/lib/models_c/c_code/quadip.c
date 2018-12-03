@@ -62,8 +62,8 @@ static char module_docstring[]="\
   Revisions\n\
   ---------\n\
   2008-07-05	Kevin Stevenson, UCF  \n\
-			kevin218@knights.ucf.edu\n\
-		Original version\n\
+			    kevin218@knights.ucf.edu\n\
+		        Original version\n\
   2011-01-05    Nate Lust, UCF\n\
                 natelust at linux dot com\n\
                 Converted to c extention function\n\

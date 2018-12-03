@@ -43,9 +43,6 @@ static PyObject *felramp(PyObject *self, PyObject *args, PyObject *keywds)
 }
 
 
-static PyMethodDef module_methods[] = {
-  {"felramp",(PyCFunction)felramp,METH_VARARGS|METH_KEYWORDS,module_docstring},{NULL}};
-
 static char module_docstring[] ="\
     FINDME: This function needs a docstring -- the following is a copy/paste from fallingexp.c.\n\
   \n\
@@ -69,6 +66,9 @@ static char module_docstring[] ="\
                   jfraine at spacescience.org\n\
                   Updated c extensions to python3, with support for python2.7\n\n\
 ";
+
+static PyMethodDef module_methods[] = {
+  {"felramp",(PyCFunction)felramp,METH_VARARGS|METH_KEYWORDS,module_docstring},{NULL}};
 
 PyMODINIT_FUNC
 #if PY_MAJOR_VERSION >= 3

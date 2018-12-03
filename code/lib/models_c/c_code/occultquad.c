@@ -451,7 +451,6 @@ double rf(double x, double y, double z)
 	return rf;
 }
 
-
 static char module_docstring[]="\
   FINDME: This function NEEDS OF DOC_STRING\n\
 \n\
@@ -460,7 +459,7 @@ static char module_docstring[]="\
         \n\
   Returns\n\
   -------\n\
-\n
+\n\
   Revisions\n\
   ---------\n\
     Created: 2012-09-12  Laura Kreidberg \n\

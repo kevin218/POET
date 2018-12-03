@@ -74,10 +74,12 @@ static char module_docstring[]="\
 \n\
 \n\
  MODIFICATION HISTORY:\n\
- 	Written by:	Kevin Stevenson, UCF  	2009-11-28\n\
-			kevin218@knights.ucf.edu\n\
-
-	2018-11-22  Jonathan Fraine, SSI\n\
+   	Written by:	Kevin Stevenson, UCF\n\n\
+                kevin218@knights.ucf.edu\n\
+   	\n\
+    2009-11-28  Original creation \n\
+   	\n\
+   	2018-11-22  Jonathan Fraine, SSI\n\
                 jfraine at spacescience.org\n\
                 Updated c extensions to python3, with support for python2.7\n\
 ";

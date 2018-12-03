@@ -44,6 +44,9 @@ static char module_docstring[]="\
 \n\
    Revisions\n\
    ---------\n\
+    2010-06-11   Kevin Stevenson, UCF\n\
+                 kevin218@knights.ucf.edu\n\
+                 Original version\n\n\
    2011-01-08    Nate Lust, UCF\n\
                  natelust at linux dot com\n\
                  Initial version, as c extension\n\n\

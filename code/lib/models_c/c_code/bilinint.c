@@ -278,7 +278,7 @@ static char module_docstring[]="\
     Revisions\n\
     ---------\n\
     2010-06-11  Kevin Stevenson, UCF\n\
-                            kevin218@knights.ucf.edu\n\
+                kevin218@knights.ucf.edu\n\
                 Original version\n\n\
     2010-07-07  Kevin\n\
                 Added wbfipmask\n\n\

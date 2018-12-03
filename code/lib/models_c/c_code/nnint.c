@@ -194,7 +194,7 @@ static char module_docstring[]="\
 \n\
   Revisions\n\
   ---------\n\
-    2010-06-07        Kevin Stevenson, UCF  \n\
+    2010-06-07  Kevin Stevenson, UCF  \n\
                 kevin218@knights.ucf.edu\n\
                 Original version\n\
     2010-07-07  Kevin\n\
@@ -202,7 +202,6 @@ static char module_docstring[]="\
     2011-01-06  nate lust, ucf\n\
                 natelust at linux dot com\n\
                 converted to c extension function\n\
-		
     2018-11-27  Jonathan Fraine, SSI\n\
                 jfraine at spacescience.org\n\
                 Updated c extensions to python3, with support for python2.7\n\

@@ -58,8 +58,8 @@ static char module_docstring[]="\
   Revisions\n\
   ---------\n\
   2008-06-24	Kevin Stevenson, UCF  \n\
-			kevin218@knights.ucf.edu\n\
-		Original version\n\
+                kevin218@knights.ucf.edu\n\
+                Original version\n\
   2010-12-24    Nate Lust, UCF \n\
                 natelust at linux dot com\n\
   2018-11-22    Jonathan Fraine, SSI\n\
