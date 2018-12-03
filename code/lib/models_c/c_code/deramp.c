@@ -69,22 +69,25 @@ static char deramp_doc[]="\
   ---------\n\
   2008-06-24	Kevin Stevenson, UCF  \n\
 			kevin218@knights.ucf.edu\n\
-		Original version\n\
+		Original version\n\n\
   2010-12-24    Nate Lust, UCF \n\
-                natelust at linux dot com\n\
+                natelust at linux dot com\n\n\
+  2018-11-11    Jonathan Fraine, SSI\n\
+                jfraine at spacescience.org\n\
+                Updated c extensions to python3, with support for python2.7\n\n\
 ";
 
 static PyMethodDef module_methods[] = {
   {"deramp",(PyCFunction)deramp,METH_VARARGS|METH_KEYWORDS,deramp_doc},{NULL}};
 
-static char module_docstring[] =
-"This module is used to calcuate the deramp";
+// static char module_docstring[] =
+// "This module is used to calcuate the deramp";
 
 PyMODINIT_FUNC
 #if PY_MAJOR_VERSION >= 3
-PyInit_deramp(void)
+    PyInit_deramp(void)
 #else
-initderamp(void)
+    initderamp(void)
 #endif
 {
 #if PY_MAJOR_VERSION >= 3
@@ -92,7 +95,7 @@ PyObject *module;
 static struct PyModuleDef moduledef = {
 PyModuleDef_HEAD_INIT,
 "deramp",             /* m_name */
-module_docstring,    /* m_doc */
+deramp_doc,    /* m_doc */
 -1,                  /* m_size */
 module_methods,      /* m_methods */
 NULL,                /* m_reload */
@@ -110,7 +113,7 @@ return NULL;
 import_array();
 return module;
 #else
-PyObject *m = Py_InitModule3("deramp", module_methods, module_docstring);
+PyObject *m = Py_InitModule3("deramp", module_methods, deramp_doc);
 if (m == NULL)
 return;
 /* Load `numpy` functionality. */
