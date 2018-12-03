@@ -1,7 +1,7 @@
 #! /usr/bin env python
 #Converts UTC Julian dates to Terrestrial Time and Barycentric Dynamical Time Julian dates
 #Author: Ryan A. Hardy, hardy.r@gmail.com
-#Last update: 2011-03-17
+#Last update: 2018-12
 import numpy as np
 import urllib
 import os
@@ -10,14 +10,15 @@ import time
 #from univ import c
 #from splinterp import splinterp
 import scipy.interpolate as si
-rundir = '/Users/bbrooks/Desktop/exoplanet_research/code/ancil/leapseconds/'
+rundir  = '/home/kevin/Documents/STScI/code/POET/POET/code/ancil/leapseconds/'
+ftpurl  = 'ftp://ftp.boulder.nist.gov/pub/time/leap-seconds.list'
 
 def leapdates():
 	'''Generates an array of leap second dates which
 	are automatically updated every six months.
 	Uses local leap second file, but retrieves a leap
 	second file from NIST if the current file is out of date.
-	Last update: 2011-03-17'''
+	'''
 	try:
 		files = os.listdir(rundir)
 		recent = np.sort(files)[-1]
@@ -29,14 +30,14 @@ def leapdates():
 		ntpepoch = 2208988800
 		if time.time()+ ntpepoch > expiration:
 			print("Leap-second file expired.	Retrieving new file.")
-			nist = urllib.urlopen('ftp://utcnist.colorado.edu/pub/leap-seconds.list')
-			doc = nist.read()
+			nist = urllib.request.urlopen(ftpurl)
+			doc = nist.read().decode('utf-8')
 			nist.close()
-			newexp = doc.split('#@')[1].split('\n')[0][1:]
+			newexp = doc.split('#@')[1].split('\r\n')[0][1:]
 			newfile = open(rundir+"leap-seconds."+newexp, 'w')
 			newfile.write(doc)
 			newfile.close()
-			table = doc.split('#@')[1].split('\n#\n')[1].split('\n')
+			table = doc.split('#@')[1].split('\r\n#\r\n')[1].split('\r\n')
 			print("Leap second file updated.")
 		else:
 			print("Local leap second file retrieved.")
