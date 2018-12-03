@@ -64,6 +64,9 @@ static char rotation_doc[] = "\
                 Original version\n\
     2012-08-24  Kevin Stevenson\n\
                 Converted to C\n\
+  2018-11-11    Jonathan Fraine, SSI\n\
+                jfraine at spacescience.org\n\
+                Updated c extensions to python3, with support for python2.7\n\
 \n\
 ";
 
