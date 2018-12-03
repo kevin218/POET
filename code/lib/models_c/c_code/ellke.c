@@ -58,7 +58,7 @@ static PyObject *ellke(PyObject *self, PyObject *args)
   return Py_BuildValue("NN",ek,kk);
 }
 
-static char ellke_doc[]="\
+static char module_docstring[]="\
    Computes Hasting's polynomial approximation for the complete\n\
    elliptic integral of the first (ek) and second (kk) kind.\n\
 \n\
@@ -77,51 +77,51 @@ static char ellke_doc[]="\
    2012-08-25   Kevin Stevenson, UChicago \n\
                 kbs@uchicago.edu\n\
                 Converted from Python\n\n\
-   2018-11-11   Jonathan Fraine, SSI\n\
+   2018-11-22   Jonathan Fraine, SSI\n\
                 jfraine at spacescience.org\n\
                 Updated c extensions to python3, with support for python2.7\n\n\
 ";
 
 static PyMethodDef module_methods[] = {
-  {"ellke", ellke,METH_VARARGS,ellke_doc},{NULL}};
+  {"ellke", ellke,METH_VARARGS,module_docstring},{NULL}};
 
-static char module_docstring[] =
-"This module is used to calcuate the ellke";
+// static char module_docstring[] =
+// "This module is used to calcuate the ellke";
 
 PyMODINIT_FUNC
 #if PY_MAJOR_VERSION >= 3
-PyInit_ellke(void)
+    PyInit_ellke(void)
 #else
-initellke(void)
+    initellke(void)
 #endif
 {
-#if PY_MAJOR_VERSION >= 3
-PyObject *module;
-static struct PyModuleDef moduledef = {
-PyModuleDef_HEAD_INIT,
-"ellke",             /* m_name */
-module_docstring,    /* m_doc */
--1,                  /* m_size */
-module_methods,      /* m_methods */
-NULL,                /* m_reload */
-NULL,                /* m_traverse */
-NULL,                /* m_clear */
-NULL,                /* m_free */
-};
-#endif
+    #if PY_MAJOR_VERSION >= 3
+        PyObject *module;
+        static struct PyModuleDef moduledef = {
+            PyModuleDef_HEAD_INIT,
+            "ellke",             /* m_name */
+            module_docstring,    /* m_doc */
+            -1,                  /* m_size */
+            module_methods,      /* m_methods */
+            NULL,                /* m_reload */
+            NULL,                /* m_traverse */
+            NULL,                /* m_clear */
+            NULL,                /* m_free */
+        };
+    #endif
 
-#if PY_MAJOR_VERSION >= 3
-module = PyModule_Create(&moduledef);
-if (!module)
-return NULL;
-/* Load `numpy` functionality. */
-import_array();
-return module;
-#else
-PyObject *m = Py_InitModule3("ellke", module_methods, module_docstring);
-if (m == NULL)
-return;
-/* Load `numpy` functionality. */
-import_array();
-#endif
+    #if PY_MAJOR_VERSION >= 3
+        module = PyModule_Create(&moduledef);
+        if (!module)
+            return NULL;
+        /* Load `numpy` functionality. */
+        import_array();
+        return module;
+    #else
+        PyObject *m = Py_InitModule3("ellke", module_methods, module_docstring);
+        if (m == NULL)
+            return;
+        /* Load `numpy` functionality. */
+        import_array();
+    #endif
 }

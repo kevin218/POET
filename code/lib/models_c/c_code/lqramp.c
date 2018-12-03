@@ -45,7 +45,7 @@ static PyObject *lqramp(PyObject *self, PyObject *args, PyObject *keywds)
   return PyArray_Return(y);
 }
 
-static char lqramp_doc[]="\
+static char module_docstring[]="\
   NAME:\n\
 	LQRAMP\n\
 \n\
@@ -77,18 +77,13 @@ static char lqramp_doc[]="\
  	Written by:	Kevin Stevenson, UCF  	2009-11-28\n\
 			kevin218@knights.ucf.edu\n\
 
-	2018-11-11  Jonathan Fraine, SSI\n\
+	2018-11-22  Jonathan Fraine, SSI\n\
                 jfraine at spacescience.org\n\
                 Updated c extensions to python3, with support for python2.7\n\
-
-\n\
 ";
 
 static PyMethodDef module_methods[] = {
-  {"lqramp",(PyCFunction)lqramp,METH_VARARGS|METH_KEYWORDS,lqramp_doc},{NULL}};
-
-static char module_docstring[] =
-    "This module is used to calcuate the lqramp";
+  {"lqramp",(PyCFunction)lqramp,METH_VARARGS|METH_KEYWORDS,module_docstring},{NULL}};
 
 PyMODINIT_FUNC
 #if PY_MAJOR_VERSION >= 3
@@ -97,33 +92,33 @@ PyMODINIT_FUNC
     initlqramp(void)
 #endif
 {
-#if PY_MAJOR_VERSION >= 3
-    PyObject *module;
-    static struct PyModuleDef moduledef = {
-    PyModuleDef_HEAD_INIT,
-    "lqramp",             /* m_name */
-    module_docstring,    /* m_doc */
-    -1,                  /* m_size */
-    module_methods,      /* m_methods */
-    NULL,                /* m_reload */
-    NULL,                /* m_traverse */
-    NULL,                /* m_clear */
-    NULL,                /* m_free */
-    };
-#endif
+    #if PY_MAJOR_VERSION >= 3
+        PyObject *module;
+        static struct PyModuleDef moduledef = {
+            PyModuleDef_HEAD_INIT,
+            "lqramp",             /* m_name */
+            module_docstring,    /* m_doc */
+            -1,                  /* m_size */
+            module_methods,      /* m_methods */
+            NULL,                /* m_reload */
+            NULL,                /* m_traverse */
+            NULL,                /* m_clear */
+            NULL,                /* m_free */
+        };
+    #endif
 
-#if PY_MAJOR_VERSION >= 3
-    module = PyModule_Create(&moduledef);
-    if (!module)
-    return NULL;
-    /* Load `numpy` functionality. */
-    import_array();
-    return module;
-#else
-    PyObject *m = Py_InitModule3("lqramp", module_methods, module_docstring);
-    if (m == NULL)
-    return;
-    /* Load `numpy` functionality. */
-    import_array();
-#endif
+    #if PY_MAJOR_VERSION >= 3
+        module = PyModule_Create(&moduledef);
+        if (!module)
+            return NULL;
+        /* Load `numpy` functionality. */
+        import_array();
+        return module;
+    #else
+        PyObject *m = Py_InitModule3("lqramp", module_methods, module_docstring);
+        if (m == NULL)
+            return;
+        /* Load `numpy` functionality. */
+        import_array();
+    #endif
 }

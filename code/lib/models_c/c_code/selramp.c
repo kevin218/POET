@@ -43,10 +43,29 @@ static PyObject *selramp(PyObject *self, PyObject *args, PyObject *keywds)
 }
 
 static PyMethodDef module_methods[] = {
-  {"selramp",(PyCFunction)selramp,METH_VARARGS|METH_KEYWORDS},{NULL}};
+  {"selramp",(PyCFunction)selramp,METH_VARARGS|METH_KEYWORDS,module_docstring},{NULL}};
 
-static char module_docstring[] =
-    "This module is used to calcuate the selramp";
+static char module_docstring[]="\
+    This function NEEDS A DOC_STRING.\n\
+    \n\
+    Parameters\n\
+    ----------\n\
+    \n\
+    Returns\n\
+    -------\n\
+    \n\
+    Revisions\n\
+    ---------\n\
+    2010-07-30    Kevin Stevenson, UCF  \n\
+                  kevin218@knights.ucf.edu\n\
+                  Original version\n\n\
+    2010-12-24    Nate Lust, UCF\n\
+                  natelust at linux dot com\n\
+                  Converted to C\n\n\
+    2018-11-22    Jonathan Fraine, SSI\n\
+                  jfraine at spacescience.org\n\
+                  Updated c extensions to python3, with support for python2.7\n\n\
+";
 
 PyMODINIT_FUNC
 #if PY_MAJOR_VERSION >= 3
@@ -55,33 +74,33 @@ PyMODINIT_FUNC
     initselramp(void)
 #endif
 {
-#if PY_MAJOR_VERSION >= 3
-    PyObject *module;
-    static struct PyModuleDef moduledef = {
-    PyModuleDef_HEAD_INIT,
-    "selramp",             /* m_name */
-    module_docstring,    /* m_doc */
-    -1,                  /* m_size */
-    module_methods,      /* m_methods */
-    NULL,                /* m_reload */
-    NULL,                /* m_traverse */
-    NULL,                /* m_clear */
-    NULL,                /* m_free */
-    };
-#endif
+    #if PY_MAJOR_VERSION >= 3
+        PyObject *module;
+        static struct PyModuleDef moduledef = {
+            PyModuleDef_HEAD_INIT,
+            "selramp",             /* m_name */
+            module_docstring,    /* m_doc */
+            -1,                  /* m_size */
+            module_methods,      /* m_methods */
+            NULL,                /* m_reload */
+            NULL,                /* m_traverse */
+            NULL,                /* m_clear */
+            NULL,                /* m_free */
+        };
+    #endif
 
-#if PY_MAJOR_VERSION >= 3
-    module = PyModule_Create(&moduledef);
-    if (!module)
-    return NULL;
-    /* Load `numpy` functionality. */
-    import_array();
-    return module;
-#else
-    PyObject *m = Py_InitModule3("selramp", module_methods, module_docstring);
-    if (m == NULL)
-    return;
-    /* Load `numpy` functionality. */
-    import_array();
-#endif
+    #if PY_MAJOR_VERSION >= 3
+        module = PyModule_Create(&moduledef);
+        if (!module)
+            return NULL;
+        /* Load `numpy` functionality. */
+        import_array();
+        return module;
+    #else
+        PyObject *m = Py_InitModule3("selramp", module_methods, module_docstring);
+        if (m == NULL)
+            return;
+        /* Load `numpy` functionality. */
+        import_array();
+    #endif
 }

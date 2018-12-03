@@ -60,23 +60,21 @@ static PyObject *rsky(PyObject *self, PyObject *args)
 	return PyArray_Return(z);
 } 
 
-static char rsky_doc[] = "\
-This code computes the distance between the centers of the\n\
-star and the planet in the plane of the sky.  This parameter is\n\
-denoted r_sky = sqrt(x^2 + y^2) in the Seager Exoplanets book\n\
-(see the section by Murray, and Winn eq. 5).  In the Mandel & Agol (2002) paper,\n\
-this quantity is denoted d.\n\
-K 4/27/12 \n\
-  2018-11-11    Jonathan Fraine, SSI\n\
-                jfraine at spacescience.org\n\
-                Updated c extensions to python3, with support for python2.7\n\
+static char module_docstring[] = "\
+    This code computes the distance between the centers of the\n\
+    star and the planet in the plane of the sky.  This parameter is\n\
+    denoted r_sky = sqrt(x^2 + y^2) in the Seager Exoplanets book\n\
+    (see the section by Murray, and Winn eq. 5).  In the Mandel & Agol (2002) paper,\n\
+    this quantity is denoted d.\n\
+    
+    Revisions\n\
+    ---------\n\
+      Created: 2012-09-12  Laura Kreidberg \n\
+      Updated: 2018-11-22  Jonathan Fraine Updated for Python, with support for Python2.7\n\
 ";
 
 static PyMethodDef module_methods[] = {
-  {"rsky", rsky,METH_VARARGS,rsky_doc},{NULL}};
-
-static char module_docstring[] =
-    "This module is used to calcuate the rsky";
+  {"rsky", rsky,METH_VARARGS,module_docstring},{NULL}};
 
 PyMODINIT_FUNC
 #if PY_MAJOR_VERSION >= 3
@@ -85,33 +83,33 @@ PyMODINIT_FUNC
     initrsky(void)
 #endif
 {
-#if PY_MAJOR_VERSION >= 3
-    PyObject *module;
-    static struct PyModuleDef moduledef = {
-    PyModuleDef_HEAD_INIT,
-    "rsky",             /* m_name */
-    module_docstring,    /* m_doc */
-    -1,                  /* m_size */
-    module_methods,      /* m_methods */
-    NULL,                /* m_reload */
-    NULL,                /* m_traverse */
-    NULL,                /* m_clear */
-    NULL,                /* m_free */
-    };
-#endif
+    #if PY_MAJOR_VERSION >= 3
+        PyObject *module;
+        static struct PyModuleDef moduledef = {
+            PyModuleDef_HEAD_INIT,
+            "rsky",             /* m_name */
+            module_docstring,    /* m_doc */
+            -1,                  /* m_size */
+            module_methods,      /* m_methods */
+            NULL,                /* m_reload */
+            NULL,                /* m_traverse */
+            NULL,                /* m_clear */
+            NULL,                /* m_free */
+        };
+    #endif
 
-#if PY_MAJOR_VERSION >= 3
-    module = PyModule_Create(&moduledef);
-    if (!module)
-    return NULL;
-    /* Load `numpy` functionality. */
-    import_array();
-    return module;
-#else
-    PyObject *m = Py_InitModule3("rsky", module_methods, module_docstring);
-    if (m == NULL)
-    return;
-    /* Load `numpy` functionality. */
-    import_array();
-#endif
+    #if PY_MAJOR_VERSION >= 3
+        module = PyModule_Create(&moduledef);
+        if (!module)
+            return NULL;
+        /* Load `numpy` functionality. */
+        import_array();
+        return module;
+    #else
+        PyObject *m = Py_InitModule3("rsky", module_methods, module_docstring);
+        if (m == NULL)
+            return;
+        /* Load `numpy` functionality. */
+        import_array();
+    #endif
 }

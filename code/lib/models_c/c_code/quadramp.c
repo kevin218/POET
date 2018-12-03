@@ -40,7 +40,7 @@ static PyObject *quadramp(PyObject *self, PyObject *args, PyObject *keywds)
   return PyArray_Return(y);
 }
 
-static char quadramp_doc[] = "\
+static char module_docstring[] = "\
  NAME:\n\
 	QUADRAMP\n\
 \n\
@@ -74,20 +74,24 @@ static char quadramp_doc[] = "\
 \n\
 \n\
  MODIFICATION HISTORY:\n\
- 	Written by:	Kevin Stevenson, UCF  	2008-06-22\n\
-			kevin218@knights.ucf.edu\n\
-                        Nate Lust, UCF          2010-12-25\n\
-                        natelust at linux dot com\n\
-                        converted to c\n\
+ 	Written by:	Kevin Stevenson, UCF  	\n\n\
+    
+    2008-06-22   Kevin Stevenson, UCF  	\n\
+			     kevin218@knights.ucf.edu\n\n\
+    
+    2010-12-25   Nate Lust, UCF          \n\
+                 natelust at linux dot com\n\
+                 converted to c\n\n\
+    
+    2018-11-22   Jonathan Fraine, SSI\n\
+                 jfraine at spacescience.org\n\
+                 Updated c extensions to python3, with support for python2.7\n\n\
+
 \n\
 ";
 
 static PyMethodDef module_methods[] = {
-  {"quadramp",(PyCFunction)quadramp,METH_VARARGS|METH_KEYWORDS,quadramp_doc},{NULL}};
-
-
-static char module_docstring[] =
-    "This module is used to calcuate the quadramp";
+  {"quadramp",(PyCFunction)quadramp,METH_VARARGS|METH_KEYWORDS,module_docstring},{NULL}};
 
 PyMODINIT_FUNC
 #if PY_MAJOR_VERSION >= 3
@@ -96,33 +100,33 @@ PyMODINIT_FUNC
     initquadramp(void)
 #endif
 {
-#if PY_MAJOR_VERSION >= 3
-    PyObject *module;
-    static struct PyModuleDef moduledef = {
-    PyModuleDef_HEAD_INIT,
-    "quadramp",             /* m_name */
-    module_docstring,    /* m_doc */
-    -1,                  /* m_size */
-    module_methods,      /* m_methods */
-    NULL,                /* m_reload */
-    NULL,                /* m_traverse */
-    NULL,                /* m_clear */
-    NULL,                /* m_free */
-    };
-#endif
+    #if PY_MAJOR_VERSION >= 3
+        PyObject *module;
+        static struct PyModuleDef moduledef = {
+            PyModuleDef_HEAD_INIT,
+            "quadramp",             /* m_name */
+            module_docstring,    /* m_doc */
+            -1,                  /* m_size */
+            module_methods,      /* m_methods */
+            NULL,                /* m_reload */
+            NULL,                /* m_traverse */
+            NULL,                /* m_clear */
+            NULL,                /* m_free */
+        };
+    #endif
 
-#if PY_MAJOR_VERSION >= 3
-    module = PyModule_Create(&moduledef);
-    if (!module)
-    return NULL;
-    /* Load `numpy` functionality. */
-    import_array();
-    return module;
-#else
-    PyObject *m = Py_InitModule3("quadramp", module_methods, module_docstring);
-    if (m == NULL)
-    return;
-    /* Load `numpy` functionality. */
-    import_array();
-#endif
+    #if PY_MAJOR_VERSION >= 3
+        module = PyModule_Create(&moduledef);
+        if (!module)
+            return NULL;
+        /* Load `numpy` functionality. */
+        import_array();
+        return module;
+    #else
+        PyObject *m = Py_InitModule3("quadramp", module_methods, module_docstring);
+        if (m == NULL)
+            return;
+        /* Load `numpy` functionality. */
+        import_array();
+    #endif
 }

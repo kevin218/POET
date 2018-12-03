@@ -54,7 +54,7 @@ static PyObject *log4qramp(PyObject *self, PyObject *args, PyObject *keywds)
   return PyArray_Return(y);
 }
 
-static char log4qramp_doc[]="\
+static char module_docstring[]="\
   This function creates a model that fits a ramp using quartic-log + quadratic polynomial.\n\
 \n\
   Parameters\n\
@@ -82,16 +82,13 @@ static char log4qramp_doc[]="\
   2011-01-05    Nate Lust, UCF\n\
                 natelust at linux dot com\n\
                 Converted to c extention function\n\
-  2018-11-11    Jonathan Fraine, SSI\n\
+  2018-11-22    Jonathan Fraine, SSI\n\
                 jfraine at spacescience.org\n\
                 Updated c extensions to python3, with support for python2.7\n\
 ";
 
 static PyMethodDef module_methods[] = {
-  {"log4qramp",(PyCFunction)log4qramp,METH_VARARGS|METH_KEYWORDS,log4qramp_doc},{NULL}};
-
-static char module_docstring[] =
-    "This module is used to calcuate the log4qramp";
+  {"log4qramp",(PyCFunction)log4qramp,METH_VARARGS|METH_KEYWORDS,module_docstring},{NULL}};
 
 PyMODINIT_FUNC
 #if PY_MAJOR_VERSION >= 3
@@ -100,33 +97,33 @@ PyMODINIT_FUNC
     initlog4qramp(void)
 #endif
 {
-#if PY_MAJOR_VERSION >= 3
-    PyObject *module;
-    static struct PyModuleDef moduledef = {
-    PyModuleDef_HEAD_INIT,
-    "log4qramp",             /* m_name */
-    module_docstring,    /* m_doc */
-    -1,                  /* m_size */
-    module_methods,      /* m_methods */
-    NULL,                /* m_reload */
-    NULL,                /* m_traverse */
-    NULL,                /* m_clear */
-    NULL,                /* m_free */
-    };
-#endif
+    #if PY_MAJOR_VERSION >= 3
+        PyObject *module;
+        static struct PyModuleDef moduledef = {
+            PyModuleDef_HEAD_INIT,
+            "log4qramp",             /* m_name */
+            module_docstring,    /* m_doc */
+            -1,                  /* m_size */
+            module_methods,      /* m_methods */
+            NULL,                /* m_reload */
+            NULL,                /* m_traverse */
+            NULL,                /* m_clear */
+            NULL,                /* m_free */
+        };
+    #endif
 
-#if PY_MAJOR_VERSION >= 3
-    module = PyModule_Create(&moduledef);
-    if (!module)
-    return NULL;
-    /* Load `numpy` functionality. */
-    import_array();
-    return module;
-#else
-    PyObject *m = Py_InitModule3("log4qramp", module_methods, module_docstring);
-    if (m == NULL)
-    return;
-    /* Load `numpy` functionality. */
-    import_array();
-#endif
+    #if PY_MAJOR_VERSION >= 3
+        module = PyModule_Create(&moduledef);
+        if (!module)
+            return NULL;
+        /* Load `numpy` functionality. */
+        import_array();
+        return module;
+    #else
+        PyObject *m = Py_InitModule3("log4qramp", module_methods, module_docstring);
+        if (m == NULL)
+            return;
+        /* Load `numpy` functionality. */
+        import_array();
+    #endif
 }
