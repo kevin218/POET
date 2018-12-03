@@ -11,3 +11,6 @@ __pycashe__
 */*/*/*/.py~
 */*/*/*/*.py~
 */*/*/*/*/*.py~
+*/*.pcf~
+*/*/*.sh~
+lib/models_c/ext_func/

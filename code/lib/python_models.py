@@ -1,20 +1,15 @@
 import numpy as np
 import scipy.interpolate as spi
-#import numexpr as ne
-import sys
-import re
-import os
-#sys.path.append('../../')
-#name = re.findall('.+/(.+)/py_func',os.getcwd())[0]
-#exec('from '+name+' import *')
-#from models_c import *
-'''
+import sys, re, os
+
 try:
     import models_c as mc
+    print("Importing models_c")
 except:
     import models as mc
-'''
-import models as mc
+    print("Importing Python models")
+
+#import models as mc
 #reload(mc)
 import orbit
 import smoothing
