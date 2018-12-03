@@ -67,6 +67,9 @@ static char quadip_doc[]="\
   2011-01-05    Nate Lust, UCF\n\
                 natelust at linux dot com\n\
                 Converted to c extention function\n\
+  2018-11-11    Jonathan Fraine, SSI\n\
+                jfraine at spacescience.org\n\
+                Updated c extensions to python3, with support for python2.7\n\
 \n\
 ";
 
