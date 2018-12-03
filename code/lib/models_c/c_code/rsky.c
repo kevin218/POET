@@ -66,7 +66,11 @@ star and the planet in the plane of the sky.  This parameter is\n\
 denoted r_sky = sqrt(x^2 + y^2) in the Seager Exoplanets book\n\
 (see the section by Murray, and Winn eq. 5).  In the Mandel & Agol (2002) paper,\n\
 this quantity is denoted d.\n\
-K 4/27/12 ";
+K 4/27/12 \n\
+  2018-11-11    Jonathan Fraine, SSI\n\
+                jfraine at spacescience.org\n\
+                Updated c extensions to python3, with support for python2.7\n\
+";
 
 static PyMethodDef module_methods[] = {
   {"rsky", rsky,METH_VARARGS,rsky_doc},{NULL}};
