@@ -225,7 +225,7 @@ static PyObject *bilinint(PyObject *self, PyObject *args, PyObject *keywds)
     }
 }
 
-static char module_doc[]="\
+static char bilinint_doc[]="\
   This function fits the intra-pixel sensitivity effect using bilinear interpolation to fit mean binned flux vs position.  \n\
 \n\
     Parameters\n\
@@ -308,7 +308,7 @@ PyMODINIT_FUNC
 		static struct PyModuleDef moduledef = {
 			PyModuleDef_HEAD_INIT,
 			"bilinint",             /* m_name */
-			module_docstring,    /* m_doc */
+			bilinint_doc,    /* m_doc */
 			-1,                  /* m_size */
 			module_methods,      /* m_methods */
 			NULL,                /* m_reload */
@@ -326,7 +326,7 @@ PyMODINIT_FUNC
 		import_array();
 		return module;
 	#else
-	    PyObject *m = Py_InitModule3("bilinint", module_methods, module_docstring);
+	    PyObject *m = Py_InitModule3("bilinint", module_methods, bilinint_doc);
 		if (m == NULL)
 			return;
 		/* Load `numpy` functionality. */
