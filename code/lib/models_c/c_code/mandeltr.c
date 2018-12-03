@@ -90,9 +90,15 @@ static char mandeltr_doc[] ="\
   2010-11-27	Kevin Stevenson, UCF\n\
                 kevin218@knights.ucf.edu\n\
                 Original version\n\
+		
   2010-12-19    Nate Lust, UCF\n\
                 natelust at linux dot com\n\
                 converted function to c\n\
+		
+  2018-11-11    Jonathan Fraine, SSI\n\
+                jfraine at spacescience.org\n\
+                Updated c extensions to python3, with support for python2.7\n\
+
 ";
 
 static PyMethodDef module_methods[]={
