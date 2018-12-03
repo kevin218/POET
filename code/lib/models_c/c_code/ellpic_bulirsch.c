@@ -96,7 +96,10 @@ static char ellpic_bulirsch_doc[]="\
    Original version by Jason Eastman\n\
    2012-08-25   Kevin Stevenson, UChicago \n\
                 kbs@uchicago.edu\n\
-                Converted from Python\n\
+                Converted from Python\n\n\
+   2018-11-11   Jonathan Fraine, SSI\n\
+                jfraine at spacescience.org\n\
+                Updated c extensions to python3, with support for python2.7\n\n\
 ";
 
 static PyMethodDef module_methods[] = {
