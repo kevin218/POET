@@ -78,7 +78,7 @@ static PyObject *ellpic_bulirsch(PyObject *self, PyObject *args)
   return PyArray_Return(output);
 }
 
-static char ellpic_bulirsch_doc[]="\
+static char module_docstring[]="\
    Computes the complete elliptical integral of the third kind using\n\
    the algorithm of Bulirsch (1965).\n\
 \n\
@@ -96,49 +96,52 @@ static char ellpic_bulirsch_doc[]="\
    Original version by Jason Eastman\n\
    2012-08-25   Kevin Stevenson, UChicago \n\
                 kbs@uchicago.edu\n\
-                Converted from Python\n\
+                Converted from Python\n\n\
+   2018-11-22   Jonathan Fraine, SSI\n\
+                jfraine at spacescience.org\n\
+                Updated c extensions to python3, with support for python2.7\n\n\
 ";
 
 static PyMethodDef module_methods[] = {
-  {"ellpic_bulirsch", ellpic_bulirsch,METH_VARARGS,ellpic_bulirsch_doc},{NULL}};
+  {"ellpic_bulirsch", ellpic_bulirsch,METH_VARARGS,module_docstring},{NULL}};
 
-static char module_docstring[] =
-"This module is used to calcuate the ellpic_bulirsch";
+// static char module_docstring[] =
+// "This module is used to calcuate the ellpic_bulirsch";
 
 PyMODINIT_FUNC
 #if PY_MAJOR_VERSION >= 3
-PyInit_ellpic_bulirsch(void)
+    PyInit_ellpic_bulirsch(void)
 #else
-initellpic_bulirsch(void)
+    initellpic_bulirsch(void)
 #endif
 {
-#if PY_MAJOR_VERSION >= 3
-PyObject *module;
-static struct PyModuleDef moduledef = {
-PyModuleDef_HEAD_INIT,
-"ellpic_bulirsch",             /* m_name */
-module_docstring,    /* m_doc */
--1,                  /* m_size */
-module_methods,      /* m_methods */
-NULL,                /* m_reload */
-NULL,                /* m_traverse */
-NULL,                /* m_clear */
-NULL,                /* m_free */
-};
-#endif
+    #if PY_MAJOR_VERSION >= 3
+        PyObject *module;
+        static struct PyModuleDef moduledef = {
+            PyModuleDef_HEAD_INIT,
+            "ellpic_bulirsch",             /* m_name */
+            module_docstring,    /* m_doc */
+            -1,                  /* m_size */
+            module_methods,      /* m_methods */
+            NULL,                /* m_reload */
+            NULL,                /* m_traverse */
+            NULL,                /* m_clear */
+            NULL,                /* m_free */
+        };
+    #endif
 
-#if PY_MAJOR_VERSION >= 3
-module = PyModule_Create(&moduledef);
-if (!module)
-return NULL;
-/* Load `numpy` functionality. */
-import_array();
-return module;
-#else
-PyObject *m = Py_InitModule3("ellpic_bulirsch", module_methods, module_docstring);
-if (m == NULL)
-return;
-/* Load `numpy` functionality. */
-import_array();
-#endif
+    #if PY_MAJOR_VERSION >= 3
+        module = PyModule_Create(&moduledef);
+        if (!module)
+            return NULL;
+        /* Load `numpy` functionality. */
+        import_array();
+        return module;
+    #else
+        PyObject *m = Py_InitModule3("ellpic_bulirsch", module_methods, module_docstring);
+        if (m == NULL)
+            return;
+        /* Load `numpy` functionality. */
+        import_array();
+    #endif
 }

@@ -46,7 +46,7 @@ static PyObject *logramp(PyObject *self, PyObject *args, PyObject *keywds)
   return PyArray_Return(y);
 }
 
-static char logramp_doc[]="\
+static char module_docstring[]="\
  NAME:\n\
 	LOGRAMP\n\
 \n\
@@ -81,15 +81,18 @@ static char logramp_doc[]="\
 \n\
 \n\
  MODIFICATION HISTORY:\n\
- 	Written by:	Kevin Stevenson, UCF  	2008-06-26\n\
-			kevin218@knights.ucf.edu\n\
+	Written by:	Kevin Stevenson, UCF\n\n\
+                kevin218@knights.ucf.edu\n\
+    \n\
+    2008-06-26  Original creation \n\
+	\n\
+	2018-11-22  Jonathan Fraine, SSI\n\
+                jfraine at spacescience.org\n\
+                Updated c extensions to python3, with support for python2.7\n\
 ";
 
 static PyMethodDef module_methods[] = {
-  {"logramp",(PyCFunction)logramp,METH_VARARGS|METH_KEYWORDS,logramp_doc},{NULL}};
-
-static char module_docstring[] =
-    "This module is used to calcuate the logramp";
+  {"logramp",(PyCFunction)logramp,METH_VARARGS|METH_KEYWORDS,module_docstring},{NULL}};
 
 PyMODINIT_FUNC
 #if PY_MAJOR_VERSION >= 3
@@ -98,33 +101,33 @@ PyMODINIT_FUNC
     initlogramp(void)
 #endif
 {
-#if PY_MAJOR_VERSION >= 3
-    PyObject *module;
-    static struct PyModuleDef moduledef = {
-    PyModuleDef_HEAD_INIT,
-    "logramp",             /* m_name */
-    module_docstring,    /* m_doc */
-    -1,                  /* m_size */
-    module_methods,      /* m_methods */
-    NULL,                /* m_reload */
-    NULL,                /* m_traverse */
-    NULL,                /* m_clear */
-    NULL,                /* m_free */
-    };
-#endif
+    #if PY_MAJOR_VERSION >= 3
+        PyObject *module;
+        static struct PyModuleDef moduledef = {
+            PyModuleDef_HEAD_INIT,
+            "logramp",             /* m_name */
+            module_docstring,    /* m_doc */
+            -1,                  /* m_size */
+            module_methods,      /* m_methods */
+            NULL,                /* m_reload */
+            NULL,                /* m_traverse */
+            NULL,                /* m_clear */
+            NULL,                /* m_free */
+        };
+    #endif
 
-#if PY_MAJOR_VERSION >= 3
-    module = PyModule_Create(&moduledef);
-    if (!module)
-    return NULL;
-    /* Load `numpy` functionality. */
-    import_array();
-    return module;
-#else
-    PyObject *m = Py_InitModule3("logramp", module_methods, module_docstring);
-    if (m == NULL)
-    return;
-    /* Load `numpy` functionality. */
-    import_array();
-#endif
+    #if PY_MAJOR_VERSION >= 3
+        module = PyModule_Create(&moduledef);
+        if (!module)
+            return NULL;
+        /* Load `numpy` functionality. */
+        import_array();
+        return module;
+    #else
+        PyObject *m = Py_InitModule3("logramp", module_methods, module_docstring);
+        if (m == NULL)
+            return;
+        /* Load `numpy` functionality. */
+        import_array();
+    #endif
 }

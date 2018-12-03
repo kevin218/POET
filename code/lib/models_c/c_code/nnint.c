@@ -169,7 +169,7 @@ static PyObject *nnint(PyObject *self, PyObject *args, PyObject *keywds)
     }
 }
 
-static char nnint_doc[]="\
+static char module_docstring[]="\
   This function fits the intra-pixel sensitivity effect using the mean \n\
    within a given binned position (nearest-neighbor interpolation).\n\
 \n\
@@ -194,7 +194,7 @@ static char nnint_doc[]="\
 \n\
   Revisions\n\
   ---------\n\
-    2010-06-07        Kevin Stevenson, UCF  \n\
+    2010-06-07  Kevin Stevenson, UCF  \n\
                 kevin218@knights.ucf.edu\n\
                 Original version\n\
     2010-07-07  Kevin\n\
@@ -202,13 +202,13 @@ static char nnint_doc[]="\
     2011-01-06  nate lust, ucf\n\
                 natelust at linux dot com\n\
                 converted to c extension function\n\
+    2018-11-27  Jonathan Fraine, SSI\n\
+                jfraine at spacescience.org\n\
+                Updated c extensions to python3, with support for python2.7\n\
 ";
 
 static PyMethodDef module_methods[] = {
-  {"nnint",(PyCFunction)nnint,METH_VARARGS|METH_KEYWORDS,nnint_doc},{NULL}};
-
-static char module_docstring[] =
-    "This module is used to calcuate the nnint";
+  {"nnint",(PyCFunction)nnint,METH_VARARGS|METH_KEYWORDS,module_docstring},{NULL}};
 
 PyMODINIT_FUNC
 #if PY_MAJOR_VERSION >= 3

@@ -225,7 +225,7 @@ static PyObject *bilinint(PyObject *self, PyObject *args, PyObject *keywds)
     }
 }
 
-static char bilinint_doc[]="\
+static char module_docstring[]="\
   This function fits the intra-pixel sensitivity effect using bilinear interpolation to fit mean binned flux vs position.  \n\
 \n\
     Parameters\n\
@@ -278,20 +278,23 @@ static char bilinint_doc[]="\
     Revisions\n\
     ---------\n\
     2010-06-11  Kevin Stevenson, UCF\n\
-                            kevin218@knights.ucf.edu\n\
-                Original version\n\
+                kevin218@knights.ucf.edu\n\
+                Original version\n\n\
     2010-07-07  Kevin\n\
-                Added wbfipmask\n\
+                Added wbfipmask\n\n\
     2011-01-07  nate lust, ucf\n\
                 natelust at linux dot com\n\
-                Convert to c extension function\n\
+                Convert to c extension function\n\n\
+    2018-11-27  Jonathan Fraine, SSI\n\
+                jfraine at spacescience.org\n\
+                Updated c extensions to python3, with support for python2.7\n\n\
 ";
 
 static PyMethodDef module_methods[] = {
-  {"bilinint",(PyCFunction)bilinint,METH_VARARGS|METH_KEYWORDS,bilinint_doc},{NULL}};
+  {"bilinint",(PyCFunction)bilinint,METH_VARARGS|METH_KEYWORDS,module_docstring},{NULL}};
 
-static char module_docstring[] =
-  "This module is used to calcuate the bilinear interpolation quickly";
+// static char module_docstring[] =
+//   "This module is used to calcuate the bilinear interpolation quickly";
 
 PyMODINIT_FUNC
 #if PY_MAJOR_VERSION >= 3

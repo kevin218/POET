@@ -29,7 +29,7 @@ static PyObject *chisq(PyObject *self, PyObject *args)
   return Py_BuildValue("d",chi);
 }
 
-static char chisq_doc[]="\
+static char module_docstring[]="\
    This function creates the chi squared statistic given input parameters.\n\
 \n\
    Parameters\n\
@@ -44,16 +44,19 @@ static char chisq_doc[]="\
 \n\
    Revisions\n\
    ---------\n\
+    2010-06-11   Kevin Stevenson, UCF\n\
+                 kevin218@knights.ucf.edu\n\
+                 Original version\n\n\
    2011-01-08    Nate Lust, UCF\n\
                  natelust at linux dot com\n\
-                 Initial version, as c extension\n\
+                 Initial version, as c extension\n\n\
+    2018-11-22   Jonathan Fraine, SSI\n\
+                 jfraine at spacescience.org\n\
+                 Updated c extensions to python3, with support for python2.7\n\n\
 ";
 
 static PyMethodDef module_methods[] = {
-  {"chisq", chisq,METH_VARARGS,chisq_doc},{NULL}};
-
-static char module_docstring[] =
-    "This module is used to calcuate the chisq";
+  {"chisq", chisq,METH_VARARGS,module_docstring},{NULL}};
 
 PyMODINIT_FUNC
 #if PY_MAJOR_VERSION >= 3

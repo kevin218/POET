@@ -41,7 +41,7 @@ static PyObject *seramp(PyObject *self, PyObject *args, PyObject *keywds)
   return PyArray_Return(y);
 }
 
-static char seramp_doc[]="\
+static char module_docstring[]="\
   This function creates a model that fits a ramp using a rising exponential.\n\
 \n\
   Parameters\n\
@@ -58,52 +58,52 @@ static char seramp_doc[]="\
   Revisions\n\
   ---------\n\
   2008-06-24	Kevin Stevenson, UCF  \n\
-			kevin218@knights.ucf.edu\n\
-		Original version\n\
+                kevin218@knights.ucf.edu\n\
+                Original version\n\
   2010-12-24    Nate Lust, UCF \n\
                 natelust at linux dot com\n\
+  2018-11-22    Jonathan Fraine, SSI\n\
+                jfraine at spacescience.org\n\
+                Updated c extensions to python3, with support for python2.7\n\
 ";
 
 static PyMethodDef module_methods[] = {
-  {"seramp",(PyCFunction)seramp,METH_VARARGS|METH_KEYWORDS,seramp_doc},{NULL}};
-
-static char module_docstring[] =
-  "This module is used to calcuate the seramp";
+  {"seramp",(PyCFunction)seramp,METH_VARARGS|METH_KEYWORDS,module_docstring},{NULL}};
 
 PyMODINIT_FUNC
 #if PY_MAJOR_VERSION >= 3
-  PyInit_seramp(void)
+    PyInit_seramp(void)
 #else
-  initseramp(void)
+    initseramp(void)
 #endif
 {
-#if PY_MAJOR_VERSION >= 3
-  PyObject *module;
-  static struct PyModuleDef moduledef = {
-  PyModuleDef_HEAD_INIT,
-  "seramp",             /* m_name */
-  module_docstring,    /* m_doc */
-  -1,                  /* m_size */
-  module_methods,      /* m_methods */
-  NULL,                /* m_reload */
-  NULL,                /* m_traverse */
-  NULL,                /* m_clear */
-  NULL,                /* m_free */
-  };
-#endif
+    #if PY_MAJOR_VERSION >= 3
+        PyObject *module;
+        static struct PyModuleDef moduledef = {
+            PyModuleDef_HEAD_INIT,
+            "seramp",             /* m_name */
+            module_docstring,    /* m_doc */
+            -1,                  /* m_size */
+            module_methods,      /* m_methods */
+            NULL,                /* m_reload */
+            NULL,                /* m_traverse */
+            NULL,                /* m_clear */
+            NULL,                /* m_free */
+        };
+    #endif
 
-#if PY_MAJOR_VERSION >= 3
-  module = PyModule_Create(&moduledef);
-  if (!module)
-  return NULL;
-  /* Load `numpy` functionality. */
-  import_array();
-  return module;
-#else
-  PyObject *m = Py_InitModule3("seramp", module_methods, module_docstring);
-  if (m == NULL)
-  return;
-  /* Load `numpy` functionality. */
-  import_array();
-#endif
+    #if PY_MAJOR_VERSION >= 3
+        module = PyModule_Create(&moduledef);
+        if (!module)
+            return NULL;
+        /* Load `numpy` functionality. */
+        import_array();
+        return module;
+    #else
+        PyObject *m = Py_InitModule3("seramp", module_methods, module_docstring);
+        if (m == NULL)
+            return;
+        /* Load `numpy` functionality. */
+        import_array();
+    #endif
 }

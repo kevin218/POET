@@ -68,8 +68,7 @@ static PyObject *mandeltr(PyObject *self, PyObject *args, PyObject *keywd)
   return PyArray_Return(y);
 }
 
-static char mandeltr_doc[] ="\
-   This function computes the primary transit shape using equations provided by Mandel & Agol (2002)\n\
+static char module_docstring[] ="This function computes the primary transit shape using equations provided by Mandel & Agol (2002)\n\
 \n\
   Parameters\n\
   ----------\n\
@@ -93,14 +92,13 @@ static char mandeltr_doc[] ="\
   2010-12-19    Nate Lust, UCF\n\
                 natelust at linux dot com\n\
                 converted function to c\n\
+  2018-11-22    Jonathan Fraine, SSI\n\
+                jfraine at spacescience.org\n\
+                Updated c extensions to python3, with support for python2.7\n\
 ";
 
 static PyMethodDef module_methods[]={
-  {"mandeltr",mandeltr,METH_VARARGS|METH_KEYWORDS,mandeltr_doc}, \
-  {NULL}};
-
-static char module_docstring[] =
-    "This module is used to calcuate the mandeltr";
+  {"mandeltr",mandeltr,METH_VARARGS|METH_KEYWORDS,module_docstring}, {NULL}};
 
 PyMODINIT_FUNC
 #if PY_MAJOR_VERSION >= 3
@@ -109,33 +107,33 @@ PyMODINIT_FUNC
     initmandeltr(void)
 #endif
 {
-#if PY_MAJOR_VERSION >= 3
-    PyObject *module;
-    static struct PyModuleDef moduledef = {
-    PyModuleDef_HEAD_INIT,
-    "mandeltr",             /* m_name */
-    module_docstring,    /* m_doc */
-    -1,                  /* m_size */
-    module_methods,      /* m_methods */
-    NULL,                /* m_reload */
-    NULL,                /* m_traverse */
-    NULL,                /* m_clear */
-    NULL,                /* m_free */
-    };
-#endif
+    #if PY_MAJOR_VERSION >= 3
+        PyObject *module;
+        static struct PyModuleDef moduledef = {
+            PyModuleDef_HEAD_INIT,
+            "mandeltr",             /* m_name */
+            module_docstring,    /* m_doc */
+            -1,                  /* m_size */
+            module_methods,      /* m_methods */
+            NULL,                /* m_reload */
+            NULL,                /* m_traverse */
+            NULL,                /* m_clear */
+            NULL,                /* m_free */
+        };
+    #endif
 
-#if PY_MAJOR_VERSION >= 3
-    module = PyModule_Create(&moduledef);
-    if (!module)
-    return NULL;
-    /* Load `numpy` functionality. */
-    import_array();
-    return module;
-#else
-    PyObject *m = Py_InitModule3("mandeltr", module_methods, module_docstring);
-    if (m == NULL)
-    return;
-    /* Load `numpy` functionality. */
-    import_array();
-#endif
+    #if PY_MAJOR_VERSION >= 3
+        module = PyModule_Create(&moduledef);
+        if (!module)
+            return NULL;
+        /* Load `numpy` functionality. */
+        import_array();
+        return module;
+    #else
+        PyObject *m = Py_InitModule3("mandeltr", module_methods, module_docstring);
+        if (m == NULL)
+            return;
+        /* Load `numpy` functionality. */
+        import_array();
+    #endif
 }
