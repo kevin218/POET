@@ -32,10 +32,14 @@ def modelparams(p):
     p.numcalc    = 50000                      #Number of temperature calculations
     p.stepsize   = 100                        #Stepsize for histograms and correlation plots
     #p.rmsbins    = 5000                      #Max number of bins in RMS calc, default is 0.1*length(data)
-    p.allplots   = True                       #Disply all plots (True) or display only some plots (False)
+    p.allplots   = 5                          #Disply no plots (0), some plots (1-4), or all plots (5)
     p.leastsq    = True                       #Perform least-squares fit before MCMC
     p.normflux   = True                       #Normalize flux at each position (set False for posflux)
     p.noisysdnr  = None                       #SDNR of noisy data set (None unless using denoised data)
+    p.noisewavelet = ['None']                 #List of wavelet names (e.g. 'db19', 'haar', etc)
+    p.savedata   = False                      #Set False to skip saving data
+    p.isresidperm  = False                    #Set True to implement residual permutation technicque for estimating uncertainties
+    p.night      = 0                          #Set to 0 unless using Divide White technique
     
     p.preclip    = [0]                        #Remove first 'preclip' points
     p.postclip   = [0]                        #Remove last 'postclip' points
@@ -43,8 +47,8 @@ def modelparams(p):
                                               #Can handle multiple ranges
     
     #Priors
-    p.priorvars  = ['cosi', 'ars']            #List of variables with priors, applies to each model
-    p.priorvals  = np.array(([[0.0849, 0.002, 0.002],[9.1027, 0.067, 0.060]]))  
+    #p.priorvars  = ['cosi', 'ars']           #List of variables with priors, applies to each model
+    #p.priorvals  = np.array(([[0.0849, 0.002, 0.002],[9.1027, 0.067, 0.060]]))  
                                               #Include [mode, lower sigma, upper sigma] to describe
                                               #each asymmetric Gaussian prior
     

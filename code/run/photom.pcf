@@ -11,7 +11,7 @@ skyout      15.0     # Outer sky annulus radius
 skyfrac     0.1      # Required sky fraction of good pixels
 skymed      False    # The sky estimation:   True:median,  False:mean.
 verbose     True     # Print outputs.
-apscale     1        # Interpolation rescaling factor.cd
+apscale     5        # Interpolation rescaling factor.
 psfexpand   5        # PSF-data pixel scale ratio.
 
 # Optimal photometry parameters:
