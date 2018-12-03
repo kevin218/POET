@@ -75,6 +75,9 @@ static char vsll_doc[]="\
   2010-12-26    Nate Lust, UCF\n\
                 natelust at linux dot com\n\
                 Updated to C extension\n\
+  2018-11-11    Jonathan Fraine, SSI\n\
+                jfraine at spacescience.org\n\
+                Updated c extensions to python3, with support for python2.7\n\
 ";
 
 static PyMethodDef module_methods[] = {
