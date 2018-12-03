@@ -1,4 +1,4 @@
-
+from platform import system
 from numpy import get_include
 import os
 import re
@@ -17,11 +17,16 @@ ext_mod = []
 inc = [get_include()]
 
 for idx,fname in enumerate(files):
-    # LINUX
-    # exec('mod'+str(idx)+'=Extension("'+fname.rstrip('.c')+'",sources=["c_code/'+fname+'"],include_dirs=inc,extra_compile_args=["-fopenmp"],extra_link_args=["-lgomp"])')
-    # exec('ext_mod.append(mod'+str(idx)+')')
-    # MAC
-    exec('mod{}=Extension("{}",sources=["c_code/{}"],include_dirs=inc)'.format(idx, fname.rstrip('.c'), fname))
-    exec('ext_mod.append(mod{})'.format(idx))
+    if system() == 'Linux':
+        # LINUX
+        # exec('mod'+str(idx)+'=Extension("'+fname.rstrip('.c')+'",sources=["c_code/'+fname+'"],include_dirs=inc,extra_compile_args=["-fopenmp"],extra_link_args=["-lgomp"])')
+        exec('mod{}=Extension("{}",sources=["c_code/{}"],include_dirs=inc,extra_compile_args=["-fopenmp"],extra_link_args=["-lgomp"])'.format(idx, fname.rstrip('.c'), fname))
+    elif system() == 'Darwin':
+        # MAC
+        exec('mod{}=Extension("{}",sources=["c_code/{}"],include_dirs=inc)'.format(idx, fname.rstrip('.c'), fname))
+    elif system() == 'Windows':
+        raise Exception('This package has not been tested on Windows; please edit the setup.py appropriately.')
+    
+    exec('ext_mod.append(mod'+str(idx)+')')
 
 setup(name='models_c',version='1.0',description='Models in c for mcmc', ext_modules = ext_mod)
