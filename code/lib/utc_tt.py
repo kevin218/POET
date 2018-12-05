@@ -10,10 +10,11 @@ import time
 #from univ import c
 #from splinterp import splinterp
 import scipy.interpolate as si
-rundir  = '/home/kevin/Documents/STScI/code/POET/POET/code/ancil/leapseconds/'
-ftpurl  = 'ftp://ftp.boulder.nist.gov/pub/time/leap-seconds.list'
+#rundir  = '/Users/megan/POET-master/code/ancil/leapseconds/'
+ftpurl  = 'ftp://ftp.nist.gov/pub/time/leap-seconds.list'
+ftpurl2 = 'ftp://ftp.boulder.nist.gov/pub/time/leap-seconds.list'
 
-def leapdates():
+def leapdates(rundir):
 	'''Generates an array of leap second dates which
 	are automatically updated every six months.
 	Uses local leap second file, but retrieves a leap
@@ -30,7 +31,15 @@ def leapdates():
 		ntpepoch = 2208988800
 		if time.time()+ ntpepoch > expiration:
 			print("Leap-second file expired.	Retrieving new file.")
-			nist = urllib.request.urlopen(ftpurl)
+			try:
+				nist = urllib.request.urlopen(ftpurl)
+				#print('Leap-second ftp 1 worked')
+			except:
+				try:
+					nist = urllib.request.urlopen(ftpurl2)
+					#print('Leap-second ftp 2 worked')
+				except:
+					print('NIST leap-second file not available.	Using stored table.')
 			doc = nist.read().decode('utf-8')
 			nist.close()
 			newexp = doc.split('#@')[1].split('\r\n')[0][1:]
@@ -83,10 +92,10 @@ def leapseconds(jd_utc, dates):
 		tt_tai = 32.184
 		return tt_tai + utc_tai
 
-def utc_tt(jd_utc):
+def utc_tt(jd_utc,rundir):
 		'''Converts UTC Julian dates to Terrestrial Time (TT).
 		jd_utc	=	 (array-like) UTC Julian date'''
-		dates = leapdates()
+		dates = leapdates(rundir)
 		if len(jd_utc) > 1:
 				dt = np.zeros(len(jd_utc))
 				for i in range(len(jd_utc)):
@@ -95,13 +104,13 @@ def utc_tt(jd_utc):
 				dt = leapseconds(jd_utc, dates)
 		return jd_utc+dt/86400.
 
-def utc_tdb(jd_utc):
+def utc_tdb(jd_utc,rundir):
 	'''Converts UTC Julian dates to Barycentric Dynamical Time (TDB).
 	Formula taken from USNO Circular 179, based on that found in Fairhead and Bretagnon (1990).	Accurate to 10 microseconds.
 	jd_utc	=	 (array-like) UTC Julian date
 
 	'''
-	jd_tt = utc_tt(jd_utc)
+	jd_tt = utc_tt(jd_utc,rundir)
 	T =	(jd_tt-2451545.)/36525
 	jd_tdb = jd_tt + (0.001657*np.sin(628.3076*T + 6.2401)
 	+ 0.000022*np.sin(575.3385*T 	+	 4.2970)

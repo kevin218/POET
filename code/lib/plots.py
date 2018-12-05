@@ -290,7 +290,7 @@ def hist2d(event, fit, fignum, savefile=None, allparams=None, parname=None, ipar
                 vmin = np.min(hist2d[np.where(hist2d > 0)])
                 #largerhist = np.zeros((22,22))
                 #largerhist[1:-1,1:-1] = hist2d
-                a = plt.imshow(hist2d.T,extent=(xedges[0],xedges[-1],yedges[0],yedges[-1]), cmap=palette, 
+                a = plt.imshow(hist2d.T,extent=(xedges[0],xedges[-1],yedges[0],yedges[-1]), #cmap=palette, 
                                vmin=vmin, aspect='auto', origin='lower') #,interpolation='bicubic')
             h += 1
             n +=1
