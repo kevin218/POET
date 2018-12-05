@@ -1,0 +1,14 @@
+
+./poet.py p1
+./poet.py p2
+./poet.py p3
+./poet.py p4 fgc
+./poet.py p5 fgc/ap2500715
+./poet.py p5 fgc/bap0200715
+
+./poet.py p5 fgc/ap2000715
+./poet.py p5 fgc/ap3000715
+./poet.py p5 fgc/ap3500715
+
+./poet.py p5 fgc/ap4000715
+
