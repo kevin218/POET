@@ -10,7 +10,6 @@ import time
 #from univ import c
 #from splinterp import splinterp
 import scipy.interpolate as si
-#rundir  = '/Users/megan/POET-master/code/ancil/leapseconds/'
 ftpurl  = 'ftp://ftp.nist.gov/pub/time/leap-seconds.list'
 ftpurl2 = 'ftp://ftp.boulder.nist.gov/pub/time/leap-seconds.list'
 

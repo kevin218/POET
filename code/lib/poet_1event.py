@@ -7,8 +7,8 @@
 import os, sys, re, time
 
 #FINDME Megan added this
-if '/Users/megan/auto_aor' in sys.path:
-  sys.path.remove('/Users/megan/auto_aor')
+#if '/Users/megan/auto_aor' in sys.path:
+#  sys.path.remove('/Users/megan/auto_aor')
   
 import numpy  as np
 from astropy.io import fits as pf
