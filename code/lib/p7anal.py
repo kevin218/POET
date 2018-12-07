@@ -28,13 +28,14 @@ import kurucz_inten
 import integrate
 import transplan_tb
 import orbit
+from importlib import reload
 reload(transplan_tb)
 reload(kurucz_inten)
 
 G      = 6.67428e-11    #m^3/kg/s^2
 rhosun = 1408.          #kg/m^3, Wikipedia
 
-def stdanal(event, fit, plotnum, printout, isloadallknots=True):
+def stdanal(event, fit, plotnum, printout, isloadallknots=False):
     
     print('MARK: ' + time.ctime() + ' : Starting Standard Analysis', file=printout)
     obj        = event.eventname
@@ -44,11 +45,11 @@ def stdanal(event, fit, plotnum, printout, isloadallknots=True):
         stepsize    = event.params.stepsize
     else:
         stepsize    = 100
-    if event.kuruczfile.startswith("/home/"):
+    if event.kuruczfile.startswith("/Users/"):  #FINDME: Megan changed this to point to her home directory
         kuruczfile = event.kuruczfile
     else:
         kuruczfile = event.ancildir + "kurucz/" + event.kuruczfile
-    if event.filtfile.startswith("/home/"):
+    if event.filtfile.startswith("/Users/"):    #FINDME: Megan changed this to point to her home directory
         filtfile = event.filtfile
     else:
         filtfile   = event.ancildir + "filter/" + event.filtfile
@@ -354,7 +355,7 @@ def stdanal(event, fit, plotnum, printout, isloadallknots=True):
         event.tbntrial = bsdata[1].size
         #mandelecl model
         if hasattr(fit.i, 'depth'):
-            bsdata[0] = allparams[fit.i.depth,0::allparams.shape[1]/event.params.numcalc]
+            bsdata[0] = allparams[int(fit.i.depth),0::int(allparams.shape[1]/event.params.numcalc)]
             tb, tbg, numnegf, fmfreq = calcTb(bsdata, kout, filterf, event)
             print('There were ' + str(numnegf) + ' negative flux values for which a temperature was not computed.', file=printout)
             fit.tbm   = np.median(tb[np.where(tb > 0)])
@@ -365,7 +366,7 @@ def stdanal(event, fit, plotnum, printout, isloadallknots=True):
             print('Integral    brightness temp = ' + str(round(fit.tbm ,2)) + ' +/- ' + str(round(fit.tbsd, 2)) + ' K for mandelecl model.', file=printout)
         #mandelecl2 model
         if hasattr(fit.i, 'depth2'):
-            bsdata[0] = allparams[fit.i.depth2,0::allparams.shape[1]/event.params.numcalc]
+            bsdata[0] = allparams[int(fit.i.depth2),0::int(allparams.shape[1]/event.params.numcalc)]
             tb, tbg, numnegf, fmfreq = calcTb(bsdata, kout, filterf, event)
             print('There were ' + str(numnegf) + ' negative flux values for which a temperature was not computed.', file=printout)
             fit.tbm2   = np.median(tb[np.where(tb > 0)])
@@ -488,6 +489,7 @@ def stdanal(event, fit, plotnum, printout, isloadallknots=True):
     return
 
 def calcTb(bsdata, kout, filterf, event):
+
     kinten, kfreq, kgrav, ktemp, knainten, khead = kout
     ffreq     = event.c / (filterf[:,0] * 1e-6)
     ftrans    = filterf[:,1]
@@ -500,7 +502,12 @@ def calcTb(bsdata, kout, filterf, event):
     fmfreq    = None
     kstar     = kurucz_inten.interp2d(kinten, kgrav, ktemp, bsdata[1], bsdata[2])
     fmstar    = None
-    arat      = np.random.normal(event.tep.rprssq.val, event.tep.rprssq.uncert, sz)
+    if event.tep.rprssq.val!=-1.0:
+        arat      = np.random.normal(event.tep.rprssq.val, event.tep.rprssq.uncert, sz)
+    else:
+        rprssq = event.tep.rprs.val**2.
+        rprssquncert = 2.*event.tep.rprs.val*event.tep.rprs.uncert
+        arat      = np.random.normal(rprssq, rprssquncert, sz)
     print('\nComputing brightness temperatures...\n')
     for i in range(sz):
         if bsdata[0,i] > 0:
