@@ -431,6 +431,10 @@ def p8tables(event=None, filedir='.', topdir=None, idl=False, eclphase=0.5):
     if cwd[-1] == event[0].modeldir:
         os.chdir('..')
     printout = printoutput.init(event[0].params.printout, event)
+    numevents   = len(event)
+    nummodels   = np.zeros(numevents,dtype=int)
+    for j in range(numevents):
+        nummodels[j] = len(event[j].params.model)
     for j in range(numevents):
         print("\n" + event[j].eventname, file=printout)
         event[j].meanphase = eclphase
@@ -441,7 +445,7 @@ def p8tables(event=None, filedir='.', topdir=None, idl=False, eclphase=0.5):
     return
 
 #RUN p9figs
-def p9figs(event=None, filedir='.', topdir=None, idl=False):
+def p9figs(event=None, filedir='.', topdir=None, idl=False,isinteractive=True):
     import p9figs as p9
     #reload(p9)
     #global numevents, nummodels, isinteractive
@@ -451,6 +455,10 @@ def p9figs(event=None, filedir='.', topdir=None, idl=False):
     if cwd[-1] == event[0].modeldir:
         os.chdir('..')
     printout = printoutput.init(event[0].params.printout, event)
+    numevents   = len(event)
+    nummodels   = np.zeros(numevents,dtype=int)
+    for j in range(numevents):
+        nummodels[j] = len(event[j].params.model)
     for j in range(numevents):
         print("\n" + event[j].eventname, file=printout)
         for i in range(nummodels.min()):

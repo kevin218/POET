@@ -250,15 +250,15 @@ def root(xi, func, itmax=None, stop=None, tol=None, status=None, extra=None):
    status = 0
    
    x  = xi + 0.0   #Create an internal floating-point variable, x.
-   if x.size != 3:   
-          print('x must be a 3-element initial guess vector.')
-   return np.nan
+   if x.size!=3:
+      print('x must be a 3-element initial guess vector.')
+      return np.nan
    
-   if itmax == None:   
+   if itmax is None:   
       itmax = 100
-   if stop == None:   
+   if stop is None:   
       stop = 0
-   if tol == None:   
+   if tol is None:   
       tol = 1.0e-4
 
    #Initialize stopping criterion and iteration count.
