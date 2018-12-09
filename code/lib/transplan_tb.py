@@ -1,86 +1,86 @@
 """
  NAME:
-	TRANSPLAN_TB
+    TRANSPLAN_TB
 
  PURPOSE:
-	This function calculates the brightness temperature of a
-	transiting planet given the observed ratios of areas and
-	fluxes, the filter transmission function, stellar gravity and
-	temperature, and a grid of Kurucz models in which to
-	interpolate the intrinsic stellar brightness.
+    This function calculates the brightness temperature of a
+    transiting planet given the observed ratios of areas and
+    fluxes, the filter transmission function, stellar gravity and
+    temperature, and a grid of Kurucz models in which to
+    interpolate the intrinsic stellar brightness.
 
  CATEGORY:
-	Astronomy
+    Astronomy
 
  CALLING SEQUENCE:
 
-	Tb = TRANSPLAN_TB(Arat, Frat, Logg, Tstar)
+    Tb = TRANSPLAN_TB(Arat, Frat, Logg, Tstar)
 
  INPUTS:
-	Arat:	Area ratio between planet and star (Rp^2/R*^2).  If
-		this parameter is a 4-element array, they are assigned
-		as [Arat, Frat, Logg, Tstar], and the other three
-		positional parameters are ignored if present.  This is
-		useful when calling this function from a Monte-Carlo
-		error calculator.
-	Frat:	Flux ratio between planet and star (Fp/F*)
+    Arat:    Area ratio between planet and star (Rp^2/R*^2).  If
+        this parameter is a 4-element array, they are assigned
+        as [Arat, Frat, Logg, Tstar], and the other three
+        positional parameters are ignored if present.  This is
+        useful when calling this function from a Monte-Carlo
+        error calculator.
+    Frat:    Flux ratio between planet and star (Fp/F*)
 
-	Logg:	Stellar log(gravity) (cm s-2).  NOTE: NOT MKS!
+    Logg:    Stellar log(gravity) (cm s-2).  NOTE: NOT MKS!
 
-	Tstar:	Stellar temperature (K).
+    Tstar:    Stellar temperature (K).
 
  OPTIONAL INPUTS:
-	If GUESS is set and fmfreq and fmstar are given, Freq,
-	Trans, and Fstar are all optional.  If Arat is a 4-element
-	array, Frat, Ffreq, and Ftrans are ignored, and if present are
-	assigned to the corresponding value of Arat IN THE CALLER.
+    If GUESS is set and fmfreq and fmstar are given, Freq,
+    Trans, and Fstar are all optional.  If Arat is a 4-element
+    array, Frat, Ffreq, and Ftrans are ignored, and if present are
+    assigned to the corresponding value of Arat IN THE CALLER.
 
  KEYWORD PARAMETERS:
-	FFREQ:	[nfreq] array of frequencies (Hz) at which Trans and
-		Fstar are tabulated.  MUST BE IN ASCENDING ORDER!
-	FTRANS:	[nfreq] array giving the fractional filter
-		transmission at each frequency in Freq.
-	GMULT:	[3] array of multipliers of TBG that produces input to
-		FX_ROOT_JH, default [1d, 0.6, 1.6].
-	GUESS:	Don't solve the integral, just do the guess.
-	DOUBLE, ITMAX, STOP, TOL, VERBOSE: Passed to FX_ROOT_JH().
-	FMFREQ:	(input or returned) Representative frequency (Hz) of
-		the filter.  If set, is used in calculating brightness
-		temperature guess.  If not set, is calculated from the
-		transmission function and returned.
-	FMSTAR:	(input or returned) stellar brightness at
-			FMFREQ (W m-2 sr-1 Hz-1).  If set, is used in
-			calculating brightness temperature guess.  If
-			not set, is calculated from the transmission
-			function and returned.
-	FSTAR:	(returned) [nffreq] interpolated stellar brightness at
-			FFREQ (W m-2 sr-1 Hz-1).  If set, is used in
-			calculating brightness temperature.  If
-			not set, is calculated from the Kurucz
-			parameters and returned.
-	TBG:	(returned) Brightness temperature guess (K).
-	STATUS:	 (returned) Set to 0 if the algorithm did not
-		 converge, 1 if it did IN THE CALLER.
+    FFREQ:    [nfreq] array of frequencies (Hz) at which Trans and
+        Fstar are tabulated.  MUST BE IN ASCENDING ORDER!
+    FTRANS:    [nfreq] array giving the fractional filter
+        transmission at each frequency in Freq.
+    GMULT:    [3] array of multipliers of TBG that produces input to
+        FX_ROOT_JH, default [1d, 0.6, 1.6].
+    GUESS:    Don't solve the integral, just do the guess.
+    DOUBLE, ITMAX, STOP, TOL, VERBOSE: Passed to FX_ROOT_JH().
+    FMFREQ:    (input or returned) Representative frequency (Hz) of
+        the filter.  If set, is used in calculating brightness
+        temperature guess.  If not set, is calculated from the
+        transmission function and returned.
+    FMSTAR:    (input or returned) stellar brightness at
+            FMFREQ (W m-2 sr-1 Hz-1).  If set, is used in
+            calculating brightness temperature guess.  If
+            not set, is calculated from the transmission
+            function and returned.
+    FSTAR:    (returned) [nffreq] interpolated stellar brightness at
+            FFREQ (W m-2 sr-1 Hz-1).  If set, is used in
+            calculating brightness temperature.  If
+            not set, is calculated from the Kurucz
+            parameters and returned.
+    TBG:    (returned) Brightness temperature guess (K).
+    STATUS:     (returned) Set to 0 if the algorithm did not
+         converge, 1 if it did IN THE CALLER.
 
  OUTPUTS:
-	This function returns the brightness temperature of a
-	transiting planet in Kelvin.
+    This function returns the brightness temperature of a
+    transiting planet in Kelvin.
 
  SIDE EFFECTS:
-	Sets the values of the returned variables IN THE CALLER.
+    Sets the values of the returned variables IN THE CALLER.
 
  PROCEDURE:
-	See Eq. 6 and 10 of 2006-02-01-planetbrightnesstemp.pdf.  To
-	get a double-precision calculation, use double-precision
-	inputs.
+    See Eq. 6 and 10 of 2006-02-01-planetbrightnesstemp.pdf.  To
+    get a double-precision calculation, use double-precision
+    inputs.
 
  EXAMPLE:
 
  MODIFICATION HISTORY:
- 	Written by:	Joseph Harrington, Cornell.  2006-02-11
-			jh@oobleck.astro.cornell.edu
-	2006-02-12 jh	Made 4-element vector as first argument (opt,
-			for Monte Carlo).  Added STATUS.
+     Written by:    Joseph Harrington, Cornell.  2006-02-11
+            jh@oobleck.astro.cornell.edu
+    2006-02-12 jh    Made 4-element vector as first argument (opt,
+            for Monte Carlo).  Added STATUS.
 """
 
 def transplan_tb(arat, frat, logg, tstar, kfreq=None, kgrav=None, ktemp=None, kinten=None, ffreq=None, ftrans=None, fmfreq=None, fstar=None, fmstar=None, guess=None, gmult=None, itmax=None, stop=None, tol=None, verbose=None, status=None):
@@ -103,7 +103,7 @@ def transplan_tb(arat, frat, logg, tstar, kfreq=None, kgrav=None, ktemp=None, ki
    
    # default guess array
    if gmult == None:   
-      	gmult = np.array([1.0, 0.6, 1.6])
+          gmult = np.array([1.0, 0.6, 1.6])
    
    # constants, MKS
    c = 2.99792458e8    # m/s, speed of light
@@ -111,17 +111,17 @@ def transplan_tb(arat, frat, logg, tstar, kfreq=None, kgrav=None, ktemp=None, ki
    k = 1.3806503e-23   # J/K, Boltzmann's constant, Google
    
    # find fstar
-   if fstar == None:   
-      	kstar = kurucz_inten.interp(kinten, kgrav, ktemp, logg, tstar)
-      	fstar = np.interp(ffreq, kfreq, kstar)
+   if fstar is None:   
+          kstar = kurucz_inten.interp(kinten, kgrav, ktemp, logg, tstar)
+          fstar = np.interp(ffreq, kfreq, kstar)
    
    # calculate filter mean and brightness there
-   if fmfreq == None:
-	fmfreq = (integrate.integrate(ffreq, ffreq*ftrans, min(ffreq), max(ffreq)) /
-		  integrate.integrate(ffreq, ftrans,       min(ffreq), max(ffreq)))
-	
-   if fmstar == None:
-      	fmstar = np.interp([fmfreq], ffreq, fstar)
+   if fmfreq is None:
+    fmfreq = (integrate.integrate(ffreq, ffreq*ftrans, min(ffreq), max(ffreq)) /
+          integrate.integrate(ffreq, ftrans,       min(ffreq), max(ffreq)))
+    
+   if fmstar is None:
+          fmstar = np.interp([fmfreq], ffreq, fstar)
    
    # guess Tb at the weighted band center
    tbg = (h*fmfreq)/k/np.log((2.*h*iarat*fmfreq**3)/(c**2*frat*fmstar) + 1.)
@@ -186,14 +186,14 @@ def transplan_tb(arat, frat, logg, tstar, kfreq=None, kgrav=None, ktemp=None, ki
 #                |x(k) - x(k+1)| < TOL.
 #                If the STOP keyword is set to 1, the algorithm stops when
 #                |Func(x(k))| < TOL. The default is 1.0e-4.
-#		 Tol is limited to machine precision.  If set below
-#		 precision, it will be reset to precision IN THE
-#		 CALLER.
+#         Tol is limited to machine precision.  If set below
+#         precision, it will be reset to precision IN THE
+#         CALLER.
 #
-#	STATUS:	 (returned) Set to 0 if the algorithm did not
-#		 converge, 1 if it did IN THE CALLER.
+#    STATUS:     (returned) Set to 0 if the algorithm did not
+#         converge, 1 if it did IN THE CALLER.
 #
-#	EXTRA:	 Structure containing parameters to pass to FUNC.
+#    EXTRA:     Structure containing parameters to pass to FUNC.
 #
 # EXAMPLE:
 #       Define an IDL function named FUNC.
@@ -224,7 +224,7 @@ def transplan_tb(arat, frat, logg, tstar, kfreq=None, kgrav=None, ktemp=None, ki
 #       arithmetic only when necessary.
 #
 # SIDE EFFECTS:
-#	Sets STATUS and may set TOL IN THE CALLER.
+#    Sets STATUS and may set TOL IN THE CALLER.
 #
 # REFERENCE:
 #       Numerical Recipes, The Art of Scientific Computing (Second Edition)
@@ -235,11 +235,11 @@ def transplan_tb(arat, frat, logg, tstar, kfreq=None, kgrav=None, ktemp=None, ki
 #       Written by:  GGS, RSI, March 1994
 #       Modified:    GGS, RSI, September 1994
 #                    Added support for double-precision complex inputs.
-#	2005-02-07 jh	Added _extra.
-#	2005-02-12 jh	Added status, tol protection.  Fixed indentation.
-#	2008-08-15 kevin
-#			Kevin Stevenson, UCF
-#			Converted to Python
+#    2005-02-07 jh    Added _extra.
+#    2005-02-12 jh    Added status, tol protection.  Fixed indentation.
+#    2008-08-15 kevin
+#            Kevin Stevenson, UCF
+#            Converted to Python
 #-
 
 def root(xi, func, itmax=None, stop=None, tol=None, status=None, extra=None):
@@ -250,15 +250,15 @@ def root(xi, func, itmax=None, stop=None, tol=None, status=None, extra=None):
    status = 0
    
    x  = xi + 0.0   #Create an internal floating-point variable, x.
-   if x.size != 3:   
-      	print 'x must be a 3-element initial guess vector.'
-	return np.nan
+   if x.size!=3:
+      print('x must be a 3-element initial guess vector.')
+      return np.nan
    
-   if itmax == None:   
+   if itmax is None:   
       itmax = 100
-   if stop == None:   
+   if stop is None:   
       stop = 0
-   if tol == None:   
+   if tol is None:   
       tol = 1.0e-4
 
    #Initialize stopping criterion and iteration count.
@@ -310,7 +310,7 @@ def root(xi, func, itmax=None, stop=None, tol=None, status=None, extra=None):
       it = it + 1
 
    if (it >= itmax and cond == 0):   
-      print 'Algorithm failed to converge within given parameters.'
+      print('Algorithm failed to converge within given parameters.')
    else:   
       status = 1
    
@@ -318,61 +318,61 @@ def root(xi, func, itmax=None, stop=None, tol=None, status=None, extra=None):
 
 """
  NAME:
-	TBFUNC
+    TBFUNC
 
  PURPOSE:
-	This function is used by fx_root_jh to calculate the
-	brightness temperature of a transiting planet.  When
-	this function returns 0, a root has been found and Tb is the
-	brightness temperature of the planet in Kelvin.
+    This function is used by fx_root_jh to calculate the
+    brightness temperature of a transiting planet.  When
+    this function returns 0, a root has been found and Tb is the
+    brightness temperature of the planet in Kelvin.
 
  CATEGORY:
-	Astronomy.
+    Astronomy.
 
  CALLING SEQUENCE:
 
-	Result = tbfunc(Tb)
+    Result = tbfunc(Tb)
 
  INPUTS:
-	Tb:	Brightness temperature (Kelvin)
+    Tb:    Brightness temperature (Kelvin)
 
  KEYWORDS:
-	ARAT:	Area ratio between planet and star (Rp^2/R*^2)
-	FRAT:	Flux ratio between planet and star (Fp/F*)
-	FREQ:	[nfreq] array of frequencies (Hz) at which Trans and
-		Istar are tabulated.  MUST BE IN ASCENDING ORDER!
-	TRANS:	[nfreq] array giving the fractional filter
-		transmission at each frequency in Freq.
-	ISTAR:	[nfreq] array giving the stellar brightness at each
-		frequency in Freq in units of W m-2 sr-1 Hz-1.
-	VERBOSE:	Print input tb and function values.
+    ARAT:    Area ratio between planet and star (Rp^2/R*^2)
+    FRAT:    Flux ratio between planet and star (Fp/F*)
+    FREQ:    [nfreq] array of frequencies (Hz) at which Trans and
+        Istar are tabulated.  MUST BE IN ASCENDING ORDER!
+    TRANS:    [nfreq] array giving the fractional filter
+        transmission at each frequency in Freq.
+    ISTAR:    [nfreq] array giving the stellar brightness at each
+        frequency in Freq in units of W m-2 sr-1 Hz-1.
+    VERBOSE:    Print input tb and function values.
 
  OUTPUTS:
-	This function returns the vertical distance from the Y axis
-	for the given input parameters.  If the distance is 0, a root
-	has been found and Tb is the brightness temperature of the
-	planet in Kelvin.
+    This function returns the vertical distance from the Y axis
+    for the given input parameters.  If the distance is 0, a root
+    has been found and Tb is the brightness temperature of the
+    planet in Kelvin.
 
  PROCEDURE:
-	See Eq. 6 of 2006-02-01-planetbrightnesstemp.pdf.  To get a
-	double-precision calculation, use double-precision inputs.
+    See Eq. 6 of 2006-02-01-planetbrightnesstemp.pdf.  To get a
+    double-precision calculation, use double-precision inputs.
 
  EXAMPLE:
-	; Note: fx_root_jh just adds _extra=e to the function
-	; definition and the internal named function call, to allow
-	; passing of extra parameters.
-	func = 'transplan_tbfunc'
-	tb = fx_root_jh(guess, func, $
+    ; Note: fx_root_jh just adds _extra=e to the function
+    ; definition and the internal named function call, to allow
+    ; passing of extra parameters.
+    func = 'transplan_tbfunc'
+    tb = fx_root_jh(guess, func, $
          arat=arat, frat=frat, freq=freq, trans=trans, istar=istar, $
          itmax=itmax, stop=stop, tol=tol)
 
  MODIFICATION HISTORY:
- 	Written by:	Joseph Harrington, Cornell.  2006 Feb 7
-			jh@oobleck.astro.cornell.edu
-	2006 02 10 jh	Fix c, add VERBOSE.
-	2008-08-15 kevin
-			Kevin Stevenson, UCF
-			Converted to Python
+     Written by:    Joseph Harrington, Cornell.  2006 Feb 7
+            jh@oobleck.astro.cornell.edu
+    2006 02 10 jh    Fix c, add VERBOSE.
+    2008-08-15 kevin
+            Kevin Stevenson, UCF
+            Converted to Python
 """
 
 
@@ -392,20 +392,20 @@ def tbfunc(tb, extra, verbose=None):
    k = 1.3806503e-23   # J/K, Boltzmann's constant, Google
    
    if (verbose is not None):   
-      	print tb
+          print(tb)
    
    ntb = np.array(tb).size
    if ntb == 1:
-	ret    = c**2 * frat / (2.*h*arat) * integrate.integrate(freq, trans * istar) - \
-	       integrate.integrate(freq, trans*freq**3 / (np.exp(h*freq/(k*tb)) - 1.))
+    ret    = c**2 * frat / (2.*h*arat) * integrate.integrate(freq, trans * istar) - \
+           integrate.integrate(freq, trans*freq**3 / (np.exp(h*freq/(k*tb)) - 1.))
    else:
      ret = np.zeros(ntb)
      for i in range(ntb):
-      	ret[i] = c**2 * frat / (2.*h*arat) * integrate.integrate(freq, trans * istar) - \
-	       integrate.integrate(freq, trans*freq**3 / (np.exp(h*freq/(k*tb[i])) - 1.))
+          ret[i] = c**2 * frat / (2.*h*arat) * integrate.integrate(freq, trans * istar) - \
+           integrate.integrate(freq, trans*freq**3 / (np.exp(h*freq/(k*tb[i])) - 1.))
 
    if (verbose is not None):   
-      	print ret
+          print(ret)
    
    return ret
 

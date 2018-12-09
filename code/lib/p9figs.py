@@ -181,7 +181,7 @@ def figs(event, fitnum, fignum):
                 #plt.suptitle(event.params.planetname + ' Correlation Between Free Parameters',size=24)
                 if i > j:
                     a = plt.subplot(numfp-1,numfp-1,k)
-                    a.set_axis_bgcolor(plt.cm.YlOrRd(np.abs(fit.paramcorr[m,n])))
+                    a.set_facecolor(plt.cm.YlOrRd(np.abs(fit.paramcorr[m,n])))
                     if fit.parname[i].startswith('System Flux'):
                         a.yaxis.set_major_formatter(plt.matplotlib.ticker.FormatStrFormatter('%0.0f'))
                     if fit.parname[j].startswith('System Flux'):
@@ -227,7 +227,7 @@ def figs(event, fitnum, fignum):
                 #plt.suptitle(event.params.planetname + ' Correlation Between Free Parameters',size=24)
                 if i > j:
                     a = plt.subplot(num1-1,num1-1,k)
-                    a.set_axis_bgcolor(plt.cm.YlOrRd(np.abs(fit.paramcorr[m,n])))
+                    a.set_facecolor(plt.cm.YlOrRd(np.abs(fit.paramcorr[m,n])))
                     if fit.parname[i].startswith('System Flux'):
                         a.yaxis.set_major_formatter(plt.matplotlib.ticker.FormatStrFormatter('%0.0f'))
                     if fit.parname[j].startswith('System Flux'):
@@ -244,7 +244,7 @@ def figs(event, fitnum, fignum):
                         plt.xlabel(s, size = 10)
                     else:
                         a = plt.xticks(visible=False)
-                    plt.plot(fit.allparams[j,0::stepsize],fit.allparams[i,0::stepsize],'b,') #,ms=2)
+                    plt.plot(fit.allparams[j,0::int(stepsize)],fit.allparams[i,0::int(stepsize)],'b,') #,ms=2)
                 k += 1
                 n += 1
             m += 1
@@ -268,7 +268,7 @@ def figs(event, fitnum, fignum):
             for j in fit.nonfixedpars[0:num1-1]:
                 #plt.suptitle(event.params.planetname + ' Correlation Between Free Parameters',size=24)
                 a = plt.subplot(num2-1,num1-1,k)
-                a.set_axis_bgcolor(plt.cm.YlOrRd(np.abs(fit.paramcorr[m,n])))
+                a.set_facecolor(plt.cm.YlOrRd(np.abs(fit.paramcorr[m,n])))
                 if fit.parname[i].startswith('System Flux'):
                     a.yaxis.set_major_formatter(plt.matplotlib.ticker.FormatStrFormatter('%0.0f'))
                 if fit.parname[j].startswith('System Flux'):
@@ -285,7 +285,7 @@ def figs(event, fitnum, fignum):
                     plt.xlabel(s, size = 10)
                 else:
                     a = plt.xticks(visible=False)
-                plt.plot(fit.allparams[j,0::stepsize],fit.allparams[i,0::stepsize],'b,') #,ms=1)
+                plt.plot(fit.allparams[j,0::int(stepsize)],fit.allparams[i,0::int(stepsize)],'b,') #,ms=1)
                 k += 1
                 n += 1
             m += 1
@@ -303,7 +303,7 @@ def figs(event, fitnum, fignum):
                 #plt.suptitle(event.params.planetname + ' Correlation Between Free Parameters',size=24)
                 if i > j:
                     a = plt.subplot(num2-1,num2-1,k)
-                    a.set_axis_bgcolor(plt.cm.YlOrRd(np.abs(fit.paramcorr[m,n])))
+                    a.set_facecolor(plt.cm.YlOrRd(np.abs(fit.paramcorr[m,n])))
                     if fit.parname[i].startswith('System Flux'):
                         a.yaxis.set_major_formatter(plt.matplotlib.ticker.FormatStrFormatter('%0.0f'))
                     if fit.parname[j].startswith('System Flux'):
@@ -320,7 +320,7 @@ def figs(event, fitnum, fignum):
                         plt.xlabel(s, size = 10)
                     else:
                         a = plt.xticks(visible=False)
-                    plt.plot(fit.allparams[j,0::stepsize],fit.allparams[i,0::stepsize],'b,') #,ms=1)
+                    plt.plot(fit.allparams[int(j),0::int(stepsize)],fit.allparams[int(i),0::int(stepsize)],'b,') #,ms=1)
                 k += 1
                 n += 1
             m += 1
@@ -393,7 +393,7 @@ def figs(event, fitnum, fignum):
         plt.yticks(size=12)
         #plt.axvline(x=fit.meanp[i,0])
         plt.xlabel(fit.parname[i], size=14)
-        a  = plt.hist(fit.allparams[i,0::stepsize], 20, label=str(fit.meanp[i,0]))
+        a  = plt.hist(fit.allparams[int(i),0::int(stepsize)], 20, label=str(fit.meanp[i,0]))
         j += 1
     plt.subplots_adjust(left=0.07,right=0.95,bottom=bottom,top=0.95,hspace=0.40,wspace=0.25)
     plt.savefig(event.modeldir + "/" + obj + "-fig" + str(fignum*numfigs+907) + "-" + fit.saveext + "-hist.png", dpi=300)
@@ -469,7 +469,7 @@ def figs(event, fitnum, fignum):
     #CHMOD ALL POSTSCRIPT FILES
     for files in os.listdir('.'):
         if files.endswith('.ps'):
-            os.chmod(files, 0664)   #0664 must be in octal
+            os.chmod(files, 0o664)   #0664 must be in octal
     
     del fit.allparams
     return
