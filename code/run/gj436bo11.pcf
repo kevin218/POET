@@ -92,6 +92,7 @@ hordir     esp01/ancil/horizons/
 kuruczdir  esp01/ancil/kurucz/
 filtdir    esp01/ancil/filter/
 psfdir     esp01/ancil/psf/
+leapdir    POET-master/code/ancil/leapseconds/
 
 # ancil files
 #          irac                        irs              mips

@@ -5,6 +5,11 @@
 # $Id: poet_1event.py 302 2010-07-10 05:35:30Z patricio $
 
 import os, sys, re, time
+
+#FINDME Megan added this
+#if '/Users/megan/auto_aor' in sys.path:
+#  sys.path.remove('/Users/megan/auto_aor')
+  
 import numpy  as np
 from astropy.io import fits as pf
 import matplotlib.pyplot as plt
@@ -17,6 +22,8 @@ import logedit       as le
 import timer         as t
 from   manageevent import *
 from univ import Univ
+
+
 
 class Event(Univ):
 
@@ -187,6 +194,7 @@ class Event(Univ):
     self.kuruczdir = pcf.kuruczdir.get(0)
     self.filtdir   = pcf.filtdir.get(0)
     self.psfdir    = pcf.psfdir.get(0)
+    self.leapdir   = pcf.leapdir.get(0)
 
     self.pmaskfile  = np.zeros(self.naor, '|S150')
     for i in np.arange(self.naor):

@@ -1192,15 +1192,15 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
     print("Acceptance rate = " + str(fit[j].arate) + "%", file=printout)
     print("Best Parameters:", file=printout)
     print(bestp, file=printout)
-    
-    for j in range(numevents):
-        fignum   = 6000+num*numfigs+j*100
-        savefile = event[j].modeldir+"/"+event[j].eventname+"-fig"+str(fignum)+"-"+ fit[j].saveext+".png"
-        plots.trace(event[j], fit[j], fignum, savefile)
-        if not isinteractive:
-            plt.close(fignum)
-        else:
-            plt.pause(0.01)
+    if allplots > 2:
+        for j in range(numevents):
+            fignum   = 6000+num*numfigs+j*100
+            savefile = event[j].modeldir+"/"+event[j].eventname+"-fig"+str(fignum)+"-"+ fit[j].saveext+".png"
+            plots.trace(event[j], fit[j], fignum, savefile)
+            if not isinteractive:
+                plt.close(fignum)
+            else:
+                plt.pause(0.01)
     
     #BIN DATA
     for j in range(numevents):
@@ -1973,22 +1973,24 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
     
     print('Producing figures.')
     #PLOT BINNED DATA AND BEST FIT
-    for j in range(numevents):
-        fignum   = 6001+num*numfigs+j*100
-        savefile = event[j].modeldir+"/"+event[j].eventname+"-fig"+str(fignum)+"-"+ fit[j].saveext+".png"
-        plots.binlc(event[j], fit[j], fignum, savefile, j=j)
+    if allplots > 1:
+        for j in range(numevents):
+            fignum   = 6001+num*numfigs+j*100
+            savefile = event[j].modeldir+"/"+event[j].eventname+"-fig"+str(fignum)+"-"+ fit[j].saveext+".png"
+            plots.binlc(event[j], fit[j], fignum, savefile, j=j)
 
     #PLOT NORMALIZED BINNED DATA AND BEST FIT
-    for j in range(numevents):
-        fignum   = 6002+num*numfigs+j*100
-        savefile = event[j].modeldir+"/"+event[j].eventname+"-fig"+str(fignum)+"-"+ fit[j].saveext+".png"
-        if hasattr(event[j].params, 'interclip'):
-            interclip = event[j].params.interclip
-        else:
-            interclip = None
-        plots.normlc(event[j], fit[j], fignum, savefile, j=j, interclip=interclip)
+    if allplots > 0:
+        for j in range(numevents):
+            fignum   = 6002+num*numfigs+j*100
+            savefile = event[j].modeldir+"/"+event[j].eventname+"-fig"+str(fignum)+"-"+ fit[j].saveext+".png"
+            if hasattr(event[j].params, 'interclip'):
+                interclip = event[j].params.interclip
+            else:
+                interclip = None
+            plots.normlc(event[j], fit[j], fignum, savefile, j=j, interclip=interclip)
     
-    if allplots == True:
+    if allplots > 3:
         #allparams TRACE PARAMETER VALUES FOR ALL STEPS
         for j in range(numevents):
             fignum   = 6003+num*numfigs+j*100
@@ -2002,6 +2004,7 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
                 savefile = event[j].modeldir+"/"+event[j].eventname+"-fig"+str(fignum)+"-"+ fit[j].saveext+".png"
                 plots.trace(event[j], fit[j], fignum, savefile=savefile, allparams=fit[j].allorthop, parname=fit[j].opname)
         
+    if allplots > 4:
         #allparams AUTOCORRELATION PLOT
         for j in range(numevents):
             fignum   = 6004+num*numfigs+j*100
@@ -2126,7 +2129,7 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
             #WRITE fit[j].allparams TO FILE, DELETE fit[j].allparams
             fit[j].allparamsfile = event[j].modeldir + "/d-" + event[j].eventname + '-allparams-' + \
                                    fit[j].saveext + '.npy'
-            pid  = open(fit[j].allparamsfile, 'w')
+            pid  = open(fit[j].allparamsfile, 'wb')
             np.save(pid, fit[j].allparams)
             pid.close()
             del fit[j].allparams, fit[j].allorthop

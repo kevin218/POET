@@ -120,7 +120,7 @@ def checks(eventname, period=None, ephtime=None, cwd=None):
   event.bjdutc = event.fp.juldat + event.fp.bjdcor / 86400.0   # utc bjd date
   event.bjdtdb = np.empty(event.bjdutc.shape)
   for i in range(event.bjdtdb.shape[0]):
-    event.bjdtdb[i] = utc_tt.utc_tdb(event.bjdutc[i])   # terrestial bjd date
+    event.bjdtdb[i] = utc_tt.utc_tdb(event.bjdutc[i],event.topdir+event.leapdir)   # terrestial bjd date
 
   # ccampo 3/18/2011: check which units phase should be in
   try:
