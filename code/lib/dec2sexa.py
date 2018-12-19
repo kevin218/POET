@@ -32,7 +32,7 @@ def dec2sexa1(dec, ndecdig=6):
    s=round(f+ .5*(10**(-ndecdig-1)), ndecdig)  
    parts=(thesign,h,m,s)
    format="%%s%%2d:%%02d:%%0%d.%df"  % (secw, ndecdig)
-   #print "TEST: format="+format
+   #print("TEST: format="+format)
    return format  % parts
 
 

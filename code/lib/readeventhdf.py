@@ -38,7 +38,7 @@ class DataGob:
 
 
 def _undress(e):
-   #print "----\ndigesting item of class %s named %s"  %(e.__class__, e.name)
+   #print("----\ndigesting item of class %s named %s"  %(e.__class__, e.name))
    if e.__class__ == h5py.Group:
       g=DataGob()
       for n in e.names:

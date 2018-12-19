@@ -19,7 +19,7 @@ import run
 import p11advfigs as p11
 
 def main(args):
-    print 'MARK: ' + time.ctime() + ' : Bin and Plot'
+    print('MARK: ' + time.ctime() + ' : Bin and Plot')
 
     # import param files, if necessary
     #obj      = ['hd149bp41', 'hd149bp42', 'hd149bp43']
@@ -107,7 +107,7 @@ def main(args):
 
     midptsd = np.sqrt(1/sum(weight))
     midptav = sum(midpts)/sum(weight)
-    print 'Average midpoint = ' + str(round(midptav,5)) + ' +/- ' + str(round(midptsd,5))
+    print('Average midpoint = ' + str(round(midptav,5)) + ' +/- ' + str(round(midptsd,5)))
 
     #CALCULATE WEIGHTED AVERAGE MIDPOINT
     #SPECIFIC FOR SIMULTANEOUS OBSERVATIONS OF CH13 & CH24
@@ -119,7 +119,7 @@ def main(args):
 
     midptsd = np.sqrt(1/sum(weight))
     midptav = sum(midpts)/sum(weight)
-    print 'Average midpoint for CH13 = ' + str(round(midptav,5)) + ' +/- ' + str(round(midptsd,5))
+    print('Average midpoint for CH13 = ' + str(round(midptav,5)) + ' +/- ' + str(round(midptsd,5)))
     weight = np.zeros(nfit)
     midpts = np.zeros(nfit)
     for i in (1,3):
@@ -128,7 +128,7 @@ def main(args):
 
     midptsd = np.sqrt(1/sum(weight))
     midptav = sum(midpts)/sum(weight)
-    print 'Average midpoint for CH24 = ' + str(round(midptav,5)) + ' +/- ' + str(round(midptsd,5))
+    print('Average midpoint for CH24 = ' + str(round(midptav,5)) + ' +/- ' + str(round(midptsd,5)))
 
     #CALCULATE WEIGHTED AVERAGE TEMPERATURE
     weight = np.zeros(nfit)
@@ -139,19 +139,19 @@ def main(args):
 
     tempsd = np.sqrt(1/sum(weight))
     tempav = sum(temps)/sum(weight)
-    print 'Average temperature = ' + str(round(tempav,0)) + ' +/- ' + str(round(tempsd,0)) + ' K'
+    print('Average temperature = ' + str(round(tempav,0)) + ' +/- ' + str(round(tempsd,0)) + ' K')
 
     #CALCULATE WEIGHTED AVERAGE MINIMUM ECCENTRICITY
     weight = np.zeros(nfit)
     emins  = np.zeros(nfit)
     for i in range(nfit):
-	    #print fit[i].eminerr[0], fit[i].eminerr[1]
+	    #print(fit[i].eminerr[0], fit[i].eminerr[1])
 	    weight[i] = 1/(fit[i].eminerr[1])**2
 	    emins[i]  = weight[i]*np.abs(fit[i].eminerr[0])
 
     eminsd  = np.sqrt(1/sum(weight))
     eminav  = sum(emins)/sum(weight)
-    print 'Average minimum eccentricity = ' + str(round(eminav,5)) + ' +/- ' + str(round(eminsd,5))
+    print('Average minimum eccentricity = ' + str(round(eminav,5)) + ' +/- ' + str(round(eminsd,5)))
     #eminerr = orbit.error_ecosomega(event[0].ephtime, fit.ecltime, event.period,
     #                                event.ephtimeerr, fit.ecltimeerr, event.perioderr)
 
@@ -159,8 +159,8 @@ def main(args):
     omega  = np.array((96., 10))*np.pi/180 #WASP-18b
     ecc    = eminav / np.cos(omega[0])
     eccerr = ecc*np.sqrt((eminsd/eminav)**2 + (omega[1]*np.sin(omega[0])/np.cos(omega[0]))**2)
-    print 'Given that omega = ' + str(round(omega[0],5)) + ' +/- ' + str(round(eccerr,5)) + ' radians...'
-    print 'Eccentricity = ' + str(round(ecc,5)) + ' +/- ' + str(round(eccerr,5))
+    print('Given that omega = ' + str(round(omega[0],5)) + ' +/- ' + str(round(eccerr,5)) + ' radians...')
+    print('Eccentricity = ' + str(round(ecc,5)) + ' +/- ' + str(round(eccerr,5)))
     '''
     #CALCULATE PERIOD
     '''

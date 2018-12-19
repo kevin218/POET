@@ -246,7 +246,7 @@ def make_psf_binning(spsf, shape, scale, params, psfctr, subpsf=None):
 
   # Extract sub-section from supersampled PSF:
   #params = params
-  #print params
+  #print(params)
   subpsf[:] = spsf[yctr-params[0]:yctr-params[0]+ns[0],
                    xctr-params[1]:xctr-params[1]+ns[1]]
 

@@ -344,7 +344,7 @@ def e_duration(eclipse_phase, width, period, m_star, r_star, r_planet, i=np.pi/2
             left = midpoint
         else:
             right = midpoint
-        #print midpoint
+        #print(midpoint)
         x+=1
         if x > 256:
             print("Convergence failure.")
@@ -518,7 +518,7 @@ def e(phase, omega, error_phase=0, error_omega = 0, epsilon=1e-14):
             left = midpoint
         else:
             right = midpoint
-        #print midpoint, eclipse_phase(omega, midpoint)
+        #print(midpoint, eclipse_phase(omega, midpoint))
     if error_phase != 0 or error_omega != 0:
         sigma = error_phase**2*((e(phase+h, omega) - e(phase-h, omega))/(2*h))**2
         sigma += error_omega**2*((e(phase, omega+h) - e(phase, omega-h))/(2*h))**2
@@ -655,7 +655,7 @@ def period(dates, initial_guess, n=10000, width=0.1):
     epoch = np.zeros(len(dates))
     for i in range(0, len(dates)):
         epoch[i] = round((dates[i][0] - b)/initial_guess)
-        #print epoch[i]
+        #print(epoch[i])
     #Determine current goodness of fit
     chisq = 0
     for i in range(0, len(dates)):
@@ -696,7 +696,7 @@ def period(dates, initial_guess, n=10000, width=0.1):
     sigma = 0
     for i in range(0, len(dates)):
         sigma+=(dates[i][0]-(left*epoch[i]+up))**2
-        #print (dates[i][0]-(left*epoch[i]+up))
+        #print(dates[i][0]-(left*epoch[i]+up))
     sigma /= len(dates)
     sigma=(sigma/len(dates))**0.5
     return left, sigma, down
@@ -709,6 +709,6 @@ def phase_fit(phase, error_phase, data):
         for j in range(0, len(data)):'''
             
 
-#print ephemeris(2.64, 2454875, 2454280.78148, 100, .585)
+#print(ephemeris(2.64, 2454875, 2454280.78148, 100, .585))
 #print("Eclipse phase: \t", eclipse_phase(351, 0.15), "+/-",  error_eclipse(0.15, 0.012, 351, 1.2)
 #print("ecosw:\t", ecosomega(0.5868),"+/-",  error_ecosomega(2454455.279241, 1.5e-4, 2.643904, 5e-6, 2454282.33311743, 0.0005*2.643904)[1]
