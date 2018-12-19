@@ -276,7 +276,7 @@ def old_gaussianguess(y, x=None, mask=None):
   """
 
   if y.ndim != 1 :
-    raise (ArrayShapeError, "y must be 1D, for now.")
+    raise ArrayShapeError("y must be 1D, for now.")
 
   if x is None :
     x = np.indices(y.shape)[0]
@@ -285,7 +285,7 @@ def old_gaussianguess(y, x=None, mask=None):
       oldshape = x.shape
       x.shape  = y.shape
     elif x.shape != y.shape :
-      raise (ArrayShapeError, "x must have same shape as y (and be sorted).")
+      raise ArrayShapeError("x must have same shape as y (and be sorted).")
 
   # Default mask:
   if mask is None:
@@ -556,7 +556,7 @@ def fitgaussian(y, x=None, bgpars=None, fitbg=0, guess=None,
   else:
     if (   ((x.ndim == 1) and (x.shape     != y.shape))
         or ((x.ndim >  1) and (x.shape[1:] != y.shape))):
-      raise (ValueError, "x must give coordinates of points in y.")
+      raise ValueError("x must give coordinates of points in y.")
 
   # Default mask: all good
   if mask is None:
@@ -767,7 +767,7 @@ def fitgaussians(y, x=None, guess=None, sigma=1.0):
   else:
     if (   ((x.ndim == 1) and (x.shape     != y.shape))
         or ((x.ndim >  1) and (x.shape[1:] != y.shape))):
-      raise (ValueError, "x must give coordinates of points in y.")
+      raise ValueError("x must give coordinates of points in y.")
 
   # "ravel" the guess
   ngauss = np.shape(guess)[0]
