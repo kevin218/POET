@@ -286,7 +286,7 @@ def hist2d(event, fit, fignum, savefile=None, allparams=None, parname=None, ipar
                 else:
                     a = plt.xticks(visible=False)
                 hist2d, xedges, yedges = np.histogram2d(allparams[k,0::int(stepsize)],
-                                                        allparams[i,0::int(stepsize)],20,normed=True)
+                                                        allparams[i,0::int(stepsize)],20,density=True)
                 vmin = np.min(hist2d[np.where(hist2d > 0)])
                 #largerhist = np.zeros((22,22))
                 #largerhist[1:-1,1:-1] = hist2d
@@ -350,7 +350,7 @@ def histograms(event, fit, fignum, savefile=None, allparams=None, parname=None, 
         plt.yticks(size=12)
         #plt.axvline(x=fit.meanp[i,0])
         plt.xlabel(parname[i], size=14)
-        a  = plt.hist(allparams[i,0::int(stepsize)], 20, normed=False, label=str(fit.meanp[i,0]))
+        a  = plt.hist(allparams[i,0::int(stepsize)], 20, density=False, label=str(fit.meanp[i,0]))
         j += 1
     plt.subplots_adjust(left=0.07,right=0.95,bottom=bottom,top=0.95,hspace=hspace,wspace=0.25)
     if savefile != None:
@@ -503,6 +503,70 @@ def pointingHist(event, fit, fignum, savefile=None, istitle=True, minnumpts=1, s
     a.yaxis.set_visible(False)
     a.xaxis.set_visible(False)
     a = plt.imshow([[vmin,vmax],[vmin,vmax]], cmap=plt.cm.jet, aspect='auto', visible=False)
+    plt.colorbar(a, fraction=3.0)
+    if savefile != None:
+        plt.savefig(savefile)
+    return
+
+# PRF WIDTH
+def prfghw(event, fit, fignum, savefile=None, istitle=True, srcest=None, axis='y'):
+    if axis == 'y':
+        vmin = event.sy[np.where(event.x>0)].min()
+        vmax = event.sy[np.where(event.x>0)].max()
+    elif axis == 'x':
+        vmin = event.sx[np.where(event.x>0)].min()
+        vmax = event.sx[np.where(event.x>0)].max()
+    else:
+        print('Specify axis as y or x')
+        return
+    yround = fit.yuc[0] - fit.y[0]
+    xround = fit.xuc[0] - fit.x[0]
+    # Determine size of non-zero region
+    xmin = event.x[np.where(event.x>0)].min()
+    xmax = event.x.max()
+    ymin = event.y[np.where(event.y>0)].min()
+    ymax = event.y.max()
+    # Plot
+    plt.figure(fignum, figsize=(8,6))
+    plt.clf()
+    if istitle:
+        a = plt.suptitle(event.eventname + ' PRF Gaussian Half-Width in ' + axis, size=16)
+    #MAP
+    a = plt.axes([0.11,0.10,0.75,0.80])
+    if axis == 'y':
+        plt.scatter(event.x, event.y, c=event.sy, vmin=vmin, vmax=vmax)
+    elif axis == 'x':
+        plt.scatter(event.x, event.y, c=event.sx, vmin=vmin, vmax=vmax)
+    plt.ylabel('Pixel Position in y', size=14)
+    plt.xlabel('Pixel Position in x', size=14)
+    plt.xlim(xmin,xmax)
+    plt.ylim(ymin,ymax)
+    #print(xmin,xmax,ymin,ymax)
+    if srcest == None:
+        #Spitzer
+        if ymin < -0.5+yround:
+            plt.hlines(-0.5+yround, xmin, xmax, 'k')
+        if ymax >  0.5+yround:
+            plt.hlines( 0.5+yround, xmin, xmax, 'k')
+        if xmin < -0.5+xround:
+            plt.vlines(-0.5+xround, ymin, ymax, 'k')
+        if xmax >  0.5+xround:
+            plt.vlines( 0.5+xround, ymin, ymax, 'k')
+    else:
+        #K2
+        if ymin < -0.5+srcest[0]:
+            plt.hlines(-0.5+srcest[0], xmin, xmax, 'k')
+        if ymax >  0.5+srcest[0]:
+            plt.hlines( 0.5+srcest[0], xmin, xmax, 'k')
+        if xmin < -0.5+srcest[1]:
+            plt.vlines(-0.5+srcest[1], ymin, ymax, 'k')
+        if xmax >  0.5+srcest[1]:
+            plt.vlines( 0.5+srcest[1], ymin, ymax, 'k')
+    #COLORBAR
+    a = plt.axes([0.90,0.10,0.01,0.8], frameon=False)
+    a.yaxis.set_visible(False)
+    a.xaxis.set_visible(False)
+    a = plt.imshow([[vmin,vmax],[vmin,vmax]], aspect='auto', visible=False)
     plt.colorbar(a, fraction=3.0)
     if savefile != None:
         plt.savefig(savefile)
