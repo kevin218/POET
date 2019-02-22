@@ -298,6 +298,56 @@ def setupmodel(model, ind):
         myfuncs.append(mandelecl_orbit)
         saveext.append('mo')
         functype.append('ecl/tr')
+    elif model[i] == 'batman_trquad':
+        #DEFINE INDICES
+        ind.t0 = ind.size
+        ind.rprs = ind.size + 1
+        ind.period = ind.size + 2
+        ind.ars = ind.size + 3
+        ind.cosi = ind.size + 4
+        ind.ecc = ind.size + 5
+        ind.omega = ind.size + 6
+        ind.u1 = ind.size + 7
+        ind.u2 = ind.size + 8 
+        ind.size  += 9
+        #DEFINE NAMES
+        parname.insert(ind.t0,'Time of inferior conjunction')
+        parname.insert(ind.rprs,'Rp/Rs')
+        parname.insert(ind.period,'period')
+        parname.insert(ind.ars,'a/Rs')
+        parname.insert(ind.cosi,'cos(i)')
+        parname.insert(ind.ecc,'eccentricity')
+        parname.insert(ind.omega,'Omega (deg)')
+        parname.insert(ind.u1,'Limb darkening, u1')
+        parname.insert(ind.u2,'Limb darkening, u2')
+       #DEFINE ECLIPSE MODEL                                                   
+        myfuncs.append(mc.batman_trquad)                                         
+        saveext.append('btrq')                                                    
+        functype.append('ecl/tr')    
+    elif model[i] == 'batman_ecl':
+        #DEFINE INDICES
+        ind.eclmidpt = ind.size
+        ind.fpfs = ind.size + 1
+        ind.rprs = ind.size + 2
+        ind.period = ind.size + 3
+        ind.ars = ind.size + 4
+        ind.cosi = ind.size + 5
+        ind.ecc = ind.size + 6
+        ind.omega = ind.size + 7
+        ind.size  += 8
+        #DEFINE NAMES
+        parname.insert(ind.eclmidpt,'Eclipse midpt')
+        parname.insert(ind.fpfs,'Fp/Fs')
+        parname.insert(ind.rprs,'Rp/Rs')
+        parname.insert(ind.period,'period')
+        parname.insert(ind.ars,'a/Rs')
+        parname.insert(ind.cosi,'cos(i)')
+        parname.insert(ind.ecc,'eccentricity')
+        parname.insert(ind.omega,'Omega (deg)')
+       #DEFINE ECLIPSE MODEL                                                   
+        myfuncs.append(mc.batman_ecl)                                         
+        saveext.append('becl')                                                    
+        functype.append('sinusoidal')    
     elif model[i] == 'ortho':
         #DEFINE INDICES
         ind.orthop = ind.size
@@ -791,6 +841,16 @@ def setupmodel(model, ind):
         myfuncs.append(mc.log4qramp)
         saveext.append('l4q')
         functype.append('ramp')
+    elif model[i] == 'constant':
+        #DEFINE INDICES
+        ind.c = ind.size
+        ind.size += 1
+        #DEFINE NAMES
+        parname.insert(ind.c,    'Constant')
+        #DEFINE RAMP MODEL
+        myfuncs.append(mc.constant)
+        saveext.append('const')
+        functype.append('ramp')
     elif model[i] == 'sindecay':
         #DEFINE INDICES
         ind.sdx0    = ind.size
@@ -1188,24 +1248,24 @@ def setupmodel(model, ind):
         myfuncs.append(medianip)
         saveext.append('mip')
         functype.append('ipmap')
-    elif model[i] == 'nnint':
+    elif model[i] == 'pnnint':
         #DEFINE INDICES
         ind.nnip   = ind.size
         ind.size  += 1
         #DEFINE NAMES
         parname.insert(ind.nnip,   'Interpolation, min # pts')
         #DEFINE INTRA-PIXEL MODEL
-        myfuncs.append(mc.nnint)
+        myfuncs.append(mc.pnnint)
         saveext.append('nni')
         functype.append('ipmap')
-    elif model[i] == 'bilinint':
+    elif model[i] == 'pbilinint':
         #DEFINE INDICES
         ind.blip   = ind.size
         ind.size  += 1
         #DEFINE NAMES
         parname.insert(ind.blip,   'Interpolation, min # pts')
         #DEFINE INTRA-PIXEL MODEL
-        myfuncs.append(mc.bilinint)
+        myfuncs.append(mc.pbilinint)
         saveext.append('bli')
         functype.append('ipmap')
     elif model[i] == 'ipspline':
