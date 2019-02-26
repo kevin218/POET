@@ -2,7 +2,7 @@ import numpy as np
 import spiderman
 
 
-def spiderman_sph(rampparams, t, etc = []):
+def spiderman_sph(params, t, etc = []):
    """
   This function creates a model that fits spherical harmonics 
 
@@ -43,37 +43,38 @@ def spiderman_sph(rampparams, t, etc = []):
                 laura.kreidberg@gmail.com 
                 Original version
   2019-02-24	update interpolation, add to github version 
-  TODO          add response function to etc
+  TODO          add response function, nlayers to etc
    """
    p = spiderman.ModelParams(brightness_model =  'spherical', thermal = True, stellar_model = 'blackbody')
+   p.nlayers = 5
 
-   p.t0    	    = rampparams[0]
-   p.per       	    = rampparams[1]
-   p.a_abs 	    = rampparams[2]
-   p.inc	    = np.arccos(rampparams[3])*180./np.pi
-   p.ecc	    = rampparams[4]
-   p.w	   	    = rampparams[5]
-   p.rp	    	    = rampparams[6]
-   p.a	   	    = rampparams[7]
-   p.p_u1	    = rampparams[8]
-   p.p_u2	    = rampparams[9]
-   p.T_s	    = rampparams[10]
-   p.l1	   	    = rampparams[11]
-   p.l2	    	    = rampparams[12]
-   p.degree 	    = int(rampparams[13])
-   p.la0	    = rampparams[14]
-   p.lo0	    = rampparams[15]
-   sph0	    = rampparams[16]
-   sph1	    = rampparams[17]
-   sph2	    = rampparams[18]
-   sph3	    = rampparams[19]
+   p.t0    	    = params[0]
+   p.per       	    = params[1]
+   p.a_abs 	    = params[2]
+   p.inc	    = np.arccos(params[3])*180./np.pi
+   p.ecc	    = params[4]
+   p.w	   	    = params[5]
+   p.rp	    	    = params[6]
+   p.a	   	    = params[7]
+   p.p_u1	    = params[8]
+   p.p_u2	    = params[9]
+   p.T_s	    = params[10]
+   p.l1	   	    = params[11]
+   p.l2	    	    = params[12]
+   p.degree 	    = int(params[13])
+   p.la0	    = params[14]
+   p.lo0	    = params[15]
+   sph0	    = params[16]
+   sph1	    = params[17]
+   sph2	    = params[18]
+   sph3	    = params[19]
    p.n_layers = 5
 
    sph = []
-   for i in range(0, p.degree**2): sph.append(rampparams[16+i])
+   for i in range(0, p.degree**2): sph.append(params[16+i])
    p.sph = sph
 
-   npoints = int(rampparams[20])
+   npoints = int(params[20])
 
  
    #p.filter = "/Users/lkreidberg/Desktop/Util/Throughput/spitzer_irac_ch2.txt"

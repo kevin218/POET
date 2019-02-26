@@ -1075,6 +1075,94 @@ def setupmodel(model, ind):
         myfuncs.append(mc.spiderman_sph)
         saveext.append('spsh')
         functype.append('sinusoidal')
+    elif model[i] == 'spiderman_spot':
+        #DEFINE INDICES
+        ind.t0 = ind.size
+        ind.per = ind.size + 1
+        ind.a_abs = ind.size + 2
+        ind.cosi = ind.size + 3
+        ind.ecc = ind.size + 4
+        ind.w = ind.size + 5
+        ind.rp = ind.size + 6
+        ind.a = ind.size + 7
+        ind.p_u1 = ind.size + 8
+        ind.p_u2 = ind.size + 9
+        ind.T_s = ind.size + 10
+        ind.l1 = ind.size + 11
+        ind.l2 = ind.size + 12
+        ind.la0 = ind.size + 13
+        ind.lo0 = ind.size + 14
+        ind.spotsize = ind.size + 15
+        ind.spot_T = ind.size + 16
+        ind.p_T = ind.size + 17
+        ind.npoints = ind.size + 18
+        ind.size   += 19
+        #DEFINE NAMES
+        parname.insert(ind.t0,  't0')
+        parname.insert(ind.per,  'per')
+        parname.insert(ind.a_abs,  'a_abs')
+        parname.insert(ind.cosi,  'cosi')
+        parname.insert(ind.ecc,  'ecc')
+        parname.insert(ind.w,  'w')
+        parname.insert(ind.rp,  'rp')
+        parname.insert(ind.a,  'a')
+        parname.insert(ind.p_u1,  'p_u1')
+        parname.insert(ind.p_u2,  'p_u2')
+        parname.insert(ind.T_s,  'T_s')
+        parname.insert(ind.l1,  'l1')
+        parname.insert(ind.l2,  'l2')
+        parname.insert(ind.la0, 'la0')
+        parname.insert(ind.lo0, 'lo0')
+        parname.insert(ind.spotsize, 'spotsize')
+        parname.insert(ind.spot_T, 'spot_T')
+        parname.insert(ind.p_T, 'p_T')
+        parname.insert(ind.npoints,  'npoints')
+        #DEFINE RAMP MODEL
+        myfuncs.append(mc.spiderman_spot)
+        saveext.append('spsp')
+        functype.append('sinusoidal')
+    elif model[i] == 'spiderman_rock':
+        #DEFINE INDICES
+        ind.t0 = ind.size
+        ind.per = ind.size + 1
+        ind.a_abs = ind.size + 2
+        ind.cosi = ind.size + 3
+        ind.ecc = ind.size + 4
+        ind.w = ind.size + 5
+        ind.rp = ind.size + 6
+        ind.a = ind.size + 7
+        ind.p_u1 = ind.size + 8
+        ind.p_u2 = ind.size + 9
+        ind.T_s = ind.size + 10
+        ind.l1 = ind.size + 11
+        ind.l2 = ind.size + 12
+        ind.insol = ind.size + 13
+        ind.albedo = ind.size + 14
+        ind.redist = ind.size + 15
+        ind.npoints = ind.size + 16
+        ind.size   += 17
+        #DEFINE NAMES
+        parname.insert(ind.t0,  't0')
+        parname.insert(ind.per,  'per')
+        parname.insert(ind.a_abs,  'a_abs')
+        parname.insert(ind.cosi,  'cosi')
+        parname.insert(ind.ecc,  'ecc')
+        parname.insert(ind.w,  'w')
+        parname.insert(ind.rp,  'rp')
+        parname.insert(ind.a,  'a')
+        parname.insert(ind.p_u1,  'p_u1')
+        parname.insert(ind.p_u2,  'p_u2')
+        parname.insert(ind.T_s,  'T_s')
+        parname.insert(ind.l1,  'l1')
+        parname.insert(ind.l2,  'l2')
+        parname.insert(ind.insol, 'insol')
+        parname.insert(ind.albedo, 'albedo')
+        parname.insert(ind.redist, 'redist')
+        parname.insert(ind.npoints,  'npoints')
+        #DEFINE RAMP MODEL
+        myfuncs.append(mc.spiderman_rock)
+        saveext.append('spr')
+        functype.append('sinusoidal')
     elif model[i] == 'gp_exp2':
         #DEFINE INDICES
         ind.gpexp2a  = ind.size

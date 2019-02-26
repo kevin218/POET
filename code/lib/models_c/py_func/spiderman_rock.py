@@ -1,9 +1,10 @@
 import numpy as np
 import spiderman
 
-def spiderman_zhang(params, t, etc = []):
+
+def spiderman_rock(params, t, etc = []):
    """
-  This function creates a model that fits a physical motivated model based on Zhang et al. 2017, ApJ, 836, 73
+  This function generates the Kreidberg & Loeb 2016 phase curve model
 
   Parameters
   ----------
@@ -20,9 +21,9 @@ def spiderman_zhang(params, t, etc = []):
 	T_s:		stellar Teff
 	l1:		short wavelength (m)
 	l2:		long wavelength (m)
-	xi:		radiative/advective timescale
-	T_n:		nightside temperature
-	delta_T:	day-night temperature contrast
+        insol:          insolation (relative to Earth)
+        albedo:         Bond albedo
+        redist:         fraction of incident flux redistributed to nightside
         npoints:        number of phase bins for light curve interpolation
 	
 
@@ -32,15 +33,16 @@ def spiderman_zhang(params, t, etc = []):
 
   Revisions
   ---------
-  2016-11-19 	Laura Kreidberg	
+  2016-02-25 	Laura Kreidberg	
                 laura.kreidberg@gmail.com 
                 Original version
-  2019-02-24	update interpolation, add to github version 
-  TODO          add response function, nlayers to etc
+  TODO          add response function and nlayers to etc
    """
-   p = spiderman.ModelParams(brightness_model =  'zhang', stellar_model = 'blackbody')
-   p.nlayers = 5
 
+
+   p = spiderman.ModelParams(brightness_model = 'kreidberg', stellar_model = 'blackbody')
+
+   p.n_layers = 5                  
    p.t0    	    = params[0]
    p.per       	    = params[1]
    p.a_abs 	    = params[2]
@@ -54,14 +56,15 @@ def spiderman_zhang(params, t, etc = []):
    p.T_s	    = params[10]
    p.l1	   	    = params[11]
    p.l2	    	    = params[12]
-   p.xi	   	    = params[13]
-   p.T_n	    = params[14]
-   p.delta_T	    = params[15]
+   p.insol          = 1361.*params[13]     #W/m^2
+   p.albedo	    = params[14]
+   p.redist	    = params[15]
    npoints          = int(params[16])
 
    #TODO: add filter path to etc
    #p.filter = "/Users/lkreidberg/Desktop/Util/Throughput/spitzer_irac_ch2.txt"
- 
+
+
    #calculate light curve over npoints phase bins
    phase = (t - p.t0)/p.per
    phase -= np.round(phase)

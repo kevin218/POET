@@ -1,16 +1,16 @@
 import numpy as np
 import spiderman
 
-def spiderman_zhang(params, t, etc = []):
+def spiderman_spot(params, t, etc = []):
    """
-  This function creates a model that fits a physical motivated model based on Zhang et al. 2017, ApJ, 836, 73
+  This function creates a model that fits a hotspot model 
 
   Parameters
   ----------
     	t0:		time of conjunction 
 	per:		orbital period
 	a_abs:		semi-major axis (AU)
-	cos(i):	        cosine of the orbital inclination	
+	inc:		inclinations (deg)
 	ecc:		eccentricity
 	w:		arg of periastron (deg)
 	rp:		planet radius (stellar radii)
@@ -18,13 +18,13 @@ def spiderman_zhang(params, t, etc = []):
 	p_u1:		planet linear limb darkening parameter
 	p_u2:		planet quadratic limb darkening
 	T_s:		stellar Teff
-	l1:		short wavelength (m)
-	l2:		long wavelength (m)
-	xi:		radiative/advective timescale
-	T_n:		nightside temperature
-	delta_T:	day-night temperature contrast
-        npoints:        number of phase bins for light curve interpolation
-	
+	l1:		blue wavelength (m)
+	l2:		red wavelength (m)
+	la0:		latitude of hotspot		
+	lo0:		longitude of hotspot
+	spotsize:	 hot spot radius in degrees	
+	spot_T:		the surface temperature of the hotspot as a fraction of temperature of the star
+	p_T:		the temperature of the planet that is not in the hotspot
 
   Returns
   -------
@@ -32,13 +32,13 @@ def spiderman_zhang(params, t, etc = []):
 
   Revisions
   ---------
-  2016-11-19 	Laura Kreidberg	
+  2017-09-11 	Laura Kreidberg	
                 laura.kreidberg@gmail.com 
                 Original version
   2019-02-24	update interpolation, add to github version 
   TODO          add response function, nlayers to etc
    """
-   p = spiderman.ModelParams(brightness_model =  'zhang', stellar_model = 'blackbody')
+   p = spiderman.ModelParams(brightness_model =  'hotspot_t', stellar_model = 'blackbody')
    p.nlayers = 5
 
    p.t0    	    = params[0]
@@ -54,14 +54,15 @@ def spiderman_zhang(params, t, etc = []):
    p.T_s	    = params[10]
    p.l1	   	    = params[11]
    p.l2	    	    = params[12]
-   p.xi	   	    = params[13]
-   p.T_n	    = params[14]
-   p.delta_T	    = params[15]
-   npoints          = int(params[16])
-
-   #TODO: add filter path to etc
-   #p.filter = "/Users/lkreidberg/Desktop/Util/Throughput/spitzer_irac_ch2.txt"
+   p.la0	    = params[13]
+   p.lo0	    = params[14]
+   p.size	    = params[15]
+   p.spot_T	    = params[16]
+   p.p_T	    = params[17]
+   npoints          = int(params[18])
  
+   #p.filter = "/Users/lkreidberg/Desktop/Util/Throughput/spitzer_irac_ch2.txt"
+
    #calculate light curve over npoints phase bins
    phase = (t - p.t0)/p.per
    phase -= np.round(phase)

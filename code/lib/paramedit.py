@@ -45,8 +45,9 @@ def init_models():
             ["sincos2",      "c1a       \tc1o       \tc2a       \tc2o       \ts1a       \ts1o       \ts2a       \ts2o       \tp         \tc         \tmidpt     \tt14       \tt12\n", np.zeros((4,13))],
             ["cosine8",      "c8a1      \tc8p1      \tc8t1      \tc8a2      \tc8p2      \tc8t2      \tc8a3      \tc8p3      \tc8t3      \tc8a4      \tc8p4      \tc8t4      \tc8a5      \tc8p5      \tc8t5      \tc8a6      \tc8p6      \tc8t6      \tc8a7      \tc8p7      \tc8t7      \tc8a8      \tc8p8      \tc8t8      \tc8c\n", np.zeros((4, 25))],
             ["spiderman_zhang",     "t0        \tper       \ta_abs     \tcosi       \tecc       \tw         \trp        \ta        \tp_u1       \tp_u2      \tT_s       \tl1        \tl2        \txi        \tT_n       \tdelta_T     \tnpoints\n", np.zeros((4,17))],
-            ["spiderman_hotspot",   "t0        \tper       \ta_abs     \tcosi       \tecc       \tw         \trp        \ta        \tp_u1       \tp_u2      \tT_s       \tl1        \tl2        \tla0        \tlo0       \tspotsize   \tspot_T	\tp_T      \tnpoints\n", np.zeros((4,19))],
+            ["spiderman_spot",   "t0        \tper       \ta_abs     \tcosi       \tecc       \tw         \trp        \ta        \tp_u1       \tp_u2      \tT_s       \tl1        \tl2        \tla0        \tlo0       \tspotsize   \tspot_T	\tp_T      \tnpoints\n", np.zeros((4,19))],
             ["spiderman_sph",      "t0        \tper       \ta_abs     \tcosi       \tecc       \tw         \trp        \ta        \tp_u1       \tp_u2      \tT_s       \tl1        \tl2        \tdegree	\tla0        \tlo0       \tsph0	\tsph1	\tsph2        \tsph3     \tnpoints\n", np.zeros((4,21))],
+            ["spiderman_rock",      "t0        \tper       \ta_abs     \tcosi       \tecc       \tw         \trp        \ta        \tp_u1       \tp_u2      \tT_s       \tl1        \tl2        \tinsol     \talbedo     \tredist     \tnpoints\n", np.zeros((4,17))],
             #GAUSSIAN PROCESS
             ["gp_exp2",      "amp       \tscale     \tnsamp\n", np.zeros((4, 3))],
             #INSTRUMENTAL
