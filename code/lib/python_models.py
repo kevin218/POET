@@ -1428,6 +1428,26 @@ def setupmodel(model, ind):
         myfuncs.append(medianip)
         saveext.append('mip')
         functype.append('ipmap')
+    elif model[i] == 'nnint':
+        #DEFINE INDICES
+        ind.nnip   = ind.size
+        ind.size  += 1
+        #DEFINE NAMES
+        parname.insert(ind.nnip,   'Interpolation, min # pts')
+        #DEFINE INTRA-PIXEL MODEL
+        myfuncs.append(mc.pnnint)
+        saveext.append('nni')
+        functype.append('ipmap')
+    elif model[i] == 'bilinint':
+        #DEFINE INDICES
+        ind.blip   = ind.size
+        ind.size  += 1
+        #DEFINE NAMES
+        parname.insert(ind.blip,   'Interpolation, min # pts')
+        #DEFINE INTRA-PIXEL MODEL
+        myfuncs.append(mc.pbilinint)
+        saveext.append('bli')
+        functype.append('ipmap')
     elif model[i] == 'pnnint':
         #DEFINE INDICES
         ind.nnip   = ind.size
