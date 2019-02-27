@@ -1435,7 +1435,7 @@ def setupmodel(model, ind):
         #DEFINE NAMES
         parname.insert(ind.nnip,   'Interpolation, min # pts')
         #DEFINE INTRA-PIXEL MODEL
-        myfuncs.append(mc.pnnint)
+        myfuncs.append(mc.nnint)
         saveext.append('nni')
         functype.append('ipmap')
     elif model[i] == 'bilinint':
@@ -1445,7 +1445,7 @@ def setupmodel(model, ind):
         #DEFINE NAMES
         parname.insert(ind.blip,   'Interpolation, min # pts')
         #DEFINE INTRA-PIXEL MODEL
-        myfuncs.append(mc.pbilinint)
+        myfuncs.append(mc.bilinint)
         saveext.append('bli')
         functype.append('ipmap')
     elif model[i] == 'pnnint':
