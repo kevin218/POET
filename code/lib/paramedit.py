@@ -15,8 +15,11 @@ def init_models():
             ["trnlldsp",     "trspmid   \trprs      \tcosi      \tars       \ttrspf     \ttrspp     \ttrspc1    \ttrspc2    \ttrspc3    \ttrspc4\n", np.zeros((4, 10))],
             ["trnlldsp2",    "trspmid2  \trprs2     \tcosi2     \tars2      \ttrspf2    \ttrspp2    \ttrspc12   \ttrspc22   \ttrspc32   \ttrspc42\n", np.zeros((4, 10))],
             ["mandelgeom",   "midpt\twidth\tRp/Rs\tb\tflux\n", np.zeros((4, 5))],
-			["mandelorbit",  "e\tomega\ti\tperiod\trplanet\trstar\tmstar\tecldepth\tflux\n", np.zeros((4, 9))],
+	    ["mandelorbit",  "e\tomega\ti\tperiod\trplanet\trstar\tmstar\tecldepth\tflux\n", np.zeros((4, 9))],
+            ["batman_trquad","t0        \trprs      \tperiod      \tars       \tcosi       \tecc       \tomega     \tu1     \tu2\n", np.zeros((4,9))],
+            ["batman_ecl",   "eclmidpt  \tfpfs      \trprs      \tperiod      \tars       \tcosi       \tecc       \tomega\n", np.zeros((4,8))],
             #RAMPS
+            ["constant",      "c\n", np.zeros((4, 1))],
             ["hook",         "hgoal     \thr0       \thr1       \thpm\n", np.zeros((4, 4))],
             ["hook2",        "h2goal    \th2r0      \th2r1      \th2pm      \th2per\n", np.zeros((4, 5))],
             ["heqramp",      "heqt0     \theqr0     \theqr1     \theqr2     \theqr3     \theqpm     \theqper\n", np.zeros((4, 7))],
@@ -41,6 +44,10 @@ def init_models():
             ["sincos",       "a         \tp1        \tt1        \tb         \tp2        \tt2        \tc\n", np.zeros((4, 7))],
             ["sincos2",      "c1a       \tc1o       \tc2a       \tc2o       \ts1a       \ts1o       \ts2a       \ts2o       \tp         \tc         \tmidpt     \tt14       \tt12\n", np.zeros((4,13))],
             ["cosine8",      "c8a1      \tc8p1      \tc8t1      \tc8a2      \tc8p2      \tc8t2      \tc8a3      \tc8p3      \tc8t3      \tc8a4      \tc8p4      \tc8t4      \tc8a5      \tc8p5      \tc8t5      \tc8a6      \tc8p6      \tc8t6      \tc8a7      \tc8p7      \tc8t7      \tc8a8      \tc8p8      \tc8t8      \tc8c\n", np.zeros((4, 25))],
+            ["spiderman_zhang",     "t0        \tper       \ta_abs     \tcosi       \tecc       \tw         \trp        \ta        \tp_u1       \tp_u2      \tT_s       \tl1        \tl2        \txi        \tT_n       \tdelta_T     \tnpoints\n", np.zeros((4,17))],
+            ["spiderman_spot",   "t0        \tper       \ta_abs     \tcosi       \tecc       \tw         \trp        \ta        \tp_u1       \tp_u2      \tT_s       \tl1        \tl2        \tla0        \tlo0       \tspotsize   \tspot_T	\tp_T      \tnpoints\n", np.zeros((4,19))],
+            ["spiderman_sph",      "t0        \tper       \ta_abs     \tcosi       \tecc       \tw         \trp        \ta        \tp_u1       \tp_u2      \tT_s       \tl1        \tl2        \tdegree	\tla0        \tlo0       \tsph0	\tsph1	\tsph2        \tsph3     \tnpoints\n", np.zeros((4,21))],
+            ["spiderman_rock",      "t0        \tper       \ta_abs     \tcosi       \tecc       \tw         \trp        \ta        \tp_u1       \tp_u2      \tT_s       \tl1        \tl2        \tinsol     \talbedo     \tredist     \tnpoints\n", np.zeros((4,17))],
             #GAUSSIAN PROCESS
             ["gp_exp2",      "amp       \tscale     \tnsamp\n", np.zeros((4, 3))],
             #INSTRUMENTAL
@@ -59,6 +66,8 @@ def init_models():
             ["medianip", "rad\n", np.zeros((4, 1))],
             ["nnint", "minpts\n", np.zeros((4, 1))],
             ["bilinint", "minpts\n", np.zeros((4, 1))],
+            ["pnnint", "minpts\n", np.zeros((4, 1))],
+            ["pbilinint", "minpts\n", np.zeros((4, 1))],
             ["ipspline", "yknots\txknots\n", np.zeros((4, 2))],
             ["unispline", "usnk\tusk\n", np.zeros((4, 2))],
             #OTHERS

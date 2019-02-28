@@ -298,6 +298,56 @@ def setupmodel(model, ind):
         myfuncs.append(mandelecl_orbit)
         saveext.append('mo')
         functype.append('ecl/tr')
+    elif model[i] == 'batman_trquad':
+        #DEFINE INDICES
+        ind.t0 = ind.size
+        ind.rprs = ind.size + 1
+        ind.period = ind.size + 2
+        ind.ars = ind.size + 3
+        ind.cosi = ind.size + 4
+        ind.ecc = ind.size + 5
+        ind.omega = ind.size + 6
+        ind.u1 = ind.size + 7
+        ind.u2 = ind.size + 8 
+        ind.size  += 9
+        #DEFINE NAMES
+        parname.insert(ind.t0,'Time of inferior conjunction')
+        parname.insert(ind.rprs,'Rp/Rs')
+        parname.insert(ind.period,'period')
+        parname.insert(ind.ars,'a/Rs')
+        parname.insert(ind.cosi,'cos(i)')
+        parname.insert(ind.ecc,'eccentricity')
+        parname.insert(ind.omega,'Omega (deg)')
+        parname.insert(ind.u1,'Limb darkening, u1')
+        parname.insert(ind.u2,'Limb darkening, u2')
+       #DEFINE ECLIPSE MODEL                                                   
+        myfuncs.append(mc.batman_trquad)                                         
+        saveext.append('btrq')                                                    
+        functype.append('ecl/tr')    
+    elif model[i] == 'batman_ecl':
+        #DEFINE INDICES
+        ind.eclmidpt = ind.size
+        ind.fpfs = ind.size + 1
+        ind.rprs = ind.size + 2
+        ind.period = ind.size + 3
+        ind.ars = ind.size + 4
+        ind.cosi = ind.size + 5
+        ind.ecc = ind.size + 6
+        ind.omega = ind.size + 7
+        ind.size  += 8
+        #DEFINE NAMES
+        parname.insert(ind.eclmidpt,'Eclipse midpt')
+        parname.insert(ind.fpfs,'Fp/Fs')
+        parname.insert(ind.rprs,'Rp/Rs')
+        parname.insert(ind.period,'period')
+        parname.insert(ind.ars,'a/Rs')
+        parname.insert(ind.cosi,'cos(i)')
+        parname.insert(ind.ecc,'eccentricity')
+        parname.insert(ind.omega,'Omega (deg)')
+       #DEFINE ECLIPSE MODEL                                                   
+        myfuncs.append(mc.batman_ecl)                                         
+        saveext.append('becl')                                                    
+        functype.append('sinusoidal')    
     elif model[i] == 'ortho':
         #DEFINE INDICES
         ind.orthop = ind.size
@@ -791,6 +841,16 @@ def setupmodel(model, ind):
         myfuncs.append(mc.log4qramp)
         saveext.append('l4q')
         functype.append('ramp')
+    elif model[i] == 'constant':
+        #DEFINE INDICES
+        ind.c = ind.size
+        ind.size += 1
+        #DEFINE NAMES
+        parname.insert(ind.c,    'Constant')
+        #DEFINE RAMP MODEL
+        myfuncs.append(mc.constant)
+        saveext.append('const')
+        functype.append('ramp')
     elif model[i] == 'sindecay':
         #DEFINE INDICES
         ind.sdx0    = ind.size
@@ -922,6 +982,186 @@ def setupmodel(model, ind):
            #DEFINE RAMP MODEL
         myfuncs.append(mc.cosine8)
         saveext.append('c8')
+        functype.append('sinusoidal')
+    elif model[i] == 'spiderman_zhang':
+        #DEFINE INDICES
+        ind.t0 = ind.size
+        ind.per = ind.size + 1
+        ind.a_abs = ind.size + 2
+        ind.cosi = ind.size + 3
+        ind.ecc = ind.size + 4
+        ind.w = ind.size + 5
+        ind.rp = ind.size + 6
+        ind.a = ind.size + 7
+        ind.p_u1 = ind.size + 8
+        ind.p_u2 = ind.size + 9
+        ind.T_s = ind.size + 10
+        ind.l1 = ind.size + 11
+        ind.l2 = ind.size + 12
+        ind.xi = ind.size + 13
+        ind.T_n = ind.size + 14
+        ind.delta_T = ind.size + 15 
+        ind.npoints = ind.size + 16
+        ind.size   += 17
+        #DEFINE NAMES
+        parname.insert(ind.t0,  't0')
+        parname.insert(ind.per,  'per')
+        parname.insert(ind.a_abs,  'a_abs')
+        parname.insert(ind.cosi,  'cosi')
+        parname.insert(ind.ecc,  'ecc')
+        parname.insert(ind.w,  'w')
+        parname.insert(ind.rp,  'rp')
+        parname.insert(ind.a,  'a')
+        parname.insert(ind.p_u1,  'p_u1')
+        parname.insert(ind.p_u2,  'p_u2')
+        parname.insert(ind.T_s,  'T_s')
+        parname.insert(ind.l1,  'l1')
+        parname.insert(ind.l2,  'l2')
+        parname.insert(ind.xi,  'xi')
+        parname.insert(ind.T_n,  'T_n')
+        parname.insert(ind.delta_T,  'delta_T')
+        parname.insert(ind.npoints,  'npoints')
+        #DEFINE RAMP MODEL
+        myfuncs.append(mc.spiderman_zhang)
+        saveext.append('spz')
+        functype.append('sinusoidal')
+    elif model[i] == 'spiderman_sph':
+        #DEFINE INDICES
+        ind.t0 = ind.size
+        ind.per = ind.size + 1
+        ind.a_abs = ind.size + 2
+        ind.cosi = ind.size + 3
+        ind.ecc = ind.size + 4
+        ind.w = ind.size + 5
+        ind.rp = ind.size + 6
+        ind.a = ind.size + 7
+        ind.p_u1 = ind.size + 8
+        ind.p_u2 = ind.size + 9
+        ind.T_s = ind.size + 10
+        ind.l1 = ind.size + 11
+        ind.l2 = ind.size + 12
+        ind.degree = ind.size + 13
+        ind.la0 = ind.size + 14
+        ind.lo0 = ind.size + 15
+        ind.sph0 = ind.size + 16
+        ind.sph1 = ind.size + 17
+        ind.sph2 = ind.size + 18
+        ind.sph3 = ind.size + 19
+        ind.npoints = ind.size + 20
+        ind.size   += 21
+        #DEFINE NAMES
+        parname.insert(ind.t0,  't0')
+        parname.insert(ind.per,  'per')
+        parname.insert(ind.a_abs,  'a_abs')
+        parname.insert(ind.cosi,  'cosi')
+        parname.insert(ind.ecc,  'ecc')
+        parname.insert(ind.w,  'w')
+        parname.insert(ind.rp,  'rp')
+        parname.insert(ind.a,  'a')
+        parname.insert(ind.p_u1,  'p_u1')
+        parname.insert(ind.p_u2,  'p_u2')
+        parname.insert(ind.T_s,  'T_s')
+        parname.insert(ind.l1,  'l1')
+        parname.insert(ind.l2,  'l2')
+        parname.insert(ind.degree, 'degree')
+        parname.insert(ind.la0, 'la0')
+        parname.insert(ind.lo0, 'lo0')
+        parname.insert(ind.sph0, 'sph0')
+        parname.insert(ind.sph1, 'sph1')
+        parname.insert(ind.sph2, 'sph2')
+        parname.insert(ind.sph3, 'sph3')
+        parname.insert(ind.npoints,  'npoints')
+        #DEFINE RAMP MODEL
+        myfuncs.append(mc.spiderman_sph)
+        saveext.append('spsh')
+        functype.append('sinusoidal')
+    elif model[i] == 'spiderman_spot':
+        #DEFINE INDICES
+        ind.t0 = ind.size
+        ind.per = ind.size + 1
+        ind.a_abs = ind.size + 2
+        ind.cosi = ind.size + 3
+        ind.ecc = ind.size + 4
+        ind.w = ind.size + 5
+        ind.rp = ind.size + 6
+        ind.a = ind.size + 7
+        ind.p_u1 = ind.size + 8
+        ind.p_u2 = ind.size + 9
+        ind.T_s = ind.size + 10
+        ind.l1 = ind.size + 11
+        ind.l2 = ind.size + 12
+        ind.la0 = ind.size + 13
+        ind.lo0 = ind.size + 14
+        ind.spotsize = ind.size + 15
+        ind.spot_T = ind.size + 16
+        ind.p_T = ind.size + 17
+        ind.npoints = ind.size + 18
+        ind.size   += 19
+        #DEFINE NAMES
+        parname.insert(ind.t0,  't0')
+        parname.insert(ind.per,  'per')
+        parname.insert(ind.a_abs,  'a_abs')
+        parname.insert(ind.cosi,  'cosi')
+        parname.insert(ind.ecc,  'ecc')
+        parname.insert(ind.w,  'w')
+        parname.insert(ind.rp,  'rp')
+        parname.insert(ind.a,  'a')
+        parname.insert(ind.p_u1,  'p_u1')
+        parname.insert(ind.p_u2,  'p_u2')
+        parname.insert(ind.T_s,  'T_s')
+        parname.insert(ind.l1,  'l1')
+        parname.insert(ind.l2,  'l2')
+        parname.insert(ind.la0, 'la0')
+        parname.insert(ind.lo0, 'lo0')
+        parname.insert(ind.spotsize, 'spotsize')
+        parname.insert(ind.spot_T, 'spot_T')
+        parname.insert(ind.p_T, 'p_T')
+        parname.insert(ind.npoints,  'npoints')
+        #DEFINE RAMP MODEL
+        myfuncs.append(mc.spiderman_spot)
+        saveext.append('spsp')
+        functype.append('sinusoidal')
+    elif model[i] == 'spiderman_rock':
+        #DEFINE INDICES
+        ind.t0 = ind.size
+        ind.per = ind.size + 1
+        ind.a_abs = ind.size + 2
+        ind.cosi = ind.size + 3
+        ind.ecc = ind.size + 4
+        ind.w = ind.size + 5
+        ind.rp = ind.size + 6
+        ind.a = ind.size + 7
+        ind.p_u1 = ind.size + 8
+        ind.p_u2 = ind.size + 9
+        ind.T_s = ind.size + 10
+        ind.l1 = ind.size + 11
+        ind.l2 = ind.size + 12
+        ind.insol = ind.size + 13
+        ind.albedo = ind.size + 14
+        ind.redist = ind.size + 15
+        ind.npoints = ind.size + 16
+        ind.size   += 17
+        #DEFINE NAMES
+        parname.insert(ind.t0,  't0')
+        parname.insert(ind.per,  'per')
+        parname.insert(ind.a_abs,  'a_abs')
+        parname.insert(ind.cosi,  'cosi')
+        parname.insert(ind.ecc,  'ecc')
+        parname.insert(ind.w,  'w')
+        parname.insert(ind.rp,  'rp')
+        parname.insert(ind.a,  'a')
+        parname.insert(ind.p_u1,  'p_u1')
+        parname.insert(ind.p_u2,  'p_u2')
+        parname.insert(ind.T_s,  'T_s')
+        parname.insert(ind.l1,  'l1')
+        parname.insert(ind.l2,  'l2')
+        parname.insert(ind.insol, 'insol')
+        parname.insert(ind.albedo, 'albedo')
+        parname.insert(ind.redist, 'redist')
+        parname.insert(ind.npoints,  'npoints')
+        #DEFINE RAMP MODEL
+        myfuncs.append(mc.spiderman_rock)
+        saveext.append('spr')
         functype.append('sinusoidal')
     elif model[i] == 'gp_exp2':
         #DEFINE INDICES
@@ -1206,6 +1446,26 @@ def setupmodel(model, ind):
         parname.insert(ind.blip,   'Interpolation, min # pts')
         #DEFINE INTRA-PIXEL MODEL
         myfuncs.append(mc.bilinint)
+        saveext.append('bli')
+        functype.append('ipmap')
+    elif model[i] == 'pnnint':
+        #DEFINE INDICES
+        ind.nnip   = ind.size
+        ind.size  += 1
+        #DEFINE NAMES
+        parname.insert(ind.nnip,   'Interpolation, min # pts')
+        #DEFINE INTRA-PIXEL MODEL
+        myfuncs.append(mc.pnnint)
+        saveext.append('nni')
+        functype.append('ipmap')
+    elif model[i] == 'pbilinint':
+        #DEFINE INDICES
+        ind.blip   = ind.size
+        ind.size  += 1
+        #DEFINE NAMES
+        parname.insert(ind.blip,   'Interpolation, min # pts')
+        #DEFINE INTRA-PIXEL MODEL
+        myfuncs.append(mc.pbilinint)
         saveext.append('bli')
         functype.append('ipmap')
     elif model[i] == 'ipspline':

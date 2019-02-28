@@ -1805,7 +1805,7 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
         fit[j].normsigma     = (fit[j].newsigma   / fit[j].ramp).flatten()
         fit[j].normmeanfit   = (fit[j].meanfit    / fit[j].ramp).flatten()
         fit[j].normmedianfit = (fit[j].medianfit  / fit[j].ramp).flatten()
-        fit[j].normbestfit   = (fit[j].bestfit    / fit[j].ramp).flatten()
+        fit[j].normbestfit   = (fit[j].bestfit    / fit[j].ramp).flatten()             
         fit[j].normfluxuc    = (fit[j].fluxuc     / fit[j].rampuc).flatten()
         fit[j].normsigmauc   = (fit[j].newsigmauc / fit[j].rampuc).flatten()
         fit[j].normresuc     = (fit[j].fluxuc     / fit[j].rampuc2).flatten()
