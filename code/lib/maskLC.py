@@ -26,13 +26,13 @@ def boxCarMedianMask(data, window_len, maxstd, mask=None, unct=None):
     if window_len % 2 == 0:
         print("Median filter length ("+str(window_len)+") must be odd. Adding 1.")
         window_len += 1
-    if mask == None:
+    if mask is None:
         mask = np.ones(npts)
     #Median smooth light curve
     smdata      = smooth.medfilt(data, window_len)
     residuals   = data - smdata
     #Estimate typical uncertainty
-    if unct == None:
+    if unct is None:
         unct = np.std(residuals[np.where(mask)])
     #Count number of standard deviations from median
     stdev   = np.abs(residuals/unct)

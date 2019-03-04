@@ -84,10 +84,10 @@ def binlc(event, fit, fignum, savefile=None, istitle=True, j=0):
     else:
         plt.suptitle(istitle, size=16)
     plt.errorbar(fit.abscissauc, fit.binfluxuc, fit.binstduc, fmt='ko', 
-                     ms=4, linewidth=1, label='Binned Data')
-    plt.plot(fit.abscissa, fit.binnoecl, 'k-', label='No Eclipse')
+                     ms=4, linewidth=1, label='Binned Data', zorder=3)
+    plt.plot(fit.abscissa, fit.binnoecl, 'k-', label='No Eclipse', zorder=1)
     #plt.plot(fit.abscissa, fit.binmedianfit, pltfmt2[j], label='Median Fit')
-    plt.plot(fit.abscissa, fit.binbestfit,    pltfmt[j], label='Best Fit')
+    plt.plot(fit.abscissa, fit.binbestfit,    pltfmt[j], label='Best Fit', zorder=5)
     plt.xticks(size=13)
     plt.yticks(size=13)
     plt.xlabel(fit.xlabel,size=14)
@@ -112,15 +112,15 @@ def normlc(event, fit, fignum, savefile=None, istitle=True, j=0, interclip=None)
         pass
     else:
         plt.suptitle(istitle, size=16)
-    plt.errorbar(fit.abscissauc,fit.normbinfluxuc,fit.normbinsduc,fmt='ko',ms=4,lw=1, label='Binned Data')
-    plt.plot(fit.timeunit, fit.normbestfit,pltfmt[j], label='Best Fit', lw=2)
+    plt.errorbar(fit.abscissauc,fit.normbinfluxuc,fit.normbinsduc,fmt='ko',ms=4,lw=1, label='Binned Data', zorder=1)
+    plt.plot(fit.timeunit, fit.normbestfit,pltfmt[j], label='Best Fit', lw=2, zorder=3)
     if interclip != None:
         for i in range(len(interclip)):
             ind0 = np.argmin(np.abs(fit.timeunit-fit.timeunituc[interclip[i][0]]))
             ind1 = np.argmin(np.abs(fit.timeunit-fit.timeunituc[interclip[i][1]]))
             #ind0 = ind1-1
             plt.plot([fit.timeunit[ind0],fit.timeunit[ind1]], 
-                     [fit.normbestfit[ind0],fit.normbestfit[ind1]], '-w', lw=3)
+                     [fit.normbestfit[ind0],fit.normbestfit[ind1]], '-w', lw=3, zorder=5)
             #plt.plot(fit.tuall[interclip[i][0]:interclip[i][1]], np.ones(interclip[i][1]-interclip[i][0]), '-w', lw=3)
     plt.setp(a.get_xticklabels(), visible = False)
     plt.yticks(size=13)
@@ -367,15 +367,15 @@ def ipprojections(event, fit, fignum, savefile=None, istitle=True):
     yround = fit.yuc[0] - fit.y[0]
     xround = fit.xuc[0] - fit.x[0]
     plt.subplot(1,2,1)
-    plt.errorbar(yround+fit.binyy, fit.binyflux, fit.binyflstd, fmt='ro', label='Binned Flux')
-    plt.plot(yround+fit.binyy, fit.binybestip, 'k-', lw=2, label='BLISS Map')
+    plt.errorbar(yround+fit.binyy, fit.binyflux, fit.binyflstd, fmt='ro', label='Binned Flux', zorder=1)
+    plt.plot(yround+fit.binyy, fit.binybestip, 'k-', lw=2, label='BLISS Map', zorder=3)
     plt.xlabel('Pixel Postion in y', size=14)
     plt.ylabel('Normalized Flux', size=14)
     plt.xticks(rotation=90)
     plt.legend(loc='best')
     plt.subplot(1,2,2)
-    plt.errorbar(xround+fit.binxx, fit.binxflux, fit.binxflstd, fmt='bo', label='Binned Flux')
-    plt.plot(xround+fit.binxx, fit.binxbestip, 'k-', lw=2, label='BLISS Map')
+    plt.errorbar(xround+fit.binxx, fit.binxflux, fit.binxflstd, fmt='bo', label='Binned Flux', zorder=1)
+    plt.plot(xround+fit.binxx, fit.binxbestip, 'k-', lw=2, label='BLISS Map', zorder=3)
     plt.xlabel('Pixel Postion in x', size=14)
     plt.xticks(rotation=90)
     #a = plt.ylabel('Normalized Flux', size=14)
@@ -577,18 +577,18 @@ def rmsplot(event, fit, fignum, savefile=None, istitle=True, stderr=None, normfa
     if stderr == None:
         stderr = fit.stderr
     if normfactor == None:
-        normfactor = stderr[0]
+        normfactor = 1e-6
     plt.rcParams.update({'legend.fontsize':11})
     plt.figure(fignum, figsize=(8,6))
     plt.clf()
     if istitle:
         a = plt.suptitle(event.eventname + ' Correlated Noise', size=16)
-    plt.loglog(fit.binsz, fit.rms/normfactor, color='black', lw=1.5, label='Fit RMS')    # our noise
-    plt.loglog(fit.binsz, stderr/normfactor, color='red', ls='-', lw=2, label='Std. Err.') # expected noise
+    plt.loglog(fit.binsz, fit.rms/normfactor, color='black', lw=1.5, label='Fit RMS', zorder=3)    # our noise
+    plt.loglog(fit.binsz, stderr/normfactor, color='red', ls='-', lw=2, label='Std. Err.', zorder=1) # expected noise
     plt.xlim(0, fit.binsz[-1]*2)
     plt.ylim(stderr[-1]/normfactor/2., stderr[0]/normfactor*2.)
     plt.xlabel("Bin Size", fontsize=14)
-    plt.ylabel("Normalized RMS", fontsize=14)
+    plt.ylabel("RMS (ppm)", fontsize=14)
     plt.xticks(size=12)
     plt.yticks(size=12)
     plt.legend()
