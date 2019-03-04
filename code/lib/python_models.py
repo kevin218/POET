@@ -3003,7 +3003,7 @@ def ipspline(ipparams, position, etc = []):
     yknots, xknots = etc
 
     tck = spi.bisplrep(xknots.flatten(), yknots.flatten(), ipparams, kx=3, ky=3)
-    #print tck
+    #print(tck)
     #tck = [yknots, xknots, ipparams, 3, 3]
     #func = spi.interp2d(xknots, yknots, ipparams, kind='cubic'
     output = np.ones(y.size)

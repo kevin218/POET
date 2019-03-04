@@ -54,7 +54,8 @@ MODIFICATION HISTORY:
 
     # catches a wrong date input
     if month > 12 or month < 1 or day > 31 or day < 1:
-        raise(ValueError, 'Error: Date does not exist. Check the input...')
+        raise ValueError('Error: Date does not exist. Check the input...')
+
     
     # Gregorian to Julian conversion formulae; wikipedia
     a = np.floor((14-month)/12.)

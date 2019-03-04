@@ -56,7 +56,7 @@ def centering(event, pcf, centerdir):
 
   # Centering bad pixel mask:
   centermask = np.ones((event.ny, event.nx))
-  print (event.ymask)
+  print(event.ymask)
   if event.ymask is not None:
     ymask = np.asarray(event.ymask, int)
     xmask = np.asarray(event.xmask, int)

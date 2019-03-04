@@ -206,7 +206,7 @@ def frameviewer(event, zoom=True, expand=14):
                   pass
                 else: #else, save the realscreen
                   pg.image.save(realscreen,path)
-                print 'writing to',path
+                print('writing to',path)
                 break #Break loop
                   
           if event.key == K_LEFT: #Move left

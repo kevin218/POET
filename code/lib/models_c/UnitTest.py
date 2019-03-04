@@ -272,7 +272,7 @@ yc = mc.mandeltr(params, t, [])
 if np.allclose(yp, yc):
     print("Mandeltr:   PASS")
 else:
-    print ("Mandeltr:  FAIL", np.np.nansum(abs(yp-yc)/yp))
+    print("Mandeltr:  FAIL", np.np.nansum(abs(yp-yc)/yp))
 
 try:
     ### nnint()

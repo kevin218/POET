@@ -85,9 +85,9 @@ def interp3d(inten, grav, temp, wgrav, wtemp, log=None, kf=None):
     # FINDME: this only works if the low indices are both 0 and we're not
     # at temps where Kurucz starts skipping gravities...
     if kg[ihigrav] < wgrav.min():   
-          print 'kurucz_inten.interp: wgrav ' + str(wgrav.min()) + ' higher than ' + str(kg[ihigrav]) + ', see FINDME in code to fix.'
+          print('kurucz_inten.interp: wgrav ' + str(wgrav.min()) + ' higher than ' + str(kg[ihigrav]) + ', see FINDME in code to fix.')
     if kt[ihitemp] < wtemp.min():   
-          print 'kurucz_inten.interp: wtemp ' + str(wtemp.min()) + ' higher than ' + str(kt[ihitemp]) + ', see FINDME in code to fix.'
+          print('kurucz_inten.interp: wtemp ' + str(wtemp.min()) + ' higher than ' + str(kt[ihitemp]) + ', see FINDME in code to fix.')
     kf = np.reshape(inten[0:ngrav * ntemp,:], (ntemp, ngrav, nwav))
 
     # calculate the indices of the parameters we want

@@ -85,7 +85,7 @@ def col(data, weights=False):
     # This function generates the asym value associated a given frame and distance array (aka raidail profile)
     # It is intended to be used entirely internally and never called from the outside
     # it implements sum of the variance squared at a given radius times the number of points at that radius
- #   assert data.shape == dis.shape
+ #   assert(data.shape == dis.shape)
  #   temp = map(lambda r: (var(data[dis == r],\
  #                                      weights[dis ==r])),dis.flatten())
     #temp = []

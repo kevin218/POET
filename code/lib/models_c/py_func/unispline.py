@@ -33,7 +33,7 @@ def unispline(params, timeflux, etc = []):
     saplev      = sp(time)
     
     #tck = spi.bisplrep(xknots.flatten(), yknots.flatten(), ipparams, kx=3, ky=3)
-    #print tck
+    #print(tck)
     #tck = [yknots, xknots, ipparams, 3, 3]
     #func = spi.interp2d(xknots, yknots, ipparams, kind='cubic'
     #output = np.ones(time.size)

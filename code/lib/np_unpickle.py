@@ -49,7 +49,7 @@ def unpickle_old_pyfits(fn):
 def pickle_fn(objlist,fn):
     import cPickle
     
-    print objlist,fn
+    print(objlist,fn)
     f = open(fn,'w')
     try:
         for o in objlist:
@@ -61,7 +61,7 @@ if __name__ == '__main__':
     import sys
     
     if len(sys.argv)<2:
-        print 'Need to provide files to convert'
+        print('Need to provide files to convert')
         sys.exit(1)
         
     fns = sys.argv[1:]

@@ -34,22 +34,22 @@ def smooth(x,window_len=10,window='hanning'):
     """
 
     if x.ndim != 1:
-        raise(ValueError, "smooth only accepts 1 dimension arrays.")
+        raise ValueError("smooth only accepts 1 dimension arrays.")
     
     window_len = int(window_len)
     
     if x.size < window_len:
-        raise(ValueError, "Input vector needs to be bigger than window size.")
+        raise ValueError("Input vector needs to be bigger than window size.")
 
     
     if window_len<4 and window=='hanning':
-        raise(ValueError, "Window length is too small.")
+        raise ValueError("Window length is too small.")
         #print("Window length is too small. No smoothing performed.")
         #return x
     
 
     if not window in ['flat', 'hanning', 'hamming', 'bartlett', 'blackman']:
-        raise(ValueError, "Window is one of 'flat', 'hanning', 'hamming', 'bartlett', 'blackman'")
+        raise ValueError("Window is one of 'flat', 'hanning', 'hamming', 'bartlett', 'blackman'")
 
 
     #s=numpy.r_[2*x[0]-x[window_len:1:-1],x,2*x[-1]-x[-1:-window_len:-1]]
@@ -67,7 +67,7 @@ def medfilt(x, window_len):
     """Apply a length-k median filter to a 1D array x.
     Boundaries are extended by repeating endpoints.
     """
-    assert x.ndim == 1, "Input must be one-dimensional."
+    assert(x.ndim == 1), "Input must be one-dimensional."
     if window_len % 2 == 0:
         print("Median filter length ("+str(window_len)+") must be odd. Adding 1.")
         window_len += 1
