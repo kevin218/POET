@@ -84,10 +84,10 @@ def binlc(event, fit, fignum, savefile=None, istitle=True, j=0):
     else:
         plt.suptitle(istitle, size=16)
     plt.errorbar(fit.abscissauc, fit.binfluxuc, fit.binstduc, fmt='ko', 
-                     ms=4, linewidth=1, label='Binned Data')
-    plt.plot(fit.abscissa, fit.binnoecl, 'k-', label='No Eclipse')
+                     ms=4, linewidth=1, label='Binned Data', zorder=3)
+    plt.plot(fit.abscissa, fit.binnoecl, 'k-', label='No Eclipse', zorder=1)
     #plt.plot(fit.abscissa, fit.binmedianfit, pltfmt2[j], label='Median Fit')
-    plt.plot(fit.abscissa, fit.binbestfit,    pltfmt[j], label='Best Fit')
+    plt.plot(fit.abscissa, fit.binbestfit,    pltfmt[j], label='Best Fit', zorder=5)
     plt.xticks(size=13)
     plt.yticks(size=13)
     plt.xlabel(fit.xlabel,size=14)
@@ -112,15 +112,15 @@ def normlc(event, fit, fignum, savefile=None, istitle=True, j=0, interclip=None)
         pass
     else:
         plt.suptitle(istitle, size=16)
-    plt.errorbar(fit.abscissauc,fit.normbinfluxuc,fit.normbinsduc,fmt='ko',ms=4,lw=1, label='Binned Data')
-    plt.plot(fit.timeunit, fit.normbestfit,pltfmt[j], label='Best Fit', lw=2)
+    plt.errorbar(fit.abscissauc,fit.normbinfluxuc,fit.normbinsduc,fmt='ko',ms=4,lw=1, label='Binned Data', zorder=1)
+    plt.plot(fit.timeunit, fit.normbestfit,pltfmt[j], label='Best Fit', lw=2, zorder=3)
     if interclip != None:
         for i in range(len(interclip)):
             ind0 = np.argmin(np.abs(fit.timeunit-fit.timeunituc[interclip[i][0]]))
             ind1 = np.argmin(np.abs(fit.timeunit-fit.timeunituc[interclip[i][1]]))
             #ind0 = ind1-1
             plt.plot([fit.timeunit[ind0],fit.timeunit[ind1]], 
-                     [fit.normbestfit[ind0],fit.normbestfit[ind1]], '-w', lw=3)
+                     [fit.normbestfit[ind0],fit.normbestfit[ind1]], '-w', lw=3, zorder=5)
             #plt.plot(fit.tuall[interclip[i][0]:interclip[i][1]], np.ones(interclip[i][1]-interclip[i][0]), '-w', lw=3)
     plt.setp(a.get_xticklabels(), visible = False)
     plt.yticks(size=13)
@@ -286,7 +286,7 @@ def hist2d(event, fit, fignum, savefile=None, allparams=None, parname=None, ipar
                 else:
                     a = plt.xticks(visible=False)
                 hist2d, xedges, yedges = np.histogram2d(allparams[k,0::int(stepsize)],
-                                                        allparams[i,0::int(stepsize)],20,normed=True)
+                                                        allparams[i,0::int(stepsize)],20,density=True)
                 vmin = np.min(hist2d[np.where(hist2d > 0)])
                 #largerhist = np.zeros((22,22))
                 #largerhist[1:-1,1:-1] = hist2d
@@ -350,7 +350,7 @@ def histograms(event, fit, fignum, savefile=None, allparams=None, parname=None, 
         plt.yticks(size=12)
         #plt.axvline(x=fit.meanp[i,0])
         plt.xlabel(parname[i], size=14)
-        a  = plt.hist(allparams[i,0::int(stepsize)], 20, normed=False, label=str(fit.meanp[i,0]))
+        a  = plt.hist(allparams[i,0::int(stepsize)], 20, density=False, label=str(fit.meanp[i,0]))
         j += 1
     plt.subplots_adjust(left=0.07,right=0.95,bottom=bottom,top=0.95,hspace=hspace,wspace=0.25)
     if savefile != None:
@@ -367,15 +367,15 @@ def ipprojections(event, fit, fignum, savefile=None, istitle=True):
     yround = fit.yuc[0] - fit.y[0]
     xround = fit.xuc[0] - fit.x[0]
     plt.subplot(1,2,1)
-    plt.errorbar(yround+fit.binyy, fit.binyflux, fit.binyflstd, fmt='ro', label='Binned Flux')
-    plt.plot(yround+fit.binyy, fit.binybestip, 'k-', lw=2, label='BLISS Map')
+    plt.errorbar(yround+fit.binyy, fit.binyflux, fit.binyflstd, fmt='ro', label='Binned Flux', zorder=1)
+    plt.plot(yround+fit.binyy, fit.binybestip, 'k-', lw=2, label='BLISS Map', zorder=3)
     plt.xlabel('Pixel Postion in y', size=14)
     plt.ylabel('Normalized Flux', size=14)
     plt.xticks(rotation=90)
     plt.legend(loc='best')
     plt.subplot(1,2,2)
-    plt.errorbar(xround+fit.binxx, fit.binxflux, fit.binxflstd, fmt='bo', label='Binned Flux')
-    plt.plot(xround+fit.binxx, fit.binxbestip, 'k-', lw=2, label='BLISS Map')
+    plt.errorbar(xround+fit.binxx, fit.binxflux, fit.binxflstd, fmt='bo', label='Binned Flux', zorder=1)
+    plt.plot(xround+fit.binxx, fit.binxbestip, 'k-', lw=2, label='BLISS Map', zorder=3)
     plt.xlabel('Pixel Postion in x', size=14)
     plt.xticks(rotation=90)
     #a = plt.ylabel('Normalized Flux', size=14)
@@ -508,23 +508,87 @@ def pointingHist(event, fit, fignum, savefile=None, istitle=True, minnumpts=1, s
         plt.savefig(savefile)
     return
 
+# PRF WIDTH
+def prfghw(event, fit, fignum, savefile=None, istitle=True, srcest=None, axis='y'):
+    if axis == 'y':
+        vmin = event.sy[np.where(event.x>0)].min()
+        vmax = event.sy[np.where(event.x>0)].max()
+    elif axis == 'x':
+        vmin = event.sx[np.where(event.x>0)].min()
+        vmax = event.sx[np.where(event.x>0)].max()
+    else:
+        print('Specify axis as y or x')
+        return
+    yround = fit.yuc[0] - fit.y[0]
+    xround = fit.xuc[0] - fit.x[0]
+    # Determine size of non-zero region
+    xmin = event.x[np.where(event.x>0)].min()
+    xmax = event.x.max()
+    ymin = event.y[np.where(event.y>0)].min()
+    ymax = event.y.max()
+    # Plot
+    plt.figure(fignum, figsize=(8,6))
+    plt.clf()
+    if istitle:
+        a = plt.suptitle(event.eventname + ' PRF Gaussian Half-Width in ' + axis, size=16)
+    #MAP
+    a = plt.axes([0.11,0.10,0.75,0.80])
+    if axis == 'y':
+        plt.scatter(event.x, event.y, c=event.sy, vmin=vmin, vmax=vmax)
+    elif axis == 'x':
+        plt.scatter(event.x, event.y, c=event.sx, vmin=vmin, vmax=vmax)
+    plt.ylabel('Pixel Position in y', size=14)
+    plt.xlabel('Pixel Position in x', size=14)
+    plt.xlim(xmin,xmax)
+    plt.ylim(ymin,ymax)
+    #print(xmin,xmax,ymin,ymax)
+    if srcest == None:
+        #Spitzer
+        if ymin < -0.5+yround:
+            plt.hlines(-0.5+yround, xmin, xmax, 'k')
+        if ymax >  0.5+yround:
+            plt.hlines( 0.5+yround, xmin, xmax, 'k')
+        if xmin < -0.5+xround:
+            plt.vlines(-0.5+xround, ymin, ymax, 'k')
+        if xmax >  0.5+xround:
+            plt.vlines( 0.5+xround, ymin, ymax, 'k')
+    else:
+        #K2
+        if ymin < -0.5+srcest[0]:
+            plt.hlines(-0.5+srcest[0], xmin, xmax, 'k')
+        if ymax >  0.5+srcest[0]:
+            plt.hlines( 0.5+srcest[0], xmin, xmax, 'k')
+        if xmin < -0.5+srcest[1]:
+            plt.vlines(-0.5+srcest[1], ymin, ymax, 'k')
+        if xmax >  0.5+srcest[1]:
+            plt.vlines( 0.5+srcest[1], ymin, ymax, 'k')
+    #COLORBAR
+    a = plt.axes([0.90,0.10,0.01,0.8], frameon=False)
+    a.yaxis.set_visible(False)
+    a.xaxis.set_visible(False)
+    a = plt.imshow([[vmin,vmax],[vmin,vmax]], aspect='auto', visible=False)
+    plt.colorbar(a, fraction=3.0)
+    if savefile != None:
+        plt.savefig(savefile)
+    return
+
 # Plot RMS vs. bin size looking for time-correlated noise
 def rmsplot(event, fit, fignum, savefile=None, istitle=True, stderr=None, normfactor=None):
     if stderr == None:
         stderr = fit.stderr
     if normfactor == None:
-        normfactor = stderr[0]
+        normfactor = 1e-6
     plt.rcParams.update({'legend.fontsize':11})
     plt.figure(fignum, figsize=(8,6))
     plt.clf()
     if istitle:
         a = plt.suptitle(event.eventname + ' Correlated Noise', size=16)
-    plt.loglog(fit.binsz, fit.rms/normfactor, color='black', lw=1.5, label='Fit RMS')    # our noise
-    plt.loglog(fit.binsz, stderr/normfactor, color='red', ls='-', lw=2, label='Std. Err.') # expected noise
+    plt.loglog(fit.binsz, fit.rms/normfactor, color='black', lw=1.5, label='Fit RMS', zorder=3)    # our noise
+    plt.loglog(fit.binsz, stderr/normfactor, color='red', ls='-', lw=2, label='Std. Err.', zorder=1) # expected noise
     plt.xlim(0, fit.binsz[-1]*2)
     plt.ylim(stderr[-1]/normfactor/2., stderr[0]/normfactor*2.)
     plt.xlabel("Bin Size", fontsize=14)
-    plt.ylabel("Normalized RMS", fontsize=14)
+    plt.ylabel("RMS (ppm)", fontsize=14)
     plt.xticks(size=12)
     plt.yticks(size=12)
     plt.legend()
