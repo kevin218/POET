@@ -16,8 +16,8 @@ def init_models():
             ["trnlldsp2",    "trspmid2  \trprs2     \tcosi2     \tars2      \ttrspf2    \ttrspp2    \ttrspc12   \ttrspc22   \ttrspc32   \ttrspc42\n", np.zeros((4, 10))],
             ["mandelgeom",   "midpt\twidth\tRp/Rs\tb\tflux\n", np.zeros((4, 5))],
 	    ["mandelorbit",  "e\tomega\ti\tperiod\trplanet\trstar\tmstar\tecldepth\tflux\n", np.zeros((4, 9))],
-            ["batman_trquad","t0        \trprs      \tperiod      \tars       \tcosi       \tecc       \tomega     \tu1     \tu2\n", np.zeros((4,9))],
-            ["batman_ecl",   "eclmidpt  \tfpfs      \trprs      \tperiod      \tars       \tcosi       \tecc       \tomega\n", np.zeros((4,8))],
+            ["batman_trquad","t0        \tbtrprs    \tperiod    \tars       \tcosi       \tecc       \tomega     \tu1     \tu2\n", np.zeros((4,9))],
+            ["batman_ecl",   "eclmidpt  \tfpfs      \tberprs    \tperiod      \tars       \tcosi       \tecc       \tomega\n", np.zeros((4,8))],
             #RAMPS
             ["constant",      "c\n", np.zeros((4, 1))],
             ["hook",         "hgoal     \thr0       \thr1       \thpm\n", np.zeros((4, 4))],

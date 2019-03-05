@@ -1761,6 +1761,8 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
             rampp[fit[j].i.depth2 + numparams[cummodels[j]]] = 0.0
         if hasattr(fit[j].i, 'depth3'):
             rampp[fit[j].i.depth3 + numparams[cummodels[j]]] = 0.0
+        if hasattr(fit[j].i, 'fpfs'):
+            rampp[fit[j].i.fpfs + numparams[cummodels[j]]] = 0.0
         if hasattr(fit[j].i, 'trqrprs'):
             rampp[fit[j].i.trqrprs + numparams[cummodels[j]]] = 0.0
         if hasattr(fit[j].i, 'trq2rprs'):
@@ -1773,6 +1775,10 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
             rampp[fit[j].i.rprs + numparams[cummodels[j]]] = 0.0
         if hasattr(fit[j].i, 'rprs2'):
             rampp[fit[j].i.rprs2 + numparams[cummodels[j]]] = 0.0
+        if hasattr(fit[j].i, 'btrprs'):
+            rampp[fit[j].i.btrprs + numparams[cummodels[j]]] = 0.0
+        if hasattr(fit[j].i, 'berprs'):
+            rampp[fit[j].i.berprs + numparams[cummodels[j]]] = 0.0
         k = 0
         for i in range(cummodels[j],cummodels[j+1]):
             if   functype[i] == 'ortho':
