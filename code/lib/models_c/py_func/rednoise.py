@@ -37,7 +37,7 @@ def rednoise(params, residuals, etc):
     g = 1./(2*np.log(2))   #Assumes gamma = 1
     
     #FINDME: Pad residuals with zeros
-    newresiduals = np.zeros(2**np.ceil(np.log2(len(residuals))))
+    newresiduals = np.zeros(int(2**np.ceil(np.log2(len(residuals)))))
     newresiduals[:len(residuals)] = residuals
     
     # Perform wavelet decomposition
