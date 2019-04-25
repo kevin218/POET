@@ -70,7 +70,7 @@ def read(filename, selected_models, event):
 	try:
 		f = open(filename)
 	except:
-		print filename, " does not exist.  Creating new file..."
+		print(filename, " does not exist.  Creating new file...")
 		defaultfile = filename[:filename.rfind('/')+1] + event.eventname[:2] + '-params.txt'
 		models = read_parameters(defaultfile) #Read from default/backup file
 		write_parameters(filename)
@@ -89,14 +89,14 @@ def write(filename, models_used):
 	try:	
 		f = open(filename)
 	except:
-		print filename, " does not exist.  Creating new file..."
+		print(filename, " does not exist.  Creating new file...")
 		models = read_parameters('params2.txt') #Read from default/backup file
 		write_parameters(filename)
 	
-	print 'Updating the following models:'
+	print('Updating the following models:')
 	for i in models_used:
 		k = 0
-		print i[0]
+		print(i[0])
 		for j in models:
 			if i[0] == j[0]: #Test if model names are equal
 				models[k] = i
@@ -121,7 +121,7 @@ def read_parameters(file_name):
 			modelname=str(f.readline())
 		if modelname.endswith('\n'):
 			modelname=modelname[:len(modelname)-1]
-		#print models[i][0], modelname
+		#print(models[i][0], modelname)
 		if models[i][0] == modelname:
 			#Check
 			models[i][0] = modelname
@@ -138,7 +138,7 @@ def read_parameters(file_name):
 			if offset == False:
 				offset = True
 	f.close()
-	print 'Parameters have been successfully read from ' + file_name
+	print('Parameters have been successfully read from ' + file_name)
 	return models
 
 def write_parameters(file_name):
@@ -156,6 +156,6 @@ def write_parameters(file_name):
 					f.write('\t')
 			f.write('\n')
 	f.close()
-	print 'Parameters have been successfully written to ' + file_name
+	print('Parameters have been successfully written to ' + file_name)
 	return
 

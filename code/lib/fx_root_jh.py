@@ -188,7 +188,7 @@ def fx_root_jh(xi, func, double=None, itmax=None, stop=None, tol=None, status=No
       x = concatenate([x[1], x[2], root])
       it = it + 1
    if bitwise_and(it >= itmax, cond == 0):   
-      print 'Algorithm failed to converge within given parameters.'
+      print('Algorithm failed to converge within given parameters.')
    else:   
       status = 1
    

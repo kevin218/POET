@@ -48,7 +48,7 @@ def ellpic_bulirsch(n,k):
     #print('bulirsch:',k.shape, n.shape)
     kc=sqrt(1.-k**2); p=n+1.
     if(min(p) < 0.):
-        print 'Negative p'
+        print('Negative p')
     m0=1.; c=1.; p=sqrt(p); d=1./p; e=kc
     while 1:
         f = c; c = d/p+c; g = e/p; d = 2.*(f*g+d)

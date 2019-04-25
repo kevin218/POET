@@ -43,7 +43,7 @@ def execute(saveloc, numit, mag=False):
 	allparams, best, numaccept = mcmc.mcmc(flux, time, init, pmin, pmax, step, numit, error, numparams, 1, [quadlimb], [time], 0)
 
 	save(saveloc+"/output.npz", allparams, best, numaccept, trdata)
-	print np.float(numaccept)/numit*100
+	print(np.float(numaccept)/numit*100)
 	return allparams, best, numaccept, trdata
 
 def save(output, allparams, best, numaccept, trdata):
@@ -79,7 +79,7 @@ def analyze(output, saveloc=''):
 	freeparams = list()
 	numfp = 0
 	for i in range(0, len(best)):
-		print names[i], "	%f&	%f&	%f&" % (best[i], np.median(allparams[i]), np.std(allparams[i]))
+		print(names[i], "	%f&	%f&	%f&" % (best[i], np.median(allparams[i]), np.std(allparams[i])))
 		if np.median(allparams[i]) != best[i]:			
 			freeparams.append([allparams[i], best[i], names[i]])
 			numfp +=1
@@ -89,12 +89,12 @@ def analyze(output, saveloc=''):
 	chisq  = sum((model-flux)**2 / error**2)
 	bic = chisq + numfp*np.log(len(model))
 	print
-	print "Free Parameters:", numfp
-	print "MCMC Acceptance Rate:", 100*numaccept/float(allparams.shape[1]),"%"
-	print "Chi-squared: ", chisq
-	print "Reduced chi-squared: ", chisq/(len(model)-numfp)
-	print "BIC: ", bic
-	#print "RMS Residual:", rms
+	print("Free Parameters:", numfp)
+	print("MCMC Acceptance Rate:", 100*numaccept/float(allparams.shape[1]),"%")
+	print("Chi-squared: ", chisq)
+	print("Reduced chi-squared: ", chisq/(len(model)-numfp))
+	print("BIC: ", bic)
+	#print("RMS Residual:", rms)
 
 	#Plot data and model
 	plt.figure(1)

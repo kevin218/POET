@@ -82,7 +82,7 @@ def read_parameters(file_name):
                        "medianip",    "nnint",      "bilinint",      
                        "ipspline",    "posflux",    "posfluxlinip",      
                        "vsll",        "vsspline",   "flatfield3",  
-                       "not0risingexp"])
+                       "not0risingexp", "batman_ecl", "batman_trquad"])
 
     # Read file
     f = open(file_name, "r")

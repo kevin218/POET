@@ -588,7 +588,7 @@ def setupmodel(model, ind):
 		saveext.append('ff3')
 		functype[i] = 5
    	else:
-		print str(model[i]) + " model not found."
+		print(str(model[i]) + " model not found.")
 		myfuncs.append(-1)
 		functype[i] = -1
 
@@ -631,7 +631,7 @@ def mandelecl(eclparams, x, etc = []):
  	Written by:	Kevin Stevenson, UCF  	2008-05-08
 			kevin218@knights.ucf.edu
    """
-   #print "you made it in the function"
+   #print("you made it in the function")
    midpt        = eclparams[0]
    width        = eclparams[1]
    depth        = eclparams[2]
@@ -1667,7 +1667,7 @@ def ipspline(ipparams, position, etc = []):
     yknots, xknots = etc
     
     tck = spi.bisplrep(xknots.flatten(), yknots.flatten(), ipparams, kx=3, ky=3)
-    #print tck
+    #print(tck)
     #tck = [yknots, xknots, ipparams, 3, 3]
     #func = spi.interp2d(xknots, yknots, ipparams, kind='cubic'
     output = np.ones(y.size)

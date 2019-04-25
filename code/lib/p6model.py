@@ -257,7 +257,6 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
     text         = ""
     maxnumfp     = 0
     numfreepars  = np.array(np.where(stepsize > 0)).flatten().size
-    isipmapping  = False
     print("\nCurrent event & model:", file=printout)
     for j in range(numevents):
         print(event[j].eventname, file=printout)
@@ -421,7 +420,6 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
         fit[j].ballardipuc = np.ones(fit[j].fluxuc.size)
         for i in range(cummodels[j],cummodels[j+1]):
             if functype[i] == 'ipmap':
-                isipmapping           = True
                 fit[j].isipmapping    = True    #Using mapping for IP sensitivity
                 fit[j].wherebinflux   = []      #List of size = # of bins, def which points fall into each bin
                 fit[j].wherebinfluxuc = []      #Un-clipped version of above
@@ -708,6 +706,7 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
         #ASSIGN INDEPENDENT VARIABLE AND EXTRA PARAMETERS FOR EACH MODEL TYPE
         k = 0
         fit[j].etc = []  
+        fit[j].isprfwidth  = False
         for i in range(cummodels[j],cummodels[j+1]):
             if   functype[i] == 'ecl/tr':
                 funcx.  append(fit[j].timeunit)
@@ -738,6 +737,7 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
                     funcx.  append(fit[j].gausswidth)
                     funcxuc.append(fit[j].gausswidthuc)
                     fit[j].etc.append([])
+                    fit[j].isprfwidth = True
                 elif fit[j].model[k] == 'ipspline':
                     funcx.  append(fit[j].position)
                     funcxuc.append(fit[j].positionuc)
@@ -1761,6 +1761,8 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
             rampp[fit[j].i.depth2 + numparams[cummodels[j]]] = 0.0
         if hasattr(fit[j].i, 'depth3'):
             rampp[fit[j].i.depth3 + numparams[cummodels[j]]] = 0.0
+        if hasattr(fit[j].i, 'fpfs'):
+            rampp[fit[j].i.fpfs + numparams[cummodels[j]]] = 0.0
         if hasattr(fit[j].i, 'trqrprs'):
             rampp[fit[j].i.trqrprs + numparams[cummodels[j]]] = 0.0
         if hasattr(fit[j].i, 'trq2rprs'):
@@ -1773,6 +1775,10 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
             rampp[fit[j].i.rprs + numparams[cummodels[j]]] = 0.0
         if hasattr(fit[j].i, 'rprs2'):
             rampp[fit[j].i.rprs2 + numparams[cummodels[j]]] = 0.0
+        if hasattr(fit[j].i, 'btrprs'):
+            rampp[fit[j].i.btrprs + numparams[cummodels[j]]] = 0.0
+        if hasattr(fit[j].i, 'berprs'):
+            rampp[fit[j].i.berprs + numparams[cummodels[j]]] = 0.0
         k = 0
         for i in range(cummodels[j],cummodels[j+1]):
             if   functype[i] == 'ortho':
@@ -1805,7 +1811,7 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
         fit[j].normsigma     = (fit[j].newsigma   / fit[j].ramp).flatten()
         fit[j].normmeanfit   = (fit[j].meanfit    / fit[j].ramp).flatten()
         fit[j].normmedianfit = (fit[j].medianfit  / fit[j].ramp).flatten()
-        fit[j].normbestfit   = (fit[j].bestfit    / fit[j].ramp).flatten()
+        fit[j].normbestfit   = (fit[j].bestfit    / fit[j].ramp).flatten()             
         fit[j].normfluxuc    = (fit[j].fluxuc     / fit[j].rampuc).flatten()
         fit[j].normsigmauc   = (fit[j].newsigmauc / fit[j].rampuc).flatten()
         fit[j].normresuc     = (fit[j].fluxuc     / fit[j].rampuc2).flatten()
@@ -2071,6 +2077,16 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
                 fignum   = 6009+num*numfigs+j*100
                 savefile = event[j].modeldir+"/"+event[j].eventname+"-fig"+str(fignum)+"-"+ fit[j].saveext+".png"
                 plots.pointingHist(event[j], fit[j], fignum, savefile=savefile, minnumpts=minnumpts)
+        
+        #PRF WIDTH
+        for j in range(numevents):
+            if fit[j].isprfwidth:
+                fignum   = 6018+num*numfigs+j*100
+                savefile = event[j].modeldir+"/"+event[j].eventname+"-fig"+str(fignum)+"-"+ fit[j].saveext+".png"
+                plots.prfghw(event[j], fit[j], fignum, savefile=savefile, axis='y')
+                fignum   = 6019+num*numfigs+j*100
+                savefile = event[j].modeldir+"/"+event[j].eventname+"-fig"+str(fignum)+"-"+ fit[j].saveext+".png"
+                plots.prfghw(event[j], fit[j], fignum, savefile=savefile, axis='x')
         
         #PLOT RMS vs. BIN SIZE
         for j in range(numevents):
