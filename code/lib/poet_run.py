@@ -168,8 +168,8 @@ def p6model(event=None, newdir=True, filedir='..', topdir=None, clip=None, idl=F
         event[j].fit = []
         event[j].modeldir = modeldir
         if hasattr(event[j].params, 'noisewavelet') and event[j].params.noisewavelet[0] == 'all':
-            event[j].params.noisewavelet = pywt.wavelist()
-            nummodels[j] = len(pywt.wavelist())
+            event[j].params.noisewavelet = pywt.wavelist(kind='discrete')
+            nummodels[j] = len(pywt.wavelist(kind='discrete'))
             event[j].params.model = [event[j].params.model[0] for i in range(nummodels[j])]
         else:
             nummodels[j] = len(event[j].params.model)
