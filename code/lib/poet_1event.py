@@ -257,6 +257,7 @@ class Event(Univ):
     self.iskurucz     = os.path.isfile(self.kuruczfile)
     self.isfilt       = os.path.isfile(self.filtfile  )
     self.ispsf        = os.path.isfile(self.psffile   )
+    self.isleapdir    = os.path.isdir (self.topdir + self.leapdir)
 
     # Calibration aors
     self.havecalaor     = 0 if np.all(self.aortype==0) else 1
@@ -432,25 +433,29 @@ class Event(Univ):
     # Report files not found:
     print("Ancil Files:")
     if not self.ispmask[0]:
-      log.writelog('Pmask:   File not found!')
+      log.writelog('Pmask:       File not found!')
     else:
-      log.writelog("Pmask:   " + str(self.pmaskfile[0].decode('utf-8')))
+      log.writelog("Pmask:       " + str(self.pmaskfile[0].decode('utf-8')))
     if not self.ishorvec:
-      log.writelog('Horizon: File not found!')
+      log.writelog('Horizon:     File not found!')
     else:
-      log.writelog("Horizon: " + self.horvecfile)
+      log.writelog("Horizon:     " + self.horvecfile)
     if not self.iskurucz:
-      log.writelog('Kurucz:  File not found!')
+      log.writelog('Kurucz:      File not found!')
     else:
-      log.writelog("Kurucz:  " + self.kuruczfile)
+      log.writelog("Kurucz:      " + self.kuruczfile)
     if not self.isfilt:
-      log.writelog('Filter:  File not found!')
+      log.writelog('Filter:      File not found!')
     else:
-      log.writelog("Filter:  " + self.filtfile)
+      log.writelog("Filter:      " + self.filtfile)
     if not self.ispsf:
-      log.writelog('PSF:     Not supplied.')
+      log.writelog('PSF:         Not supplied.')
     else:
-      log.writelog("PSF:     " + self.psffile)
+      log.writelog("PSF:         " + self.psffile)
+    if not self.isleapdir:
+      log.writelog('Leap Second: Directory not found!')
+    else:
+      log.writelog("Leap Second: " + self.topdir + self.leapdir)
 
     if self.exptime  == None:
       log.writelog("Exposure time undefined.")
