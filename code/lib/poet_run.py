@@ -258,51 +258,15 @@ def p6model(event=None, newdir=True, filedir='..', topdir=None, clip=None, idl=F
                         wavelet = event[j].params.noisewavelet[0]
                 else:
                     wavelet = 'None'
-                if hasattr(event[j].fit[i].i,'depth'):
-                    snr   = event[j].fit[i].bestp  [event[j].fit[i].i.depth  ] / \
-                            event[j].fit[i].medianp[event[j].fit[i].i.depth,1]
-                    print('%8.4f %9.7f %8.1f %11s %7.1e %6.3f,%5.3f %4.0f %12s' % 
-                         (snr, sdnr, bic, model, numit, ystep, xstep, minnumpts, wavelet), file=printout)
-                if hasattr(event[j].fit[i].i,'depth2'):
-                    snr   = event[j].fit[i].bestp  [event[j].fit[i].i.depth2  ] / \
-                            event[j].fit[i].medianp[event[j].fit[i].i.depth2,1]
-                    print('%8.4f %9.7f %8.1f %11s %7.1e %6.3f,%5.3f %4.0f %12s' % 
-                         (snr, sdnr, bic, model, numit, ystep, xstep, minnumpts, wavelet), file=printout)
-                if hasattr(event[j].fit[i].i,'depth3'):
-                    snr   = event[j].fit[i].bestp  [event[j].fit[i].i.depth3  ] / \
-                            event[j].fit[i].medianp[event[j].fit[i].i.depth3,1]
-                    print('%8.4f %9.7f %8.1f %11s %7.1e %6.3f,%5.3f %4.0f %12s' % 
-                         (snr, sdnr, bic, model, numit, ystep, xstep, minnumpts, wavelet), file=printout)
-                if hasattr(event[j].fit[i].i,'trrprs'):
-                    snr   = event[j].fit[i].bestp  [event[j].fit[i].i.trrprs  ] / \
-                            event[j].fit[i].medianp[event[j].fit[i].i.trrprs,1]
-                    print('%8.4f %9.7f %8.1f %11s %7.1e %6.3f,%5.3f %4.0f %12s' % 
-                         (snr, sdnr, bic, model, numit, ystep, xstep, minnumpts, wavelet), file=printout)
-                if hasattr(event[j].fit[i].i,'trrprs2'):
-                    snr   = event[j].fit[i].bestp  [event[j].fit[i].i.trrprs2  ] / \
-                            event[j].fit[i].medianp[event[j].fit[i].i.trrprs2,1]
-                    print('%8.4f %9.7f %8.1f %11s %7.1e %6.3f,%5.3f %4.0f %12s' % 
-                         (snr, sdnr, bic, model, numit, ystep, xstep, minnumpts, wavelet), file=printout)
-                if hasattr(event[j].fit[i].i,'trqrprs'):
-                    snr   = event[j].fit[i].bestp  [event[j].fit[i].i.trqrprs  ] / \
-                            event[j].fit[i].medianp[event[j].fit[i].i.trqrprs,1]
-                    print('%8.4f %9.7f %8.1f %11s %7.1e %6.3f,%5.3f %4.0f %12s' % 
-                         (snr, sdnr, bic, model, numit, ystep, xstep, minnumpts, wavelet), file=printout)
-                if hasattr(event[j].fit[i].i,'trq2rprs'):
-                    snr   = event[j].fit[i].bestp  [event[j].fit[i].i.trq2rprs  ] / \
-                            event[j].fit[i].medianp[event[j].fit[i].i.trq2rprs,1]
-                    print('%8.4f %9.7f %8.1f %11s %7.1e %6.3f,%5.3f %4.0f %12s' % 
-                         (snr, sdnr, bic, model, numit, ystep, xstep, minnumpts, wavelet), file=printout)
-                if hasattr(event[j].fit[i].i,'rprs'):
-                    snr   = event[j].fit[i].bestp  [event[j].fit[i].i.rprs  ] / \
-                            event[j].fit[i].medianp[event[j].fit[i].i.rprs,1]
-                    print('%8.4f %9.7f %8.1f %11s %7.1e %6.3f,%5.3f %4.0f %12s' % 
-                         (snr, sdnr, bic, model, numit, ystep, xstep, minnumpts, wavelet), file=printout)
-                if hasattr(event[j].fit[i].i,'rprs2'):
-                    snr   = event[j].fit[i].bestp  [event[j].fit[i].i.rprs2  ] / \
-                            event[j].fit[i].medianp[event[j].fit[i].i.rprs2,1]
-                    print('%8.4f %9.7f %8.1f %11s %7.1e %6.3f,%5.3f %4.0f %12s' % 
-                         (snr, sdnr, bic, model, numit, ystep, xstep, minnumpts, wavelet), file=printout)
+                    
+                snrkeys = 'depth', 'depth2', 'depth3', 'trrprs', 'trrprs2', 'trqrprs', 'trq2rprs', 'rprs', 'rprs2', 'fpfs'
+                for snrkey in snrkeys:
+                    if hasattr(event[j].fit[i].i, snrkey):
+                        snr   = event[j].fit[i].bestp  [getattr(event[j].fit[i].i, snrkey)] / \
+                                event[j].fit[i].medianp[getattr(event[j].fit[i].i, snrkey), 1]
+                        print('%8.4f %9.7f %8.1f %11s %7.1e %6.3f,%5.3f %4.0f %12s' % 
+                              (snr, sdnr, bic, model, numit, ystep, xstep, minnumpts, wavelet), file=printout)
+                                        
             except:
                 print("Error calculating values. %13s" % event[j].fit[i].saveext, file=printout)
     printoutput.close(printout)
