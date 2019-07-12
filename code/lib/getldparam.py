@@ -123,7 +123,7 @@ def getlimbparam(kuruczfile, chan, Nparam=4, lamfact=1000., spit=None, returnmu=
     
     # Make array for angle vs flux
     angvflux  = np.zeros((2, kurucznew.shape[0] - 1))
-    angvflux[0] = np.loadtxt(kuruczfile, skiprows = 2)[0]
+    angvflux[0] = np.loadtxt(kuruczfile, skiprows=2, usecols=range(0,17))[0]
     
     # Integrate spitzer / kurucz data over wavelength
     intbottom = integrate(spitfit[0], spitfit[1])
