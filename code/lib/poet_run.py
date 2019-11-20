@@ -259,7 +259,7 @@ def p6model(event=None, newdir=True, filedir='..', topdir=None, clip=None, idl=F
                 else:
                     wavelet = 'None'
                     
-                snrkeys = 'depth', 'depth2', 'depth3', 'trrprs', 'trrprs2', 'trqrprs', 'trq2rprs', 'rprs', 'rprs2', 'fpfs', 'btrprs', 'berprs'
+                snrkeys = 'depth', 'depth2', 'depth3', 'trrprs', 'trrprs2', 'trqrprs', 'trq2rprs', 'rprs', 'rprs2', 'fpfs'
                 for snrkey in snrkeys:
                     if hasattr(event[j].fit[i].i, snrkey):
                         snr   = event[j].fit[i].bestp  [getattr(event[j].fit[i].i, snrkey)] / \
@@ -455,6 +455,8 @@ def binparams(ev, binsize=64):
         aperr   = np.zeros(nbins)
         x       = np.zeros(nbins)
         y       = np.zeros(nbins)
+        sdx     = np.zeros(nbins)
+        sdy     = np.zeros(nbins)
         sx      = np.zeros(nbins)
         sy      = np.zeros(nbins)
         good    = np.ones(nbins, dtype=int)
@@ -477,6 +479,8 @@ def binparams(ev, binsize=64):
                 aperr[j]    = np.sqrt(1 / sum(1/ev[i].aperr[0,isgood]**2))
                 x[j]        = np.mean(ev[i].x[0,isgood])
                 y[j]        = np.mean(ev[i].y[0,isgood])
+                sdx[j]      = np.std(ev[i].x[0,isgood])
+                sdy[j]      = np.std(ev[i].y[0,isgood])
                 sx[j]       = np.mean(ev[i].sx[0,isgood])
                 sy[j]       = np.mean(ev[i].sy[0,isgood])
                 #good[j]     = np.min(ev[i].good[0,isgood])
@@ -494,6 +498,8 @@ def binparams(ev, binsize=64):
         ev[i].aperr     = np.copy(aperr)
         ev[i].x         = np.copy(x)
         ev[i].y         = np.copy(y)
+        ev[i].sdx       = np.copy(sdx)
+        ev[i].sdy       = np.copy(sdy)
         ev[i].sx        = np.copy(sx)
         ev[i].sy        = np.copy(sy)
         ev[i].good      = np.copy(good)

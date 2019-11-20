@@ -50,14 +50,16 @@ def bayesshrink(frames, wavelet, numlvls, loc):
         else:
             threshold = noisevar/sigmax
         #Compute less noisy coefficients by applying soft thresholding
-        dec[i] = map (lambda x: pywt.thresholding.soft(x,threshold), dec[i])
+        #dec[i] = list(map(lambda x: pywt.threshold(x,threshold,mode='soft'), dec[i]))
+        dec[i] = pywt.threshold(dec[i],threshold, mode='soft')
 
     frames = pywt.waverec(dec,wavelet)[:nframes]
     return [frames, loc]
 
 # Update event.data with denoised values
 def writedata(arg):
-    [frames, [j,i,pos]] = arg
+    frames, [j,i,pos] = arg
+
     (event.data[:,j,i,pos])[np.where(event.mask[:,j,i,pos])] = frames
     return
 
@@ -187,11 +189,15 @@ def denoise(pcf, denoisedir):
         pool   = mp.Pool(event.ncpu)
         for i in range(event.nx):
             for j in range(event.ny):
+                #res=bayesshrink((event.data[:,j,i,pos])[np.where(event.mask[:,j,i,pos])], event.wavelet, event.numlvls, [j,i,pos])
+                #writedata(res)
                 exec('res = pool.apply_async(' + event.threshold + ',((event.data[:,j,i,pos])[np.where(event.mask[:,j,i,pos])], event.wavelet, event.numlvls, [j,i,pos]),callback=writedata)')
-
+                #res = exec('pool.apply_async(' + event.threshold + ',((event.data[:,j,i,pos])[np.where(event.mask[:,j,i,pos])], event.wavelet, event.numlvls, [j,i,pos]),callback=writedata)')
+                #res = pool.apply_async(event.threshold,((event.data[:,j,i,pos])[np.where(event.mask[:,j,i,pos])], event.wavelet, event.numlvls, [j,i,pos]),callback=writedata)
+                
         pool.close()
         pool.join()
-        res.wait()
+        #res.wait()
 
         #Plot histogram of denoised wavelet coefficients
         histwc(event, event.wavelet, event.numlvls+1, pos, log=log, denoised=True, ylim=ylim)

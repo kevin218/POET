@@ -21,9 +21,11 @@
     Non-fixed priors in least-squares       2014-08-21
     Added DEMCz                     kevin   2014-08-21
     Converted to Python3            kbs     2018-11-15
+    added more output plot(s)       emmay   2019-08-13
 """
 
 import numpy as np
+import pickle
 import matplotlib.pyplot as plt
 import mpl_toolkits.mplot3d as m3d
 import time, os, sys, importlib
@@ -608,7 +610,89 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
                                 fit[j].griddistuc[1, wherexy] = np.array((ygrid[m+1]-fit[j].y[wherexy])/ystep)
                                 fit[j].griddistuc[2, wherexy] = np.array((fit[j].x[wherexy]-xgrid[n])  /xstep)
                                 fit[j].griddistuc[3, wherexy] = np.array((xgrid[n+1]-fit[j].x[wherexy])/xstep)
+                    
+                    
+                ###bin master bliss map onto grid locations. emay 10/24/2019
+                if event[0].params.mastermap==True:
+                    print('Interpolating Master Map onto Grid.')
                 
+                    mholddir=(event[0].hordir).split('/')
+                    mapdir='/'.join(mholddir[:mholddir.index('horizons')])
+                    mapfile=open(event[0].topdir+mapdir+'/mastermaps/ch'+str(event[0].photchan)+'_'+event[0].photdir+'_master_map.npz','rb')
+                    masterload=pickle.load(mapfile)
+                    mastermapF,mastermapX,mastermapY,masterbinnedF,masterbinnedX,masterbinnedY=masterload
+                    
+                    wbfipmask_mm=[]
+                    binfluxmask_mm=np.zeros((ysize,xsize),dtype=int)
+                    
+                    for m in range(ysize):
+                        yhold=ygrid[m]
+                        yhold+=(fit[j].yuc[0] - fit[j].y[0])
+                        wbftemp_mm = np.where(np.abs(mastermapY-yhold)-ystep/2. <= 1e-16)[0]
+                        for n in range(xsize):
+                            xhold=xgrid[n]
+                            xhold+=(fit[j].xuc[0] - fit[j].x[0])
+                            wbf_mm = wbftemp_mm[np.where(np.abs(mastermapX[wbftemp_mm]-xhold)-xstep/2. <= 1e-16)[0]]
+                            
+                            if len(wbf_mm) >= minnumpts:
+                                binfluxmask_mm[m,n]=1.
+                                wbfipmask_mm.append(wbf_mm)
+                            else:
+                                wbfipmask_mm.append([])
+                        
+                    fit[j].mastermapFI = np.ones(len(wbfipmask_mm))*np.nan
+                    wbfm_mm = np.where(binfluxmask_mm.flatten() == 1)[0]
+                    for m in wbfm_mm:
+                        fit[j].mastermapFI[m] = np.mean(mastermapF[wbfipmask_mm[m]])
+                     
+                    fit[j].mastermapFI/=np.nanmax(fit[j].mastermapFI)
+                    
+                    Xpltval=np.nanmedian(fit[j].x)+(fit[j].xuc[0] - fit[j].x[0])
+                    Ypltval=np.nanmedian(fit[j].y)+(fit[j].yuc[0] - fit[j].y[0])
+                    
+                    Xind_bin=np.argmin(np.abs(xgrid+(fit[j].xuc[0] - fit[j].x[0])-Xpltval))
+                    Yind_bin=np.argmin(np.abs(ygrid+(fit[j].yuc[0] - fit[j].y[0])-Ypltval))
+                    
+                    Xind_ful=np.argmin(np.abs(masterbinnedX-Xpltval))
+                    Yind_ful=np.argmin(np.abs(masterbinnedY-Ypltval))
+                    
+                    del mastermapF,mastermapX,mastermapY  
+                    mapfile.close()       
+                       
+                else:  #if not using, nan arrays to ignore map
+                    fit[j].mastermapFI = np.ones_like(fit[j].xygrid[0].flatten())*np.nan
+        
+                
+                fit[j].mastermapdata = np.zeros_like(fit[j].mastermapFI,dtype=int)*0 #initialize mask for above indexes 
+                fit[j].mastermapdata[np.where(np.isfinite(fit[j].mastermapFI) & (fit[j].binfluxmask != 0))[0]] = 1 #where map AND data exist
+                
+                fit[j].mastermapmask = np.zeros_like(fit[j].mastermapFI,dtype=int)*0 #initialize mask for where mask exists 
+                fit[j].mastermapmask[np.where(np.isfinite(fit[j].mastermapFI))[0]] = 1 #where *MAP* exist ==1
+                
+                fit[j].mastermapFI = fit[j].mastermapFI/np.nanmean(fit[j].mastermapFI)
+                        
+                #####
+                #
+                # plt.figure(999,figsize=(8,8))
+                # plt.clf()
+                # a = plt.axes([0.11,0.10,0.75,0.80])
+                # vmin=np.nanmin(fit[j].mastermapFI)
+                # vmax=np.nanmax(fit[j].mastermapFI)
+                #
+                # plt.imshow((fit[j].mastermapFI*fit[j].mastermapmask).reshape(len(ygrid),len(xgrid)),
+                #     extent=(min(xgrid)+(fit[j].xuc[0] - fit[j].x[0]),max(xgrid)+(fit[j].xuc[0] - fit[j].x[0]),min(ygrid)+(fit[j].yuc[0] - fit[j].y[0]),max(ygrid)++(fit[j].yuc[0] - fit[j].y[0])),
+                #     cmap='terrain',vmin=vmin,vmax=vmax,aspect='equal',origin='lower')
+                # #
+                # a = plt.axes([0.90,0.10,0.01,0.8], frameon=False)
+                # a.yaxis.set_visible(False)
+                # a.xaxis.set_visible(False)
+                # a = plt.imshow([[vmin,vmax],[vmin,vmax]], cmap=plt.cm.terrain, aspect='auto', visible=False)
+                # plt.colorbar(a, fraction=3.0)
+                # #
+                # plt.savefig(event[j].modeldir+"/"+event[j].eventname+"-INITIAL_MAP.png")
+                # plt.close(999)
+                
+                            
                 # COMBINE MODEL PARAMETERS INTO ONE LIST               
                 fit[j].posflux  = [fit[j].y[fit[j].isclipmask], 
                                    fit[j].x[fit[j].isclipmask], 
@@ -620,7 +704,10 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
                                    fit[j].binloc,
                                    fit[j].griddist,
                                    fit[j].xygrid[0].shape,
-                                   event[j].params.issmoothing]
+                                   event[j].params.issmoothing,
+                                   fit[j].mastermapFI,
+                                   fit[j].mastermapmask,
+                                   fit[j].mastermapdata]
                 fit[j].posfluxuc= [fit[j].y,
                                    fit[j].x,
                                    fit[j].fluxuc,
@@ -631,7 +718,10 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
                                    fit[j].binlocuc,
                                    fit[j].griddistuc,
                                    fit[j].xygrid[0].shape,
-                                   event[j].params.issmoothing]
+                                   event[j].params.issmoothing,
+                                   fit[j].mastermapFI,
+                                   fit[j].mastermapmask,
+                                   fit[j].mastermapdata]
             
             if functype[i] == 'ballardip':
                 print("Computing intrapixel effect")
@@ -733,7 +823,7 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
             #    funcxuc.append(fit[j].P_hatuc)
             #    fit[j].etc.append([])
             elif functype[i] == 'ippoly':
-                if fit[j].model[k] == 'cubicgw':
+                if fit[j].model[k] == 'cubicgw' or fit[j].model[k] == 'cubicgw2' or fit[j].model[k] == 'cubicgw3':
                     funcx.  append(fit[j].gausswidth)
                     funcxuc.append(fit[j].gausswidthuc)
                     fit[j].etc.append([])
@@ -1823,6 +1913,8 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
         #SORT flux BY x, y AND radial POSITIONS
         yy      = np.sort(fit[j].position[0])
         xx      = np.sort(fit[j].position[1])
+        syy      = np.sort(fit[j].sy[np.where(fit[j].clipmask)])
+        sxx      = np.sort(fit[j].sx[np.where(fit[j].clipmask)])
         yflux   = (fit[j].flux/fit[j].bestecl/fit[j].bestramp/fit[j].bestsin/fit[j].bestpos/ \
                    fit[j].bestvs/fit[j].bestff)[np.argsort(fit[j].position[0])]
         xflux   = (fit[j].flux/fit[j].bestecl/fit[j].bestramp/fit[j].bestsin/fit[j].bestpos/ \
@@ -1833,6 +1925,20 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
         xbestip = fit[j].bestip   [np.argsort(fit[j].position[1])] * \
                   fit[j].bestmip  [np.argsort(fit[j].position[1])] * \
                   fit[j].ballardip[np.argsort(fit[j].position[1])]
+        ybestgw = fit[j].bestip   [np.argsort(fit[j].position[0])]
+        xbestgw = fit[j].bestip   [np.argsort(fit[j].position[1])]
+
+        sybestgw = fit[j].bestip   [np.argsort(fit[j].sy[np.where(fit[j].clipmask)])]
+        sxbestgw = fit[j].bestip   [np.argsort(fit[j].sx[np.where(fit[j].clipmask)])]
+        sybestbm = fit[j].bestmip   [np.argsort(fit[j].sy[np.where(fit[j].clipmask)])]
+        sxbestbm = fit[j].bestmip   [np.argsort(fit[j].sx[np.where(fit[j].clipmask)])]
+
+        syflux   = (fit[j].flux/fit[j].bestecl/fit[j].bestramp/fit[j].bestsin/fit[j].bestpos/ \
+                   fit[j].bestvs/fit[j].bestff)[np.argsort(fit[j].sy[np.where(fit[j].clipmask)])]
+        sxflux   = (fit[j].flux/fit[j].bestecl/fit[j].bestramp/fit[j].bestsin/fit[j].bestpos/ \
+                   fit[j].bestvs/fit[j].bestff)[np.argsort(fit[j].sx[np.where(fit[j].clipmask)])]
+
+
         
         #SORT flux BY frmvis
         fvsort = np.sort(fit[j].frmvis)
@@ -1853,15 +1959,27 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
         fit[j].binnoecl      = np.zeros(nbins[j])
         fit[j].binxx         = np.zeros(nbins[j])
         fit[j].binyy         = np.zeros(nbins[j])
+        fit[j].binsxx         = np.zeros(nbins[j])
+        fit[j].binsyy         = np.zeros(nbins[j])
         fit[j].binxflux      = np.zeros(nbins[j])
         fit[j].binyflux      = np.zeros(nbins[j])
+        fit[j].binsxflux      = np.zeros(nbins[j])
+        fit[j].binsyflux      = np.zeros(nbins[j])
         fit[j].binxflstd     = np.zeros(nbins[j])
         fit[j].binyflstd     = np.zeros(nbins[j])
+        fit[j].binsxflstd     = np.zeros(nbins[j])
+        fit[j].binsyflstd     = np.zeros(nbins[j])
         fit[j].binvsflux     = np.zeros(nbins[j])
         fit[j].binvsflstd    = np.zeros(nbins[j])
         fit[j].binfrmvis     = np.zeros(nbins[j])
         fit[j].binxbestip    = np.zeros(nbins[j])
         fit[j].binybestip    = np.zeros(nbins[j])
+        fit[j].binxbestgw    = np.zeros(nbins[j])
+        fit[j].binybestgw    = np.zeros(nbins[j])
+        fit[j].binsxbestgw    = np.zeros(nbins[j])
+        fit[j].binsybestgw    = np.zeros(nbins[j])
+        fit[j].binsxbestbm    = np.zeros(nbins[j])
+        fit[j].binsybestbm    = np.zeros(nbins[j])
         fit[j].binxbipstd    = np.zeros(nbins[j])
         fit[j].binybipstd    = np.zeros(nbins[j])
         fit[j].binres        = np.zeros(nbins[j])
@@ -1903,20 +2021,55 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
                                                                      (xx <= xx[0] + 1.*(i+1)*(xx[-1]-xx[0])/nbins[j])))]
             xbestiprng             = xbestip[np.where(np.bitwise_and((xx >= xx[0] + 1.*i    *(xx[-1]-xx[0])/nbins[j]),\
                                                                      (xx <= xx[0] + 1.*(i+1)*(xx[-1]-xx[0])/nbins[j])))]
+            xbestgwrng             = xbestgw[np.where(np.bitwise_and((xx >= xx[0] + 1.*i    *(xx[-1]-xx[0])/nbins[j]),\
+                                                                     (xx <= xx[0] + 1.*(i+1)*(xx[-1]-xx[0])/nbins[j])))]
             yyrange                =      yy[np.where(np.bitwise_and((yy >= yy[0] + 1.*i    *(yy[-1]-yy[0])/nbins[j]),\
                                                                      (yy <= yy[0] + 1.*(i+1)*(yy[-1]-yy[0])/nbins[j])))]
             yfluxrange             =   yflux[np.where(np.bitwise_and((yy >= yy[0] + 1.*i    *(yy[-1]-yy[0])/nbins[j]),\
                                                                      (yy <= yy[0] + 1.*(i+1)*(yy[-1]-yy[0])/nbins[j])))]
             ybestiprng             = ybestip[np.where(np.bitwise_and((yy >= yy[0] + 1.*i    *(yy[-1]-yy[0])/nbins[j]),\
                                                                      (yy <= yy[0] + 1.*(i+1)*(yy[-1]-yy[0])/nbins[j])))]
+            ybestgwrng             = ybestgw[np.where(np.bitwise_and((yy >= yy[0] + 1.*i    *(yy[-1]-yy[0])/nbins[j]),\
+                                                                     (yy <= yy[0] + 1.*(i+1)*(yy[-1]-yy[0])/nbins[j])))]
+
+            sxxrange                =      sxx[np.where(np.bitwise_and((sxx >= sxx[0] + 1.*i    *(sxx[-1]-sxx[0])/nbins[j]),\
+                                                                    (sxx <= sxx[0] + 1.*(i+1)*(sxx[-1]-sxx[0])/nbins[j])))]
+            syyrange                =      syy[np.where(np.bitwise_and((syy >= syy[0] + 1.*i    *(syy[-1]-syy[0])/nbins[j]),\
+                                                                    (syy <= syy[0] + 1.*(i+1)*(syy[-1]-syy[0])/nbins[j])))]
+            sxfluxrange                =      sxflux[np.where(np.bitwise_and((sxx >= sxx[0] + 1.*i    *(sxx[-1]-sxx[0])/nbins[j]),\
+                                                                    (sxx <= sxx[0] + 1.*(i+1)*(sxx[-1]-sxx[0])/nbins[j])))]
+            syfluxrange                =      syflux[np.where(np.bitwise_and((syy >= syy[0] + 1.*i    *(syy[-1]-syy[0])/nbins[j]),\
+                                                                    (syy <= syy[0] + 1.*(i+1)*(syy[-1]-syy[0])/nbins[j])))]
+            sxbestgwrng             =      sxbestgw[np.where(np.bitwise_and((sxx >= sxx[0] + 1.*i    *(sxx[-1]-sxx[0])/nbins[j]),\
+                                                                    (sxx <= sxx[0] + 1.*(i+1)*(sxx[-1]-sxx[0])/nbins[j])))]
+            sybestgwrng             =      sybestgw[np.where(np.bitwise_and((syy >= syy[0] + 1.*i    *(syy[-1]-syy[0])/nbins[j]),\
+                                                                    (syy <= syy[0] + 1.*(i+1)*(syy[-1]-syy[0])/nbins[j])))]
+            sxbestbmrng             =      sxbestbm[np.where(np.bitwise_and((sxx >= sxx[0] + 1.*i    *(sxx[-1]-sxx[0])/nbins[j]),\
+                                                                    (sxx <= sxx[0] + 1.*(i+1)*(sxx[-1]-sxx[0])/nbins[j])))]
+            sybestbmrng             =      sybestbm[np.where(np.bitwise_and((syy >= syy[0] + 1.*i    *(syy[-1]-syy[0])/nbins[j]),\
+                                                                    (syy <= syy[0] + 1.*(i+1)*(syy[-1]-syy[0])/nbins[j])))]
+
+
             fit[j].binxx[i]        = np.mean(xxrange)
             fit[j].binyy[i]        = np.mean(yyrange)
+            fit[j].binsxx[i]       = np.mean(sxxrange)
+            fit[j].binsyy[i]       = np.mean(syyrange)
             fit[j].binxflux[i]     = np.mean(xfluxrange)
             fit[j].binyflux[i]     = np.mean(yfluxrange)
+            fit[j].binsxflux[i]     = np.mean(sxfluxrange)
+            fit[j].binsyflux[i]     = np.mean(syfluxrange)
             fit[j].binxflstd[i]    = np.std(xfluxrange) / np.sqrt(xfluxrange.size)
             fit[j].binyflstd[i]    = np.std(yfluxrange) / np.sqrt(yfluxrange.size)
+            fit[j].binsxflstd[i]    = np.std(sxfluxrange) / np.sqrt(sxfluxrange.size)
+            fit[j].binsyflstd[i]    = np.std(syfluxrange) / np.sqrt(syfluxrange.size)
             fit[j].binxbestip[i]   = np.mean(xbestiprng)
             fit[j].binybestip[i]   = np.mean(ybestiprng)
+            fit[j].binxbestgw[i]   = np.mean(xbestgwrng)
+            fit[j].binybestgw[i]   = np.mean(ybestgwrng)
+            fit[j].binsxbestgw[i]  = np.mean(sxbestgwrng)
+            fit[j].binsybestgw[i]  = np.mean(sybestgwrng)
+            fit[j].binsxbestbm[i]  = np.mean(sxbestbmrng)
+            fit[j].binsybestbm[i]  = np.mean(sybestbmrng)
             fit[j].binxbipstd[i]   = np.std(xbestiprng) / np.sqrt(xbestiprng.size)
             fit[j].binybipstd[i]   = np.std(ybestiprng) / np.sqrt(ybestiprng.size)
             fit[j].binres[i]       = np.mean(fit[j].residuals[start:end])
@@ -1995,6 +2148,16 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
             else:
                 interclip = None
             plots.normlc(event[j], fit[j], fignum, savefile, j=j, interclip=interclip)
+        #zoomed in version of above normalized plot
+        for j in range(numevents):
+            fignum   = 7002+num*numfigs+j*100
+            savefile = event[j].modeldir+"/"+event[j].eventname+"-fig"+str(fignum)+"-"+ fit[j].saveext+".png"
+            print(savefile)
+            if hasattr(event[j].params, 'interclip'):
+                interclip = event[j].params.interclip
+            else:
+                interclip = None
+            plots.Znormlc(event[j], fit[j], fignum, savefile, j=j, interclip=interclip)
     
     if allplots > 3:
         #allparams TRACE PARAMETER VALUES FOR ALL STEPS
@@ -2087,6 +2250,9 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
                 fignum   = 6019+num*numfigs+j*100
                 savefile = event[j].modeldir+"/"+event[j].eventname+"-fig"+str(fignum)+"-"+ fit[j].saveext+".png"
                 plots.prfghw(event[j], fit[j], fignum, savefile=savefile, axis='x')
+                fignum   = 6089+num*numfigs+j*100
+                savefile = event[j].modeldir+"/"+event[j].eventname+"-fig"+str(fignum)+"-"+ fit[j].saveext+".png"
+                plots.ipprojections_GWo(event[j], fit[j], fignum, savefile=savefile)
         
         #PLOT RMS vs. BIN SIZE
         for j in range(numevents):

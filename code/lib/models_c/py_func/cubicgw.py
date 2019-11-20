@@ -32,6 +32,7 @@ def cubicgw(ipparams, width, etc = []):
    y2       = ipparams[4]
    y3       = ipparams[5]
    c        = ipparams[6]
+   s0       = ipparams[7]
    sy, sx   = width
 
-   return x1*sx + x2*sx**2 + x3*sx**3 + y1*sy + y2*sy**2 + y3*sy**3 + c
+   return x1*(sx-s0) + x2*(sx-s0)**2 + x3*(sx-s0)**3 + y1*(sy-s0) + y2*(sy-s0)**2 + y3*(sy-s0)**3 + c

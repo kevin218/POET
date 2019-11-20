@@ -15,6 +15,7 @@ static PyObject *nnint(PyObject *self, PyObject *args, PyObject *keywds)
   PyObject *posflux, *retbinflux, *retbinstd, *issmoothing;
   PyObject *wbfipmask;
   PyArrayObject *x, *y, *flux, *binfluxmask, *kernel, *binloc, *dydx, *etc, *ipparams;
+	PyArrayObject *mastermapF, *mastermapm, *mastermapd;
   //need to make some temp tuples to read in from argument list, then parse
   // a,a,a,a,a dtype=int,a,tuple[d,d,d,d],array[a,a]dtyp=int,array[a,a,a,a],tuple[int,int],bool
   PyObject *tup1, *tup2;
@@ -45,9 +46,12 @@ static PyObject *nnint(PyObject *self, PyObject *args, PyObject *keywds)
   dydx        = (PyArrayObject *) PyList_GetItem(posflux,8);
   tup2        =                   PyList_GetItem(posflux,9);
   issmoothing =                   PyList_GetItem(posflux,10);
+  mastermapF  = (PyArrayObject *) PyList_GetItem(posflux,11);
+  mastermapm  = (PyArrayObject *) PyList_GetItem(posflux,12);
+  mastermapd  = (PyArrayObject *) PyList_GetItem(posflux,13);
 
   //create the arrays the will be returned, under various conditions
-  PyArrayObject *output, *binflux, *binstd, *tempwbfip;
+  PyArrayObject *output, *binflux, *binstd, *tempwbfip, *mastermapFH;
   npy_intp dims[1];
   
   dims[0] = flux->dimensions[0];
@@ -56,10 +60,15 @@ static PyObject *nnint(PyObject *self, PyObject *args, PyObject *keywds)
   dims[0] = PyList_Size(wbfipmask);
   binflux = (PyArrayObject *) PyArray_SimpleNew(1,dims,NPY_DOUBLE);
   binstd  = (PyArrayObject *) PyArray_SimpleNew(1,dims,NPY_DOUBLE);
+	mastermapFH  = (PyArrayObject *) PyArray_SimpleNew(1,dims,NPY_DOUBLE);
 
   int dis = binfluxmask->dimensions[0];
-  int i,j,arsize,temp_int,counter;
+  int i,j,arsize,temp_int,counter,maskcounter;
   double temp_mean,temp_std,meanbinflux;
+	
+  //int msize = mastermapd->dimensions[0];
+  double maskmedian;
+  double dovrmedian;
 
   //need to make a lock to deal with the menbinflux variable
   omp_lock_t lck;
@@ -67,6 +76,9 @@ static PyObject *nnint(PyObject *self, PyObject *args, PyObject *keywds)
 
   counter = 0;
   meanbinflux = 0;
+  maskcounter = 0;
+  maskmedian = 0;
+  dovrmedian = 0;
   // remind kevin to make all wbfipmask things arrays
   // shared(lck,meanbinflux,counter) 
   #pragma omp parallel for private(j,tempwbfip, arsize,temp_mean,temp_std,temp_int)
@@ -102,6 +114,14 @@ static PyObject *nnint(PyObject *self, PyObject *args, PyObject *keywds)
               omp_set_lock(&lck);
               meanbinflux += temp_mean;
               counter += 1;
+							
+						  if(IND_int(mastermapd,i) == 1)
+						  	{
+									maskmedian += IND(mastermapF, i);
+									dovrmedian += temp_mean;
+									maskcounter += 1;
+						  	}
+								
               omp_unset_lock(&lck);
             }
           else
@@ -120,6 +140,13 @@ static PyObject *nnint(PyObject *self, PyObject *args, PyObject *keywds)
               omp_set_lock(&lck);
               meanbinflux += temp_mean;
               counter     += 1;
+							
+						  if(IND_int(mastermapd,i) == 1)
+						  	{
+									maskmedian += IND(mastermapF, i);
+									dovrmedian += temp_mean;
+									maskcounter += 1;
+						  	}
               omp_unset_lock(&lck);
             }
         }
@@ -130,12 +157,16 @@ static PyObject *nnint(PyObject *self, PyObject *args, PyObject *keywds)
         }
     }
   meanbinflux /= (double) counter;
+  maskmedian /= (double) maskcounter;
+  dovrmedian /= (double) maskcounter;
 
   #pragma omp parallel for
   for(i=0;i<dims[0];i++)
     {
       IND(binflux,i) /= meanbinflux;
       IND(binstd, i) /= meanbinflux;
+			IND(mastermapFH, i) = IND(mastermapF, i) * dovrmedian / maskmedian;
+			//printf(" ---> %d index with mm= %lf, mh= %lf,  and %lf, %lf \n",i, IND(mastermapF, i), IND(mastermapFH, i), dovrmedian, maskmedian );
     }
   
   
@@ -143,8 +174,17 @@ static PyObject *nnint(PyObject *self, PyObject *args, PyObject *keywds)
   #pragma omp parallel for
   for(i=0;i<dims[0];i++)
     {
-      temp_int = IND2_int(binloc,0,i);
-      IND(output,i) = IND(binflux,temp_int);
+			temp_int = IND2_int(binloc,0,i);
+			 if(IND_int(mastermapm,temp_int) == 1)
+			 	{
+					//printf("mastermap value %lf \n", IND(mastermapFH,temp_int));
+					//printf("binfluxmp value %lf \n", IND(binflux,temp_int));
+			 		IND(output,i) = IND(mastermapFH,temp_int);
+			 	}
+				else
+				{
+		      IND(output,i) = IND(binflux,temp_int);	
+				}
     }
   
   if(PyObject_IsTrue(retbinflux) == 0 && PyObject_IsTrue(retbinstd) == 0)

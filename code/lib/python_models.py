@@ -925,6 +925,40 @@ def setupmodel(model, ind):
         myfuncs.append(mc.sincos2)
         saveext.append('sc2')
         functype.append('sinusoidal')
+    elif model[i] == 'sincos3':
+        #DEFINE INDICES
+        ind.sc3c1a  = ind.size
+        ind.sc3c1o  = ind.size + 1
+        ind.sc3c2a  = ind.size + 2
+        ind.sc3c2o  = ind.size + 3
+        ind.sc3s1a  = ind.size + 4
+        ind.sc3s1o  = ind.size + 5
+        ind.sc3s2a  = ind.size + 6
+        ind.sc3s2o  = ind.size + 7
+        ind.sc3p    = ind.size + 8
+        ind.sc3c    = ind.size + 9
+        ind.sc3midpt= ind.size + 10
+        ind.sc3t14  = ind.size + 11
+        ind.sc3t12  = ind.size + 12
+        ind.size   += 13
+        #DEFINE NAMES
+        parname.insert(ind.sc3c1a,  'Cosine 1, Amplitude')
+        parname.insert(ind.sc3c1o,  'Cosine 1, Phase Offset')
+        parname.insert(ind.sc3c2a,  'Cosine 2, Amplitude')
+        parname.insert(ind.sc3c2o,  'Cosine 2, Phase Offset')
+        parname.insert(ind.sc3s1a,  'Sine 1, Amplitude')
+        parname.insert(ind.sc3s1o,  'Sine 1, Phase Offset')
+        parname.insert(ind.sc3s2a,  'Sine 1, Amplitude')
+        parname.insert(ind.sc3s2o,  'Sine 1, Phase Offset')
+        parname.insert(ind.sc3p,    'Sin/Cos, Period')
+        parname.insert(ind.sc3c,    'Sin/Cos, Constant Term')
+        parname.insert(ind.sc3midpt,'Sin/Cos, Ecl. Midpt')
+        parname.insert(ind.sc3t14,  'Sin/Cos, Ecl. Width')
+        parname.insert(ind.sc3t12,  'Sin/Cos, Ecl. Ingress')
+        #DEFINE RAMP MODEL
+        myfuncs.append(mc.sincos2)
+        saveext.append('sc3')
+        functype.append('sinusoidal')
     elif model[i] == 'cosine8':
         #DEFINE INDICES
         ind.c8a1    = ind.size
@@ -982,6 +1016,31 @@ def setupmodel(model, ind):
            #DEFINE RAMP MODEL
         myfuncs.append(mc.cosine8)
         saveext.append('c8')
+        functype.append('sinusoidal')
+    elif model[i] == 'lambertian_phase':
+        #DEFINE INDICES
+        ind.lbpt0 = ind.size
+        ind.lbpper = ind.size + 1
+        ind.lbpcosi = ind.size + 2
+        ind.lbplo0 = ind.size + 3
+        ind.lbpampl = ind.size + 4
+        ind.lbpc = ind.size + 5
+        ind.lbpmidpt = ind.size + 6
+        ind.lbpt14 = ind.size + 7
+        ind.lbpt12 = ind.size + 8
+        ind.size += 9
+        #DEFINE NAMES
+        parname.insert(ind.lbpt0, 'Lambertian, t0')
+        parname.insert(ind.lbpper, 'Lambertian, per')
+        parname.insert(ind.lbpcosi,'Lambertian, cosi')
+        parname.insert(ind.lbplo0, 'Lambertian, lo0')
+        parname.insert(ind.lbpampl,'Lambertian, ampl')
+        parname.insert(ind.lbpc,    'Lambertian, Constant Term')
+        parname.insert(ind.lbpmidpt,'Lambertian, Ecl. Midpt')
+        parname.insert(ind.lbpt14,  'Lambertian, Ecl. Width')
+        parname.insert(ind.lbpt12,  'Lambertian, Ecl. Ingress')
+        myfuncs.append(mc.lambertian_phase)
+        saveext.append('lbp')
         functype.append('sinusoidal')
     elif model[i] == 'spiderman_zhang':
         #DEFINE INDICES
@@ -1074,6 +1133,66 @@ def setupmodel(model, ind):
         #DEFINE RAMP MODEL
         myfuncs.append(mc.spiderman_sph)
         saveext.append('spsh')
+        functype.append('sinusoidal')
+    elif model[i] == 'spiderman_sph3':
+        #DEFINE INDICES
+        ind.t0 = ind.size
+        ind.per = ind.size + 1
+        ind.a_abs = ind.size + 2
+        ind.cosi = ind.size + 3
+        ind.ecc = ind.size + 4
+        ind.w = ind.size + 5
+        ind.rp = ind.size + 6
+        ind.a = ind.size + 7
+        ind.p_u1 = ind.size + 8
+        ind.p_u2 = ind.size + 9
+        ind.T_s = ind.size + 10
+        ind.l1 = ind.size + 11
+        ind.l2 = ind.size + 12
+        ind.degree = ind.size + 13
+        ind.la0 = ind.size + 14
+        ind.lo0 = ind.size + 15
+        ind.sph0 = ind.size + 16
+        ind.sph1 = ind.size + 17
+        ind.sph2 = ind.size + 18
+        ind.sph3 = ind.size + 19
+        ind.sph4 = ind.size + 20
+        ind.sph5 = ind.size + 21
+        ind.sph6 = ind.size + 22
+        ind.sph7 = ind.size + 23
+        ind.sph8 = ind.size + 24
+        ind.npoints = ind.size + 25
+        ind.size   += 26
+        #DEFINE NAMES
+        parname.insert(ind.t0,  't0')
+        parname.insert(ind.per,  'per')
+        parname.insert(ind.a_abs,  'a_abs')
+        parname.insert(ind.cosi,  'cosi')
+        parname.insert(ind.ecc,  'ecc')
+        parname.insert(ind.w,  'w')
+        parname.insert(ind.rp,  'rp')
+        parname.insert(ind.a,  'a')
+        parname.insert(ind.p_u1,  'p_u1')
+        parname.insert(ind.p_u2,  'p_u2')
+        parname.insert(ind.T_s,  'T_s')
+        parname.insert(ind.l1,  'l1')
+        parname.insert(ind.l2,  'l2')
+        parname.insert(ind.degree, 'degree')
+        parname.insert(ind.la0, 'la0')
+        parname.insert(ind.lo0, 'lo0')
+        parname.insert(ind.sph0, 'sph0')
+        parname.insert(ind.sph1, 'sph1')
+        parname.insert(ind.sph2, 'sph2')
+        parname.insert(ind.sph3, 'sph3')
+        parname.insert(ind.sph3, 'sph4')
+        parname.insert(ind.sph3, 'sph5')
+        parname.insert(ind.sph3, 'sph6')
+        parname.insert(ind.sph3, 'sph7')
+        parname.insert(ind.sph3, 'sph8')
+        parname.insert(ind.npoints,  'npoints')
+        #DEFINE RAMP MODEL
+        myfuncs.append(mc.spiderman_sph)
+        saveext.append('spsh3')
         functype.append('sinusoidal')
     elif model[i] == 'spiderman_spot':
         #DEFINE INDICES
@@ -1391,7 +1510,8 @@ def setupmodel(model, ind):
         ind.ty2    = ind.size + 4
         ind.ty3    = ind.size + 5
         ind.tc     = ind.size + 6
-        ind.size  += 7
+        ind.ts0    = ind.size + 7
+        ind.size  += 8
         #DEFINE NAMES
         parname.insert(ind.tx1,    'PRF Width, Linear Term in x')
         parname.insert(ind.tx2,    'PRF Width, Quadratic Term in x')
@@ -1400,9 +1520,58 @@ def setupmodel(model, ind):
         parname.insert(ind.ty2,    'PRF Width, Quadratic Term in y')
         parname.insert(ind.ty3,    'PRF Width, Cubic Term in y')
         parname.insert(ind.tc,     'PRF Width, Constant Term')
+        parname.insert(ind.ts0,    'PRF Width, Offset Term')
         #DEFINE INTRA-PIXEL MODEL
         myfuncs.append(mc.cubicgw)
         saveext.append('3gw')
+        functype.append('ippoly')
+    elif model[i] == 'cubicgw2':
+        #DEFINE INDICES
+        ind.tx1    = ind.size
+        ind.tx2    = ind.size + 1
+        ind.tx3    = ind.size + 2
+        ind.ty1    = ind.size + 3
+        ind.ty2    = ind.size + 4
+        ind.ty3    = ind.size + 5
+        ind.tc     = ind.size + 6
+        ind.ts0    = ind.size + 7
+        ind.size  += 8
+        #DEFINE NAMES
+        parname.insert(ind.tx1,    'PRF Width, Linear Term in x')
+        parname.insert(ind.tx2,    'PRF Width, Quadratic Term in x')
+        parname.insert(ind.tx3,    'PRF Width, Cubic Term in x')
+        parname.insert(ind.ty1,    'PRF Width, Linear Term in y')
+        parname.insert(ind.ty2,    'PRF Width, Quadratic Term in y')
+        parname.insert(ind.ty3,    'PRF Width, Cubic Term in y')
+        parname.insert(ind.tc,     'PRF Width, Constant Term')
+        parname.insert(ind.ts0,    'PRF Width, Offset Term')
+        #DEFINE INTRA-PIXEL MODEL
+        myfuncs.append(mc.cubicgw)
+        saveext.append('3gw2')
+        functype.append('ippoly')
+    elif model[i] == 'cubicgw3':
+        #DEFINE INDICES
+        ind.tx1    = ind.size
+        ind.tx2    = ind.size + 1
+        ind.tx3    = ind.size + 2
+        ind.ty1    = ind.size + 3
+        ind.ty2    = ind.size + 4
+        ind.ty3    = ind.size + 5
+        ind.tc     = ind.size + 6
+        ind.ts0    = ind.size + 7
+        ind.size  += 8
+        #DEFINE NAMES
+        parname.insert(ind.tx1,    'PRF Width, Linear Term in x')
+        parname.insert(ind.tx2,    'PRF Width, Quadratic Term in x')
+        parname.insert(ind.tx3,    'PRF Width, Cubic Term in x')
+        parname.insert(ind.ty1,    'PRF Width, Linear Term in y')
+        parname.insert(ind.ty2,    'PRF Width, Quadratic Term in y')
+        parname.insert(ind.ty3,    'PRF Width, Cubic Term in y')
+        parname.insert(ind.tc,     'PRF Width, Constant Term')
+        parname.insert(ind.ts0,    'PRF Width, Offset Term')
+        #DEFINE INTRA-PIXEL MODEL
+        myfuncs.append(mc.cubicgw)
+        saveext.append('3gw3')
         functype.append('ippoly')
     elif model[i] == 'ballardip':
         #DEFINE INDICES
