@@ -112,7 +112,7 @@ def trimimage(data, c, r, mask=None, uncd=None, oob=0):
   ny, nx = np.shape(data)
 
   # The extracted image and mask
-  im = np.zeros((2*yr+1, 2*xr+1))
+  im = np.zeros((2*int(yr)+1, 2*int(xr)+1))
 
   # coordinates of the limits of the extracted image
   uplim = int(yc + yr + 1)  # upper limit
@@ -130,12 +130,12 @@ def trimimage(data, c, r, mask=None, uncd=None, oob=0):
   ret = im
 
   if mask is not None:
-    ma = np.zeros((2*yr+1, 2*xr+1)) + oob   # The mask is initialized to oob
+    ma = np.zeros((2*int(yr)+1, 2*int(xr)+1)) + oob   # The mask is initialized to oob
     ma[bot-lolim:top-lolim, lft-lelim:rgt-lelim] = mask[bot:top, lft:rgt]
     ret = (ret, ma)
 
   if uncd is not None:
-    un = np.zeros((2*yr+1, 2*xr+1)) + np.amax(uncd[bot:top, lft:rgt])
+    un = np.zeros((2*int(yr)+1, 2*int(xr)+1)) + np.amax(uncd[bot:top, lft:rgt])
     un[bot-lolim:top-lolim, lft-lelim:rgt-lelim] = uncd[bot:top, lft:rgt]
     ret = (ret, un) if mask is None else ret + (un,)
 
