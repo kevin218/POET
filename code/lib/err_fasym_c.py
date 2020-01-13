@@ -81,22 +81,22 @@ def col(data, weights=False):
     return [sum(weights*ny*data)/sum(weights*data),\
             sum(weights*nx*data)/sum(weights*data)]
 
-#def make_asym(data,dis,weights):
+def make_asym(data,dis,weights):
     # This function generates the asym value associated a given frame and distance array (aka raidail profile)
     # It is intended to be used entirely internally and never called from the outside
     # it implements sum of the variance squared at a given radius times the number of points at that radius
- #   assert(data.shape == dis.shape)
- #   temp = map(lambda r: (var(data[dis == r],\
- #                                      weights[dis ==r])),dis.flatten())
-    #temp = []
-    #for r in dis.flatten():
-     #   temp.append(var(data[dis == r],weights[dis==r]))
- #   temp = np.array(temp)
+    assert(data.shape == dis.shape)
+    temp = map(lambda r: (var(data[dis == r],\
+                                       weights[dis ==r])),dis.flatten())
+    temp = []
+    for r in dis.flatten():
+        temp.append(var(data[dis == r],weights[dis==r]))
+    temp = np.array(temp)
     #uncoment these lines if you plan on using weights
-    #if np.sum(weights) == weights.size:
- #   return np.sum(temp)
-    #else:
-     #   return np.sum(temp**2)
+    if np.sum(weights) == weights.size:
+        return np.sum(temp)
+    else:
+        return np.sum(temp**2)
 
 
 def actr(data, yxguess, asym_rad=8, asym_size=5, maxcounts=2,
@@ -203,7 +203,7 @@ def actr(data, yxguess, asym_rad=8, asym_size=5, maxcounts=2,
         weights = np.array(weights,dtype=float)
     if data.dtype != 'float64':
         data = data.astype('float64')
-
+    asym_size = int(asym_size) 
     x_guess = yxguess[1]
     y_guess = yxguess[0]
 
@@ -211,7 +211,7 @@ def actr(data, yxguess, asym_rad=8, asym_size=5, maxcounts=2,
     ny,nx = np.indices((data.shape))
 
     #create the indices for the radial profile
-    ryind, rxind = np.indices((asym_rad*2+1,asym_rad*2+1))
+    ryind, rxind = np.indices((int(asym_rad*2)+1,int(asym_rad*2)+1))
 
     #for the course pixel asym location we will reuse the same radial profile, generate that now
     dis = ((ryind-asym_rad)**2+(rxind-asym_rad)**2)**0.5
@@ -219,10 +219,10 @@ def actr(data, yxguess, asym_rad=8, asym_size=5, maxcounts=2,
     #make the view for the positions to calculate an asymmetry value, this may be unneeded look at removing
     #this for optimization, save the shape for later shape restoration
 
-    suby = ny[y_guess - asym_size:y_guess +asym_size+1,x_guess - asym_size:x_guess + asym_size+1]
+    suby = ny[int(y_guess - asym_size):int(y_guess +asym_size+1),int(x_guess - asym_size):int(x_guess + asym_size+1)]
     shape_save = suby.shape
     suby = suby.flatten()
-    subx = nx[y_guess - asym_size:y_guess +asym_size+1,x_guess - asym_size:x_guess + asym_size+1].flatten()
+    subx = nx[int(y_guess - asym_size):int(y_guess +asym_size+1),int(x_guess - asym_size):int(x_guess + asym_size+1)].flatten()
 
     #set up the range statement, as to not recreate it every loop, same with len
     len_y = len(suby)
@@ -268,8 +268,8 @@ def actr(data, yxguess, asym_rad=8, asym_size=5, maxcounts=2,
         # if not, move the array index locations and itterate counter, the while loop then repeats, delete variable
         # to make the garbage collector work less hard
         else:
-            suby    += (suby[asym.argmin()]-y_guess)
-            subx    += (subx[asym.argmin()]-x_guess)
+            suby    += (suby[(asym.argmin())]-int(y_guess))
+            subx    += (subx[(asym.argmin())]-int(x_guess))
             counter += 1
             del views,dis_dup,asym
 
