@@ -261,7 +261,7 @@ def p6model(event=None, newdir=True, filedir='..', topdir=None, clip=None, idl=F
                 else:
                     wavelet = 'None'
                     
-                snrkeys = 'depth', 'depth2', 'depth3', 'trrprs', 'trrprs2', 'trqrprs', 'trq2rprs', 'rprs', 'rprs2', 'fpfs'
+                snrkeys = 'depth', 'depth2', 'depth3', 'trrprs', 'trrprs2', 'trqrprs', 'trq2rprs', 'rprs', 'rprs2', 'fpfs', 'btrprs', 'berprs'
                 for snrkey in snrkeys:
                     if hasattr(event[j].fit[i].i, snrkey):
                         snr   = event[j].fit[i].bestp  [getattr(event[j].fit[i].i, snrkey)] / \
