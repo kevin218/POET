@@ -71,6 +71,8 @@ def poetRestore(filedir='..', topdir=None, clip=None):
             event[i].juldat     = event[i].juldat[:,start:end]
             event[i].bjdutc     = event[i].bjdutc[:,start:end]
             event[i].bjdtdb     = event[i].bjdtdb[:,start:end]
+            if hasattr(event[i], 'apdata'):
+                event[i].apdata = event[i].apdata[start:end]
     #Create and populate ancil directory, if it doesn't already exist
     if os.path.isdir(ancildir) == False:
         os.mkdir(ancildir, 775)

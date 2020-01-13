@@ -1,5 +1,6 @@
 #!/bin/bash
 mv bilinint*.so bilinint.so
+mv mm_bilinint*.so mm_bilinint.so
 mv chisq*.so chisq.so
 mv deramp*.so deramp.so
 mv ellke*.so ellke.so
