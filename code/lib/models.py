@@ -277,6 +277,76 @@ def setupmodel(model, ind):
         myfuncs.append(orthoInvtrans)
         saveext.append('O')
         functype.append('ortho')
+    elif model[i] == 'rednoise':
+        #DEFINE INDICES
+        ind.whinoise = ind.size
+        ind.rednose  = ind.size + 1
+        ind.gamma    = ind.size + 2
+        ind.size  += 3
+        #DEFINE NAMES
+        parname.insert(ind.whinoise, 'White Noise')
+        parname.insert(ind.rednose,  'Red Noise')
+        parname.insert(ind.gamma,    'gamma')
+        #DEFINE INTRA-PIXEL MODEL
+        myfuncs.append(rednoise)
+        saveext.append('RN')
+        functype.append('noise')
+    elif model[i] == 'hook':
+        #DEFINE INDICES
+        ind.hgoal  = ind.size
+        ind.h0     = ind.size + 1
+        ind.h1     = ind.size + 2
+        ind.hpm    = ind.size + 3
+        ind.size  += 4
+        #DEFINE NAMES
+        parname.insert(ind.hgoal, 'Hook, Ideal Flux')
+        parname.insert(ind.h0,    'Hook, h0')
+        parname.insert(ind.h1,    'Hook, h1')
+        parname.insert(ind.hpm,   'Hook, +/-')
+        #DEFINE RAMP MODEL
+        myfuncs.append(hook)
+        saveext.append('h')
+        functype.append('ramp')
+    elif model[i] == 'hook2':
+        #DEFINE INDICES
+        ind.h2goal  = ind.size
+        ind.h20     = ind.size + 1
+        ind.h21     = ind.size + 2
+        ind.h2pm    = ind.size + 3
+        ind.h2per   = ind.size + 4
+        ind.size  += 5
+        #DEFINE NAMES
+        parname.insert(ind.h2goal, 'Hook2, Ideal Flux')
+        parname.insert(ind.h20,    'Hook2, h0')
+        parname.insert(ind.h21,    'Hook2, h1')
+        parname.insert(ind.h2pm,   'Hook2, +/-')
+        parname.insert(ind.h2per,  'Hook2, Period')
+        #DEFINE RAMP MODEL
+        myfuncs.append(hook2)
+        saveext.append('h2')
+        functype.append('ramp')
+    elif model[i] == 'heqramp':
+        #DEFINE INDICES
+        ind.heqt0   = ind.size
+        ind.heqr0   = ind.size + 1
+        ind.heqr1   = ind.size + 2
+        ind.heqr2   = ind.size + 3
+        ind.heqr3   = ind.size + 4
+        ind.heqpm   = ind.size + 5
+        ind.heqper  = ind.size + 6
+        ind.size   += 7
+        #DEFINE NAMES
+        parname.insert(ind.heqt0,   'Hook, t0')
+        parname.insert(ind.heqr0,   'Hook, r0')
+        parname.insert(ind.heqr1,   'Hook, r1')
+        parname.insert(ind.heqr2,   'Hook, r2')
+        parname.insert(ind.heqr3,   'Hook, r3')
+        parname.insert(ind.heqpm,   'Hook, +/-')
+        parname.insert(ind.heqper,  'Hook, Period')
+        #DEFINE RAMP MODEL
+        myfuncs.append(heqramp)
+        saveext.append('heq')
+        functype.append('ramp')
     elif model[i] == 'risingexp':
         #DEFINE INDICES
         ind.regoal  = ind.size

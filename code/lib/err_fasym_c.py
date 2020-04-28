@@ -81,6 +81,7 @@ def col(data, weights=False):
     return [sum(weights*ny*data)/sum(weights*data),\
             sum(weights*nx*data)/sum(weights*data)]
 
+
 def make_asym(data,dis,weights):
     # This function generates the asym value associated a given frame and distance array (aka raidail profile)
     # It is intended to be used entirely internally and never called from the outside
@@ -348,7 +349,6 @@ def actr(data, yxguess, asym_rad=8, asym_size=5, maxcounts=2,
 
         # next invert the asym space so the minimum point is now the maximum
         asym = -1.0*asym
-
 
         # insert any additional steps that would modify the asym array, such as interpolating, or adding
         # more asym values.

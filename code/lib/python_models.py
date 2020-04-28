@@ -925,6 +925,40 @@ def setupmodel(model, ind):
         myfuncs.append(mc.sincos2)
         saveext.append('sc2')
         functype.append('sinusoidal')
+    elif model[i] == 'sincos3':
+        #DEFINE INDICES
+        ind.sc3c1a  = ind.size
+        ind.sc3c1o  = ind.size + 1
+        ind.sc3c2a  = ind.size + 2
+        ind.sc3c2o  = ind.size + 3
+        ind.sc3s1a  = ind.size + 4
+        ind.sc3s1o  = ind.size + 5
+        ind.sc3s2a  = ind.size + 6
+        ind.sc3s2o  = ind.size + 7
+        ind.sc3p    = ind.size + 8
+        ind.sc3c    = ind.size + 9
+        ind.sc3midpt= ind.size + 10
+        ind.sc3t14  = ind.size + 11
+        ind.sc3t12  = ind.size + 12
+        ind.size   += 13
+        #DEFINE NAMES
+        parname.insert(ind.sc3c1a,  'Cosine 1, Amplitude')
+        parname.insert(ind.sc3c1o,  'Cosine 1, Phase Offset')
+        parname.insert(ind.sc3c2a,  'Cosine 2, Amplitude')
+        parname.insert(ind.sc3c2o,  'Cosine 2, Phase Offset')
+        parname.insert(ind.sc3s1a,  'Sine 1, Amplitude')
+        parname.insert(ind.sc3s1o,  'Sine 1, Phase Offset')
+        parname.insert(ind.sc3s2a,  'Sine 1, Amplitude')
+        parname.insert(ind.sc3s2o,  'Sine 1, Phase Offset')
+        parname.insert(ind.sc3p,    'Sin/Cos, Period')
+        parname.insert(ind.sc3c,    'Sin/Cos, Constant Term')
+        parname.insert(ind.sc3midpt,'Sin/Cos, Ecl. Midpt')
+        parname.insert(ind.sc3t14,  'Sin/Cos, Ecl. Width')
+        parname.insert(ind.sc3t12,  'Sin/Cos, Ecl. Ingress')
+        #DEFINE RAMP MODEL
+        myfuncs.append(sincos2)
+        saveext.append('sc3')
+        functype.append('sinusoidal')
     elif model[i] == 'cosine8':
         #DEFINE INDICES
         ind.c8a1    = ind.size
@@ -982,6 +1016,56 @@ def setupmodel(model, ind):
            #DEFINE RAMP MODEL
         myfuncs.append(mc.cosine8)
         saveext.append('c8')
+        functype.append('sinusoidal')
+    elif model[i] == 'lambertian_phase':
+        #DEFINE INDICES
+        ind.lbpt0 = ind.size
+        ind.lbpper = ind.size + 1
+        ind.lbpcosi = ind.size + 2
+        ind.lbplo0 = ind.size + 3
+        ind.lbpampl = ind.size + 4
+        ind.lbpc = ind.size + 5
+        ind.lbpmidpt = ind.size + 6
+        ind.lbpt14 = ind.size + 7
+        ind.lbpt12 = ind.size + 8
+        ind.size += 9
+        #DEFINE NAMES
+        parname.insert(ind.lbpt0, 'Lambertian, t0')
+        parname.insert(ind.lbpper, 'Lambertian, per')
+        parname.insert(ind.lbpcosi,'Lambertian, cosi')
+        parname.insert(ind.lbplo0, 'Lambertian, lo0')
+        parname.insert(ind.lbpampl,'Lambertian, ampl')
+        parname.insert(ind.lbpc,    'Lambertian, Constant Term')
+        parname.insert(ind.lbpmidpt,'Lambertian, Ecl. Midpt')
+        parname.insert(ind.lbpt14,  'Lambertian, Ecl. Width')
+        parname.insert(ind.lbpt12,  'Lambertian, Ecl. Ingress')
+        myfuncs.append(mc.lambertian_phase)
+        saveext.append('lbp')
+        functype.append('sinusoidal')
+    elif model[i] == 'lambertian_ecc':
+        #DEFINE INDICES
+        ind.lbpt0 = ind.size
+        ind.lbpper = ind.size + 1
+        ind.lbpcosi = ind.size + 2
+        ind.lbplo0 = ind.size + 3
+        ind.lbpampl = ind.size + 4
+        ind.lbpc = ind.size + 5
+        ind.lbpmidpt = ind.size + 6
+        ind.lbpt14 = ind.size + 7
+        ind.lbpt12 = ind.size + 8
+        ind.size += 9
+        #DEFINE NAMES
+        parname.insert(ind.lbpt0, 'Lambertian, t0')
+        parname.insert(ind.lbpper, 'Lambertian, per')
+        parname.insert(ind.lbpcosi,'Lambertian, cosi')
+        parname.insert(ind.lbplo0, 'Lambertian, lo0')
+        parname.insert(ind.lbpampl,'Lambertian, ampl')
+        parname.insert(ind.lbpc,    'Lambertian, Constant Term')
+        parname.insert(ind.lbpmidpt,'Lambertian, Ecl. Midpt')
+        parname.insert(ind.lbpt14,  'Lambertian, Ecl. Width')
+        parname.insert(ind.lbpt12,  'Lambertian, Ecl. Ingress')
+        myfuncs.append(mc.lambertian_ecc)
+        saveext.append('lbe')
         functype.append('sinusoidal')
     elif model[i] == 'spiderman_zhang':
         #DEFINE INDICES

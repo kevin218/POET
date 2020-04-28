@@ -56,7 +56,6 @@ def centering(event, pcf, centerdir):
 
   # Centering bad pixel mask:
   centermask = np.ones((event.ny, event.nx))
-  print(event.ymask)
   if event.ymask is not None:
     ymask = np.asarray(event.ymask, int)
     xmask = np.asarray(event.xmask, int)
@@ -82,13 +81,19 @@ def centering(event, pcf, centerdir):
       event.psfctr = psfctrguess
     # Find center of PSF:
     else:
+      '''
       if event.method == "bpf" or event.method == "ipf":
         method = "fgc"
       else:
         method = event.method
       event.psfctr, extra = cd.centerdriver(method, event.psfim, psfctrguess,
                                  event.psfctrim, event.psfcrad, event.psfcsize)
+      '''
+      # Always use 'fgc' on PSF, for testing
+      event.psfctr, extra = cd.centerdriver("fgc", event.psfim, psfctrguess,
+                                 event.psfctrim, event.psfcrad, event.psfcsize) #FINDME
     log.writelog('PSF center found.')
+    print(event.psfctr) #FINDME
   else:
     event.psfim  = None
     event.psfctr = None
@@ -107,7 +112,7 @@ def centering(event, pcf, centerdir):
     event.targpos[:,pos] = targpos
   log.writelog("Center position(s) of the mean Image(s):\n" +
                str(np.transpose(event.targpos)))
-
+  
   # Inclusion ::::::::
   # Multy Process set up:
   # Shared memory arrays allow only 1D Arrays :(
@@ -139,11 +144,10 @@ def centering(event, pcf, centerdir):
     processes[nc].join()
 
   # Put the results in the event. I need to reshape them:
-  event.fp.x         = np.asarray(x      ).reshape(event.npos,event.maxnimpos)
-  event.fp.y         = np.asarray(y      ).reshape(event.npos,event.maxnimpos)
-  if event.method in ["fgc"]:
-    event.fp.sx      = np.asarray(sx     ).reshape(event.npos,event.maxnimpos)
-    event.fp.sy      = np.asarray(sy     ).reshape(event.npos,event.maxnimpos)
+  event.fp.x        = np.asarray(x      ).reshape(event.npos,event.maxnimpos)
+  event.fp.y        = np.asarray(y      ).reshape(event.npos,event.maxnimpos)
+  event.fp.sx       = np.asarray(sx     ).reshape(event.npos,event.maxnimpos)
+  event.fp.sy       = np.asarray(sy     ).reshape(event.npos,event.maxnimpos)
   # If PSF fit:
   if event.method in ["ipf", "bpf"]:
     event.fp.flux    = np.asarray(flux   ).reshape(event.npos,event.maxnimpos)
