@@ -792,8 +792,8 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
                 fit[j].mastermapovrFuc  = np.zeros_like(fit[j].mastermapFIFuc,dtype=int)*0
                 fit[j].mastermapovrFuc[np.where(~np.isnan(fit[j].mastermapFIFuc))[0]] = 1  #where map and data overlap
                 
-                # print(len(fit[j].y[fit[j].isclipmask]),len(fit[j].x[fit[j].isclipmask]),len(fit[j].flux),len(fit[j].mastermapFIF),' USED:', len(np.where(~np.isnan(fit[j].mastermapFIFuc))[0]))
-                # print(len(fit[j].y),len(fit[j].x),len(fit[j].fluxuc),len(fit[j].mastermapFIFuc),' USED:', len(np.where(~np.isnan(fit[j].mastermapFIF))[0]))
+                # print(len(fit[j].y[fit[j].isclipmask]),len(fit[j].x[fit[j].isclipmask]),len(fit[j].flux),len(fit[j].mastermapFIF),' USED:', len(np.where(~np.isnan(fit[j].mastermapFIF))[0]))
+                # print(len(fit[j].y),len(fit[j].x),len(fit[j].fluxuc),len(fit[j].mastermapFIFuc),' USED:', len(np.where(~np.isnan(fit[j].mastermapFIFuc))[0]))
                 # print(len)
                             
                 # COMBINE MODEL PARAMETERS INTO ONE LIST               
