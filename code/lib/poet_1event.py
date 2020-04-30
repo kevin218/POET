@@ -310,7 +310,10 @@ class Event(Univ):
     # self.calnexpid      = self.nexpid[np.where(self.aortype==1)]
 
     # pick a random image, not the first
-    file = bcdfiles[-2]
+    try:
+        file = bcdfiles[-2]
+    except:
+        file = bcdfiles[0]
     data, head = pf.getdata(dir + file, header=True)
 
     # data size

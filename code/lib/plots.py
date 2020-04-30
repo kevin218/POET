@@ -172,17 +172,15 @@ def Znormlc(event, fit, fignum, savefile=None, istitle=True, j=0, interclip=None
         zrenorm=(fit.normbestfit)[np.argmin(np.abs(fit.timeunit-zt_ecl))]
         zmax=np.argmax(fit.bestsin)
         zmin=np.argmin(fit.bestsin)
+        
+        zoff=360.*(fit.timeunit[zmax]-zt_ecl)/zper
+        zoff=np.nanmin([np.abs(zoff-360.),np.abs(zoff)])
+        zamp=0.5*(fit.bestsin[zmax]-fit.bestsin[zmin])/zrenorm
     else:
-        zper=fit.bestp[(np.where(np.array(fit.parname)=='per'))[0][0]]
-        zt_ecl=fit.bestp[(np.where(np.array(fit.parname)=='t0'))[0][0]]-0.5*zper
-        zrenorm=(fit.normbestfit)[np.argmin(np.abs(fit.timeunit-zt_ecl))]
-        zmax=np.argmax(fit.bestsin)
-        tp25=np.argmin(np.abs(fit.timeunit-(zt_ecl+0.25*zper)))
-        tp75=np.argmin(np.abs(fit.timeunit-(zt_ecl+0.75*zper)))
-        zmin=np.argmin(fit.bestsin[tp25:tp75]/zrenorm)+tp25
-    zoff=360.*(fit.timeunit[zmax]-zt_ecl)/zper
-    zoff=np.nanmin([np.abs(zoff-360.),np.abs(zoff)])
-    zamp=0.5*(fit.bestsin[zmax]-fit.bestsin[zmin])/zrenorm
+        zrenorm=1.0
+        zoff=0.0
+        zoff=0.0
+        zamp=0.0
     #####
     plt.errorbar(fit.abscissauc,fit.normbinfluxuc/zrenorm,fit.normbinsduc,fmt='ko',mfc='none',ms=8,lw=1, label='Binned Data', zorder=1)
     plt.plot(fit.timeunit, fit.normbestfit/zrenorm,ls='-', label='Best Fit', lw=4, c='hotpink',zorder=3)
@@ -196,7 +194,12 @@ def Znormlc(event, fit, fignum, savefile=None, istitle=True, j=0, interclip=None
             ind1 = np.argmin(np.abs(fit.timeunit-fit.timeunituc[interclip[i][1]]))
             #ind0 = ind1-1
             plt.plot([fit.timeunit[ind0],fit.timeunit[ind1]],
-                     [fit.normbestfit[ind0],fit.normbestfit[ind1]], '-w', lw=3, zorder=5)
+                     [fit.normbestfit[ind0]/zrenorm,fit.normbestfit[ind1]/zrenorm], '-w', lw=3, zorder=5)
+    if 'mmbilinint' in fit.model:
+        map_inds = np.where(fit.mastermapovrF == 0)[0]
+        plttime = np.copy(fit.timeunit)
+        plttime[map_inds] = np.nan
+        plt.plot(plttime, np.ones_like(fit.timeunit), '-', color = 'crimson', alpha = 0.3, lw = 20, zorder  = 0)
     #plt.plot(fit.tuall[interclip[i][0]:interclip[i][1]], np.ones(interclip[i][1]-interclip[i][0]), '-w', lw=3)
     plt.setp(a.get_xticklabels(), visible = False)
     plt.yticks(size=13)
@@ -501,12 +504,8 @@ def blissmap(event, fit, fignum, savefile=None, istitle=True, minnumpts=1, srces
     palette   = plt.cm.terrain#plt.matplotlib.colors.LinearSegmentedColormap('jet3',plt.cm.datad['jet'],16384)
     palette.set_under(alpha=0.0, color='w')
     # Determine size of non-zero region
-    if event.params.mastermap==True:
-        vmin=np.nanmin(fit.mastermapFI)
-        vmax=np.nanmax(fit.mastermapFI)
-    else:
-        vmin = fit.binipflux[np.where(fit.binipflux > 0)].min()
-        vmax = fit.binipflux.max()
+    vmin = fit.binipflux[np.where(fit.binipflux > 0)].min()
+    vmax = fit.binipflux.max()
     yround = fit.yuc[0] - fit.y[0]
     xround = fit.xuc[0] - fit.x[0]
     xmin = fit.xygrid[0][np.where(fit.numpts>=minnumpts)].min() + xround
@@ -528,8 +527,8 @@ def blissmap(event, fit, fignum, savefile=None, istitle=True, minnumpts=1, srces
         interp = 'bilinear'
     #MAP
     a = plt.axes([0.11,0.10,0.75,0.80])
-    if event.params.mastermap==True:
-        plt.imshow(fit.mastermapFI.reshape(fit.xygrid[0].shape)[iymin:iymax+1,ixmin:ixmax+1], cmap=plt.cm.Greys, vmin=vmin, vmax=vmax, origin='lower', 
+    if 'mmbilinint' in fit.model
+        plt.imshow(fit.mastermapFI.reshape(fit.xygrid[0].shape)[iymin:iymax+1,ixmin:ixmax+1], cmap=plt.cm.Greys, vmin=vmin, vmax=vmax, origin='lower',
                extent=(xmin,xmax,ymin,ymax), aspect='auto', interpolation=interp,alpha=0.3,zorder=0)
     plt.imshow(fit.binipflux[iymin:iymax+1,ixmin:ixmax+1], cmap=palette, vmin=vmin, vmax=vmax, origin='lower', 
                extent=(xmin,xmax,ymin,ymax), aspect='auto',zorder=1)#, interpolation=interp)

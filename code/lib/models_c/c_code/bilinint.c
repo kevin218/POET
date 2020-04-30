@@ -19,7 +19,6 @@ static PyObject *bilinint(PyObject *self, PyObject *args, PyObject *keywds)
   PyObject *posflux, *retbinflux, *retbinstd, *issmoothing;
   PyObject *wbfipmask;
   PyArrayObject *x, *y, *flux, *binfluxmask, *kernel, *binloc, *dydx, *etc, *ipparams;
-  PyArrayObject *mastermapF, *mastermapm, *mastermapd;
   //need to make some temp tuples to read in from argument list, then parse
   // a,a,a,a,a dtype=int,a,tuple[d,d,d,d],array[a,a]dtyp=int,array[a,a,a,a],tuple[int,int],bool
   PyObject *tup1, *tup2;
@@ -50,12 +49,9 @@ static PyObject *bilinint(PyObject *self, PyObject *args, PyObject *keywds)
   dydx        = (PyArrayObject *) PyList_GetItem(posflux,8);
   tup2        =                   PyList_GetItem(posflux,9);
   issmoothing =                   PyList_GetItem(posflux,10);
-  mastermapF  = (PyArrayObject *) PyList_GetItem(posflux,11);
-  mastermapm  = (PyArrayObject *) PyList_GetItem(posflux,12);
-  mastermapd  = (PyArrayObject *) PyList_GetItem(posflux,13);
 
   //create the arrays the will be returned, under various conditions
-  PyArrayObject *output, *binflux, *binstd, *tempwbfip, *mastermapFH;
+  PyArrayObject *output, *binflux, *binstd, *tempwbfip;
   npy_intp dims[1];
   
   dims[0] = flux->dimensions[0];
@@ -64,15 +60,10 @@ static PyObject *bilinint(PyObject *self, PyObject *args, PyObject *keywds)
   dims[0] = PyList_Size(wbfipmask);
   binflux = (PyArrayObject *) PyArray_SimpleNew(1,dims,NPY_DOUBLE);
   binstd  = (PyArrayObject *) PyArray_SimpleNew(1,dims,NPY_DOUBLE);
-  mastermapFH  = (PyArrayObject *) PyArray_SimpleNew(1,dims,NPY_DOUBLE);
 
   int dis = binfluxmask->dimensions[0];
-  int i,j,arsize,temp_int,counter,maskcounter;
+  int i,j,arsize,temp_int,counter;
   double temp_mean,temp_std,meanbinflux;
-  
-  int msize = mastermapd->dimensions[0];
-  double maskmedian;
-  double dovrmedian;
   
   
 
@@ -82,9 +73,6 @@ static PyObject *bilinint(PyObject *self, PyObject *args, PyObject *keywds)
 
   counter = 0;
   meanbinflux = 0;
-  maskcounter = 0;
-  maskmedian = 0;
-  dovrmedian = 0;
   //remind keving to make all wbfipmask things arrays
   // shared(lck,meanbinflux,counter) 
   #pragma omp parallel for private(j,tempwbfip,arsize,temp_mean,temp_std,temp_int)
@@ -120,22 +108,6 @@ static PyObject *bilinint(PyObject *self, PyObject *args, PyObject *keywds)
               omp_set_lock(&lck);
               meanbinflux += temp_mean;
               counter += 1;
-			  
-							// for(j=0; j<msize;j++)
-							// 	{
-							// 		if(IND_int(mastermapd,j) == i)
-							// 		{
-							// 			maskmedian += IND(mastermapF, i);
-							// 			dovrmedian += temp_mean;
-							// 			maskcounter += 1;
-							// 		}
-							// 	}
-						  if(IND_int(mastermapd,i) == 1)
-						  	{
-	  									maskmedian += IND(mastermapF, i);
-	  									dovrmedian += temp_mean;
-	  									maskcounter += 1;
-						  	}
 			  			omp_unset_lock(&lck);
 			  
             }
@@ -155,22 +127,6 @@ static PyObject *bilinint(PyObject *self, PyObject *args, PyObject *keywds)
               omp_set_lock(&lck);
               meanbinflux += temp_mean;
               counter     += 1;
-			  
-							// for(j=0; j<msize;j++)
-							// 	{
-							// 		if(IND_int(mastermapd, j) == i)
-							// 		{
-							// 			maskmedian += IND(mastermapF, i);
-							// 			dovrmedian += temp_mean;
-							// 			maskcounter += 1;
-							// 		}
-							// 	}
-						  if(IND_int(mastermapd,i) == 1)
-						  	{
-	  									maskmedian += IND(mastermapF, i);
-	  									dovrmedian += temp_mean;
-	  									maskcounter += 1;
-						  	}
 			  			omp_unset_lock(&lck);
 			  
             }
@@ -182,19 +138,12 @@ static PyObject *bilinint(PyObject *self, PyObject *args, PyObject *keywds)
         }
     }
   meanbinflux /= (double) counter;
-  maskmedian /= (double) maskcounter;
-  dovrmedian /= (double) maskcounter;
   
-  //printf("%lf, %lf \n", dovrmedian, maskmedian);
-
- 
   #pragma omp parallel for
   for(i=0;i<dims[0];i++)
     {
       IND(binflux,i) /= meanbinflux;
       IND(binstd, i) /= meanbinflux;
-	  IND(mastermapFH, i) = IND(mastermapF, i) * dovrmedian / maskmedian;
-	  //printf(" ---> %d index with mm= %lf, mh= %lf,  and %lf, %lf \n",i, IND(mastermapF, i), IND(mastermapFH, i), dovrmedian, maskmedian );
     }
   
 
@@ -232,29 +181,17 @@ static PyObject *bilinint(PyObject *self, PyObject *args, PyObject *keywds)
   dims[0] = binloc->dimensions[1];
   
   #pragma omp parallel for private(temp_int,t_int_one,t_int_x,t_int_x_one)
-  // emay modify 10/24/19 to check for and set to mastermap 
   for(i=0;i<dims[0];i++)
     {
 	  	  temp_int = IND2_int(binloc,1,i);
 	  	  t_int_one = temp_int +1;
 	  	  t_int_x   = temp_int+xsize;
 	  	  t_int_x_one = t_int_x +1;
-		  if(IND_int(mastermapm,temp_int) == 1 && IND_int(mastermapm,t_int_one) == 1 && IND_int(mastermapm,t_int_x) == 1 && IND_int(mastermapm,t_int_x_one) == 1)
-		  	{
-					//printf("mastermap values %lf, %lf, %lf, %lf \n", IND(mastermapFH,temp_int),IND(mastermapFH,t_int_one),IND(mastermapFH,t_int_x),IND(mastermapFH,t_int_x_one));
-					//printf("binfluxmp values %lf, %lf, %lf, %lf \n", IND(binflux,temp_int),IND(binflux,t_int_one),IND(binflux,t_int_x),IND(binflux,t_int_x_one));
-    	  	  IND(output,i) = IND(mastermapFH,temp_int)*IND2(dydx,1,i)*IND2(dydx,3,i)+\
-    	  	    IND(mastermapFH,t_int_one)*IND2(dydx,1,i)*IND2(dydx,2,i)+        \
-    	  	    IND(mastermapFH,t_int_x)*IND2(dydx,0,i)*IND2(dydx,3,i)+        \
-    	  	    IND(mastermapFH,t_int_x_one)*IND2(dydx,0,i)*IND2(dydx,2,i);
-		  	}
-		  else
-		  	{
-	  	  	  IND(output,i) = IND(binflux,temp_int)*IND2(dydx,1,i)*IND2(dydx,3,i)+\
-	  	  	    IND(binflux,t_int_one)*IND2(dydx,1,i)*IND2(dydx,2,i)+        \
-	  	  	    IND(binflux,t_int_x)*IND2(dydx,0,i)*IND2(dydx,3,i)+        \
-	  	  	    IND(binflux,t_int_x_one)*IND2(dydx,0,i)*IND2(dydx,2,i);
-		  	}
+				
+	  	  IND(output,i) = IND(binflux,temp_int)*IND2(dydx,1,i)*IND2(dydx,3,i)+\
+	  	    IND(binflux,t_int_one)*IND2(dydx,1,i)*IND2(dydx,2,i)+        \
+	  	    IND(binflux,t_int_x)*IND2(dydx,0,i)*IND2(dydx,3,i)+        \
+	  	    IND(binflux,t_int_x_one)*IND2(dydx,0,i)*IND2(dydx,2,i);
 	  	 	
     }
 

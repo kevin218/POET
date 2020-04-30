@@ -130,13 +130,12 @@ tup1             = [0, 0, 0.0, 0.0]
 issmoothing      = False
 
 mastermapF       = np.ones(nobj, dtype=int)
-mastermapm       = np.zeros(nobj, dtype=int)
-mastermapd       = np.array([0,1,2])
+mastermapdF      = np.zeros(nobj, dtype=int)
 
 ### bilinint()
 posflux = [y, x, aplev, wbfipmask, binfluxmask, kernel, \
           tup1, binloc, griddist,  \
-          xygrid[0].shape, issmoothing,mastermapF,mastermapm,mastermapd]
+          xygrid[0].shape, issmoothing,mastermapF,mastermapdF]
 try:
     yp = mp.bilinint(ipparams, posflux, etc)
     yc = mc.bilinint(ipparams, posflux, etc)
@@ -147,6 +146,21 @@ try:
         print("Bilinint:   FAIL", np.np.nansum(abs(yp-yc)/yp))
 except:
     print("Bilinint:   FAIL to load")
+    
+### bilinint_mm()
+posflux = [y, x, aplev, wbfipmask, binfluxmask, kernel, \
+          tup1, binloc, griddist,  \
+          xygrid[0].shape, issmoothing,mastermapF,mastermapdF]
+try:
+    yp = mp.mmbilinint(ipparams, posflux, etc)
+    yc = mc.mmbilinint(ipparams, posflux, etc)
+    
+    if np.allclose(yp, yc):
+        print("Bilinint_mm:   PASS")
+    else:
+        print("Bilinint_mm:   FAIL", np.np.nansum(abs(yp-yc)/yp))
+except:
+    print("Bilinint_mm:   FAIL to load")
 
 ### expramp()
 rampparams = np.array((goal, m, t0))
@@ -287,7 +301,6 @@ else:
 try:
     ### nnint()
     # Variables in 'posflux', 'ipparams' in bilinint()
-
     yp  = mp.nnint(ipparams, posflux, etc)
     yc = mc.nnint(ipparams, posflux, etc)
     #print(yp-yc)

@@ -464,11 +464,14 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
                 fit[j].numptsuc      = np.zeros((ysize, xsize))
                 #Minimum number of acceptable points in a bin
                 if event[j].params.minnumpts.__class__ == int:
-                    minnumpts = event[j].params.minnumpts
+                    minnumpts  = event[j].params.minnumpts
+                    minnumptsM = event[j].params.minnumptsM
                 elif len(event[j].params.minnumpts) == len(event[j].params.model):
-                    minnumpts = event[j].params.minnumpts[num]
+                    minnumpts  = event[j].params.minnumpts[num]
+                    minnumptsM = event[j].params.minnumptsM[num]
                 else:
-                    minnumpts = event[j].params.minnumpts[0]
+                    minnumpts  = event[j].params.minnumpts[0]
+                    minnumptsM = event[j].params.minnumptsM[0]
                 print('Step size in y = ' + str(ystep), file=printout)
                 print('Step size in x = ' + str(xstep), file=printout)
                 print('Ignoring bins with < ' + str(minnumpts) + ' points.', file=printout)
@@ -535,6 +538,85 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
 
                 fit[j].binfluxmask   = fit[j].binfluxmask  .flatten()
                 fit[j].binfluxmaskuc = fit[j].binfluxmaskuc.flatten()
+                
+                ###bin master bliss map onto grid locations. emay 10/24/2019
+                if 'mmbilinint' in fit[j].model:
+                    print('Binning Master Map onto Grid...')
+                
+                    mholddir   = (event[0].hordir).split('/')
+                    mapdir     = '/'.join(mholddir[:mholddir.index('horizons')])
+                    mapfile    = open(event[0].topdir+mapdir+'/mastermaps/ch'+str(event[0].photchan)+'_'+event[0].photdir+'_master_map.npz','rb')
+                    masterload = pickle.load(mapfile)
+                    mastermapF,mastermapX,mastermapY = masterload
+                    map_nnan_inds = np.where(~np.isnan(mastermapF))
+                    
+                    mastermapX = mastermapX[map_nnan_inds]
+                    mastermapY = mastermapY[map_nnan_inds]
+                    mastermapF = mastermapF[map_nnan_inds]
+                    
+                    fit[j].wbfipmask_mm   = []
+                    fit[j].binfluxmask_mm = np.zeros((ysize,xsize),dtype=int)
+                    # binloc_mm      = np.zeros((2, len(mastermapF)),   dtype=int) - 1
+                    
+                    for m in range(ysize):
+                        yhold=ygrid[m]
+                        yhold+=(fit[j].yuc[0] - fit[j].y[0])
+                        wbftemp_mm = np.where(np.abs(mastermapY-yhold)-ystep/2. <= 1e-16)[0]
+                        for n in range(xsize):
+                            xhold=xgrid[n]
+                            xhold+=(fit[j].xuc[0] - fit[j].x[0])
+                            wbf_mm = wbftemp_mm[np.where(np.abs(mastermapX[wbftemp_mm]-xhold)-xstep/2. <= 1e-16)[0]]
+                            
+                            if len(wbf_mm) >= minnumptsM:
+                                fit[j].binfluxmask_mm[m,n]=1.
+                                #fit[j].wbfipmask_mm.append(wbf_mm)
+                                fit[j].wbfipmask_mm.  append(wbf_mm)
+                            else:
+                                fit[j].wbfipmask_mm.append([])
+                        
+                    
+                    fit[j].mastermapFI = np.ones(len(fit[j].wbfipmask_mm))*np.nan
+                    wbfm_mm = np.where(fit[j].binfluxmask_mm.flatten() == 1)[0]
+                    for m in wbfm_mm:
+                        fit[j].mastermapFI[m] = np.mean(mastermapF[fit[j].wbfipmask_mm[m]])
+                    
+                    del mastermapF,mastermapX,mastermapY  
+                    mapfile.close()
+                
+                       
+                else:  #if not using, nan arrays to ignore map
+                    fit[j].mastermapFI = np.ones_like(fit[j].xygrid[0].flatten())*np.nan
+        
+                
+                fit[j].mastermapovr = np.zeros_like(fit[j].mastermapFI,dtype=int)*0 #initialize mask for above indexes
+                fit[j].mastermapovr[np.where(np.isfinite(fit[j].mastermapFI) & (fit[j].binfluxmask != 0))[0]] = 1 #where map AND data exist
+                
+                if 'mmbilinint' in fit[j].model:
+                    plt.figure(1,figsize=(8,8))
+                    plt.clf()
+                    plt.cla()
+
+                    yround = fit[j].yuc[0] - fit[j].y[0]
+                    xround = fit[j].xuc[0] - fit[j].x[0]
+                    xmin = fit[j].xygrid[0][np.where(fit[j].numpts>=minnumpts)].min() + xround
+                    xmax = fit[j].xygrid[0][np.where(fit[j].numpts>=minnumpts)].max() + xround
+                    ymin = fit[j].xygrid[1][np.where(fit[j].numpts>=minnumpts)].min() + yround
+                    ymax = fit[j].xygrid[1][np.where(fit[j].numpts>=minnumpts)].max() + yround
+                    ixmin = np.where(fit[j].xygrid[0] + xround == xmin)[1][0]
+                    ixmax = np.where(fit[j].xygrid[0] + xround == xmax)[1][0]
+                    iymin = np.where(fit[j].xygrid[1] + yround == ymin)[0][0]
+                    iymax = np.where(fit[j].xygrid[1] + yround == ymax)[0][0]
+
+                    # plt.imshow(fit[j].mastermapFI.reshape(fit[j].xygrid[0].shape)[iymin:iymax+1,ixmin:ixmax+1], cmap=plt.cm.terrain, origin='lower',
+                    #        extent=(xmin,xmax,ymin,ymax), aspect='auto',zorder=0)
+                    plt.scatter(fit[j].xygrid[0].flatten()+xround, fit[j].xygrid[1].flatten()+yround,marker='s',s=35,c=fit[j].mastermapFI,cmap=plt.cm.terrain,alpha=0.8)
+                    plt.plot((fit[j].xygrid[0].flatten())[np.where(np.isfinite(fit[j].mastermapFI) & (fit[j].binfluxmask != 0))[0]]+xround,(fit[j].xygrid[1].flatten())[np.where(np.isfinite(fit[j].mastermapFI) & (fit[j].binfluxmask != 0))[0]]+yround,'.',color='blue',ms=3)
+                    plt.plot((fit[j].xygrid[0].flatten())[np.where(~np.isfinite(fit[j].mastermapFI) & (fit[j].binfluxmask != 0))[0]]+xround,(fit[j].xygrid[1].flatten())[np.where(~np.isfinite(fit[j].mastermapFI) & (fit[j].binfluxmask != 0))[0]]+yround,'.',color='red',ms=3)
+
+                    plt.savefig(event[j].modeldir+"/"+event[j].eventname+"-fig8000.png")
+                    plt.close(1)
+                
+                #####
 
                 #DETERMINE DISTANCES TO FOUR NEAREST GRID POINTS
                 #USED FOR BILINEAR INTERPOLATION
@@ -550,31 +632,61 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
                                                                  fit[j].position[1,[wherey]] <= xgrid[n+1])[0])[0]]
                         if len(wherexy) > 0:
                             fit[j].binloc[1, wherexy] = gridpt = m*xsize + n
-                            #IF THERE ARE NO POINTS IN ONE OR MORE BINS...
-                            if (len(fit[j].wbfipmask[gridpt        ]) == 0) or \
-                               (len(fit[j].wbfipmask[gridpt      +1]) == 0) or \
-                               (len(fit[j].wbfipmask[gridpt+xsize  ]) == 0) or \
-                               (len(fit[j].wbfipmask[gridpt+xsize+1]) == 0):
-                                #SET griddist = NEAREST BIN (USE NEAREST NEIGHBOR INTERPOLATION)
-                                for loc in wherexy:
-                                    if   loc in fit[j].wherebinflux[gridpt        ]:
-                                        fit[j].griddist[0, loc] = 0
-                                        fit[j].griddist[2, loc] = 0
-                                    elif loc in fit[j].wherebinflux[gridpt      +1]:
-                                        fit[j].griddist[0, loc] = 0
-                                        fit[j].griddist[3, loc] = 0
-                                    elif loc in fit[j].wherebinflux[gridpt+xsize  ]:
-                                        fit[j].griddist[1, loc] = 0
-                                        fit[j].griddist[2, loc] = 0
-                                    elif loc in fit[j].wherebinflux[gridpt+xsize+1]:
-                                        fit[j].griddist[1, loc] = 0
-                                        fit[j].griddist[3, loc] = 0
-                            else:
-                                #CALCULATE griddist NORMALLY FOR BILINEAR INTERPOLATION
-                                fit[j].griddist[0, wherexy] = np.array((fit[j].position[0][wherexy]-ygrid[m])  /ystep)
-                                fit[j].griddist[1, wherexy] = np.array((ygrid[m+1]-fit[j].position[0][wherexy])/ystep)
-                                fit[j].griddist[2, wherexy] = np.array((fit[j].position[1][wherexy]-xgrid[n])  /xstep)
-                                fit[j].griddist[3, wherexy] = np.array((xgrid[n+1]-fit[j].position[1][wherexy])/xstep)
+                            if 'mmbilinint' in fit[j].model:  #if we're using the MM, it matters where the MAP has points, not the data
+                                #check if there are points in the binned MM AND data
+                                if ((len(fit[j].wbfipmask_mm[gridpt        ]) == 0) or \
+                                   (len(fit[j].wbfipmask_mm[gridpt      +1]) == 0) or \
+                                   (len(fit[j].wbfipmask_mm[gridpt+xsize  ]) == 0) or \
+                                   (len(fit[j].wbfipmask_mm[gridpt+xsize+1]) == 0)) and \
+                                   ((len(fit[j].wbfipmask[gridpt        ]) == 0) or \
+                                   (len(fit[j].wbfipmask[gridpt      +1]) == 0) or \
+                                   (len(fit[j].wbfipmask[gridpt+xsize  ]) == 0) or \
+                                   (len(fit[j].wbfipmask[gridpt+xsize+1]) == 0)) :
+                                   for loc in wherexy:
+                                       if   loc in fit[j].wherebinflux[gridpt        ]:
+                                           fit[j].griddist[0, loc] = 0
+                                           fit[j].griddist[2, loc] = 0
+                                       elif loc in fit[j].wherebinflux[gridpt      +1]:
+                                           fit[j].griddist[0, loc] = 0
+                                           fit[j].griddist[3, loc] = 0
+                                       elif loc in fit[j].wherebinflux[gridpt+xsize  ]:
+                                           fit[j].griddist[1, loc] = 0
+                                           fit[j].griddist[2, loc] = 0
+                                       elif loc in fit[j].wherebinflux[gridpt+xsize+1]:
+                                           fit[j].griddist[1, loc] = 0
+                                           fit[j].griddist[3, loc] = 0
+                                else:
+                                    #CALCULATE griddist NORMALLY FOR BILINEAR INTERPOLATION
+                                    fit[j].griddist[0, wherexy] = np.array((fit[j].position[0][wherexy]-ygrid[m])  /ystep)
+                                    fit[j].griddist[1, wherexy] = np.array((ygrid[m+1]-fit[j].position[0][wherexy])/ystep)
+                                    fit[j].griddist[2, wherexy] = np.array((fit[j].position[1][wherexy]-xgrid[n])  /xstep)
+                                    fit[j].griddist[3, wherexy] = np.array((xgrid[n+1]-fit[j].position[1][wherexy])/xstep)
+                            else:  #if not using MM, done normally
+                                #IF THERE ARE NO POINTS IN ONE OR MORE BINS...
+                                if (len(fit[j].wbfipmask[gridpt        ]) == 0) or \
+                                   (len(fit[j].wbfipmask[gridpt      +1]) == 0) or \
+                                   (len(fit[j].wbfipmask[gridpt+xsize  ]) == 0) or \
+                                   (len(fit[j].wbfipmask[gridpt+xsize+1]) == 0):
+                                    #SET griddist = NEAREST BIN (USE NEAREST NEIGHBOR INTERPOLATION)
+                                    for loc in wherexy:
+                                        if   loc in fit[j].wherebinflux[gridpt        ]:
+                                            fit[j].griddist[0, loc] = 0
+                                            fit[j].griddist[2, loc] = 0
+                                        elif loc in fit[j].wherebinflux[gridpt      +1]:
+                                            fit[j].griddist[0, loc] = 0
+                                            fit[j].griddist[3, loc] = 0
+                                        elif loc in fit[j].wherebinflux[gridpt+xsize  ]:
+                                            fit[j].griddist[1, loc] = 0
+                                            fit[j].griddist[2, loc] = 0
+                                        elif loc in fit[j].wherebinflux[gridpt+xsize+1]:
+                                            fit[j].griddist[1, loc] = 0
+                                            fit[j].griddist[3, loc] = 0
+                                else:
+                                    #CALCULATE griddist NORMALLY FOR BILINEAR INTERPOLATION
+                                    fit[j].griddist[0, wherexy] = np.array((fit[j].position[0][wherexy]-ygrid[m])  /ystep)
+                                    fit[j].griddist[1, wherexy] = np.array((ygrid[m+1]-fit[j].position[0][wherexy])/ystep)
+                                    fit[j].griddist[2, wherexy] = np.array((fit[j].position[1][wherexy]-xgrid[n])  /xstep)
+                                    fit[j].griddist[3, wherexy] = np.array((xgrid[n+1]-fit[j].position[1][wherexy])/xstep)
                 #REPEAT FOR uc
                 #print("50% complete...")
                 for m in range(ysize-1):
@@ -585,113 +697,104 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
                                                                  fit[j].x[wherey] <= xgrid[n+1]))[0]]
                         if len(wherexy) > 0:
                             fit[j].binlocuc[1, wherexy] = gridpt = m*xsize + n
-                            #IF THERE ARE NO POINTS IN ONE OR MORE BINS...
-                            if (len(fit[j].wbfipmaskuc[gridpt        ]) == 0) or \
-                               (len(fit[j].wbfipmaskuc[gridpt      +1]) == 0) or \
-                               (len(fit[j].wbfipmaskuc[gridpt+xsize  ]) == 0) or \
-                               (len(fit[j].wbfipmaskuc[gridpt+xsize+1]) == 0):
-                                #SET griddist = NEAREST BIN (USE NEAREST NEIGHBOR INTERPOLATION)
-                                for loc in wherexy:
-                                    if loc in fit[j].wherebinfluxuc[gridpt        ]:
-                                        fit[j].griddistuc[0, loc] = 0
-                                        fit[j].griddistuc[2, loc] = 0
-                                    if loc in fit[j].wherebinfluxuc[gridpt      +1]:
-                                        fit[j].griddistuc[0, loc] = 0
-                                        fit[j].griddistuc[3, loc] = 0
-                                    if loc in fit[j].wherebinfluxuc[gridpt+xsize  ]:
-                                        fit[j].griddistuc[1, loc] = 0
-                                        fit[j].griddistuc[2, loc] = 0
-                                    if loc in fit[j].wherebinfluxuc[gridpt+xsize+1]:
-                                        fit[j].griddistuc[1, loc] = 0
-                                        fit[j].griddistuc[3, loc] = 0
-                            else:
-                                #CALCULATE griddist NORMALLY FOR BILINEAR INTERPOLATION
-                                fit[j].griddistuc[0, wherexy] = np.array((fit[j].y[wherexy]-ygrid[m])  /ystep)
-                                fit[j].griddistuc[1, wherexy] = np.array((ygrid[m+1]-fit[j].y[wherexy])/ystep)
-                                fit[j].griddistuc[2, wherexy] = np.array((fit[j].x[wherexy]-xgrid[n])  /xstep)
-                                fit[j].griddistuc[3, wherexy] = np.array((xgrid[n+1]-fit[j].x[wherexy])/xstep)
-                    
-                    
-                ###bin master bliss map onto grid locations. emay 10/24/2019
-                if event[0].params.mastermap==True:
-                    print('Interpolating Master Map onto Grid.')
+                            if 'mmbilinint' in fit[j].model:  #if we're using the MM, it matters where the MAP has points, not the data
+                                #check if there are points in the binned MM
+                                if ((len(fit[j].wbfipmask_mm[gridpt        ]) == 0) or \
+                                   (len(fit[j].wbfipmask_mm[gridpt      +1]) == 0) or \
+                                   (len(fit[j].wbfipmask_mm[gridpt+xsize  ]) == 0) or \
+                                   (len(fit[j].wbfipmask_mm[gridpt+xsize+1]) == 0)) and \
+                                   ((len(fit[j].wbfipmaskuc[gridpt        ]) == 0) or \
+                                   (len(fit[j].wbfipmaskuc[gridpt      +1]) == 0) or \
+                                   (len(fit[j].wbfipmaskuc[gridpt+xsize  ]) == 0) or \
+                                   (len(fit[j].wbfipmaskuc[gridpt+xsize+1]) == 0)):
+                                   for loc in wherexy:
+                                       if   loc in fit[j].wherebinfluxuc[gridpt        ]:
+                                           fit[j].griddistuc[0, loc] = 0
+                                           fit[j].griddistuc[2, loc] = 0
+                                       elif loc in fit[j].wherebinfluxuc[gridpt      +1]:
+                                           fit[j].griddistuc[0, loc] = 0
+                                           fit[j].griddistuc[3, loc] = 0
+                                       elif loc in fit[j].wherebinfluxuc[gridpt+xsize  ]:
+                                           fit[j].griddistuc[1, loc] = 0
+                                           fit[j].griddistuc[2, loc] = 0
+                                       elif loc in fit[j].wherebinfluxuc[gridpt+xsize+1]:
+                                           fit[j].griddistuc[1, loc] = 0
+                                           fit[j].griddistuc[3, loc] = 0
+                                else:
+                                    #CALCULATE griddist NORMALLY FOR BILINEAR INTERPOLATION
+                                    fit[j].griddistuc[0, wherexy] = np.array((fit[j].y[wherexy]-ygrid[m])  /ystep)
+                                    fit[j].griddistuc[1, wherexy] = np.array((ygrid[m+1]-fit[j].y[wherexy])/ystep)
+                                    fit[j].griddistuc[2, wherexy] = np.array((fit[j].x[wherexy]-xgrid[n])  /xstep)
+                                    fit[j].griddistuc[3, wherexy] = np.array((xgrid[n+1]-fit[j].x[wherexy])/xstep)
+                            else:   #if not using MM, done normally
+                                #IF THERE ARE NO POINTS IN ONE OR MORE BINS...
+                                if (len(fit[j].wbfipmaskuc[gridpt        ]) == 0) or \
+                                   (len(fit[j].wbfipmaskuc[gridpt      +1]) == 0) or \
+                                   (len(fit[j].wbfipmaskuc[gridpt+xsize  ]) == 0) or \
+                                   (len(fit[j].wbfipmaskuc[gridpt+xsize+1]) == 0):
+                                    #SET griddist = NEAREST BIN (USE NEAREST NEIGHBOR INTERPOLATION)
+                                    for loc in wherexy:
+                                        if loc in fit[j].wherebinfluxuc[gridpt        ]:
+                                            fit[j].griddistuc[0, loc] = 0
+                                            fit[j].griddistuc[2, loc] = 0
+                                        if loc in fit[j].wherebinfluxuc[gridpt      +1]:
+                                            fit[j].griddistuc[0, loc] = 0
+                                            fit[j].griddistuc[3, loc] = 0
+                                        if loc in fit[j].wherebinfluxuc[gridpt+xsize  ]:
+                                            fit[j].griddistuc[1, loc] = 0
+                                            fit[j].griddistuc[2, loc] = 0
+                                        if loc in fit[j].wherebinfluxuc[gridpt+xsize+1]:
+                                            fit[j].griddistuc[1, loc] = 0
+                                            fit[j].griddistuc[3, loc] = 0
+                                else:
+                                    #CALCULATE griddist NORMALLY FOR BILINEAR INTERPOLATION
+                                    fit[j].griddistuc[0, wherexy] = np.array((fit[j].y[wherexy]-ygrid[m])  /ystep)
+                                    fit[j].griddistuc[1, wherexy] = np.array((ygrid[m+1]-fit[j].y[wherexy])/ystep)
+                                    fit[j].griddistuc[2, wherexy] = np.array((fit[j].x[wherexy]-xgrid[n])  /xstep)
+                                    fit[j].griddistuc[3, wherexy] = np.array((xgrid[n+1]-fit[j].x[wherexy])/xstep)
                 
-                    mholddir=(event[0].hordir).split('/')
-                    mapdir='/'.join(mholddir[:mholddir.index('horizons')])
-                    mapfile=open(event[0].topdir+mapdir+'/mastermaps/ch'+str(event[0].photchan)+'_'+event[0].photdir+'_master_map.npz','rb')
-                    masterload=pickle.load(mapfile)
-                    mastermapF,mastermapX,mastermapY,masterbinnedF,masterbinnedX,masterbinnedY=masterload
+                ### bilinear interpolation of MM onto data points is done here
+                if 'mmbilinint' in fit[j].model:
+                    binlocbli_mm         = fit[j].binloc[1,:]
+                    [dy1, dy2, dx1, dx2] = fit[j].griddist 
+                    [ysize, xsize]       = fit[j].xygrid[0].shape
+                    map_mask             = np.ones_like(dy1)*1
+                    map_mask[np.where(dy1 ==0)[0]] = np.nan
+                    map_mask[np.where(dy2 ==0)[0]] = np.nan
+                    map_mask[np.where(dx1 ==0)[0]] = np.nan
+                    map_mask[np.where(dx2 ==0)[0]] = np.nan
+                    fit[j].mastermapFIF  = fit[j].mastermapFI[binlocbli_mm      ]*dy2*dx2 + fit[j].mastermapFI[binlocbli_mm      +1]*dy2*dx1 + \
+                                           fit[j].mastermapFI[binlocbli_mm+xsize]*dy1*dx2 + fit[j].mastermapFI[binlocbli_mm+xsize+1]*dy1*dx1
+                    fit[j].mastermapFIF *= map_mask
+                    fit[j].mastermapFIF /= np.nanmean(fit[j].mastermapFIF)
                     
-                    wbfipmask_mm=[]
-                    binfluxmask_mm=np.zeros((ysize,xsize),dtype=int)
-                    
-                    for m in range(ysize):
-                        yhold=ygrid[m]
-                        yhold+=(fit[j].yuc[0] - fit[j].y[0])
-                        wbftemp_mm = np.where(np.abs(mastermapY-yhold)-ystep/2. <= 1e-16)[0]
-                        for n in range(xsize):
-                            xhold=xgrid[n]
-                            xhold+=(fit[j].xuc[0] - fit[j].x[0])
-                            wbf_mm = wbftemp_mm[np.where(np.abs(mastermapX[wbftemp_mm]-xhold)-xstep/2. <= 1e-16)[0]]
-                            
-                            if len(wbf_mm) >= minnumpts:
-                                binfluxmask_mm[m,n]=1.
-                                wbfipmask_mm.append(wbf_mm)
-                            else:
-                                wbfipmask_mm.append([])
-                        
-                    fit[j].mastermapFI = np.ones(len(wbfipmask_mm))*np.nan
-                    wbfm_mm = np.where(binfluxmask_mm.flatten() == 1)[0]
-                    for m in wbfm_mm:
-                        fit[j].mastermapFI[m] = np.mean(mastermapF[wbfipmask_mm[m]])
+                    #again for unclipped
+                    binlocbli_mm         = fit[j].binlocuc[1,:]
+                    [dy1, dy2, dx1, dx2] = fit[j].griddistuc
+                    [ysize, xsize]       = fit[j].xygrid[0].shape
+                    map_mask             = np.ones_like(dy1)*1
+                    map_mask[np.where(dy1 ==0)[0]] = np.nan
+                    map_mask[np.where(dy2 ==0)[0]] = np.nan
+                    map_mask[np.where(dx1 ==0)[0]] = np.nan
+                    map_mask[np.where(dx2 ==0)[0]] = np.nan
+                    fit[j].mastermapFIFuc  = fit[j].mastermapFI[binlocbli_mm      ]*dy2*dx2 + fit[j].mastermapFI[binlocbli_mm      +1]*dy2*dx1 + \
+                                           fit[j].mastermapFI[binlocbli_mm+xsize]*dy1*dx2 + fit[j].mastermapFI[binlocbli_mm+xsize+1]*dy1*dx1
+                    fit[j].mastermapFIFuc *= map_mask
+                    fit[j].mastermapFIFuc /= np.nanmean(fit[j].mastermapFIFuc)
                      
-                    fit[j].mastermapFI/=np.nanmax(fit[j].mastermapFI)
-                    
-                    Xpltval=np.nanmedian(fit[j].x)+(fit[j].xuc[0] - fit[j].x[0])
-                    Ypltval=np.nanmedian(fit[j].y)+(fit[j].yuc[0] - fit[j].y[0])
-                    
-                    Xind_bin=np.argmin(np.abs(xgrid+(fit[j].xuc[0] - fit[j].x[0])-Xpltval))
-                    Yind_bin=np.argmin(np.abs(ygrid+(fit[j].yuc[0] - fit[j].y[0])-Ypltval))
-                    
-                    Xind_ful=np.argmin(np.abs(masterbinnedX-Xpltval))
-                    Yind_ful=np.argmin(np.abs(masterbinnedY-Ypltval))
-                    
-                    del mastermapF,mastermapX,mastermapY  
-                    mapfile.close()       
-                       
-                else:  #if not using, nan arrays to ignore map
-                    fit[j].mastermapFI = np.ones_like(fit[j].xygrid[0].flatten())*np.nan
-        
+                else:
+                    fit[j].mastermapFIF    = np.zeros_like(fit[j].binloc[1,:])*np.nan
+                    fit[j].mastermapFIFuc  = np.zeros_like(fit[j].binlocuc[1,:])*np.nan
+                 
+                fit[j].mastermapovrF  = np.zeros_like(fit[j].mastermapFIF,dtype=int)*0
+                fit[j].mastermapovrF[np.where(~np.isnan(fit[j].mastermapFIF))[0]] = 1  #where map and data overlap
+                   
+                fit[j].mastermapovrFuc  = np.zeros_like(fit[j].mastermapFIFuc,dtype=int)*0
+                fit[j].mastermapovrFuc[np.where(~np.isnan(fit[j].mastermapFIFuc))[0]] = 1  #where map and data overlap
                 
-                fit[j].mastermapdata = np.zeros_like(fit[j].mastermapFI,dtype=int)*0 #initialize mask for above indexes 
-                fit[j].mastermapdata[np.where(np.isfinite(fit[j].mastermapFI) & (fit[j].binfluxmask != 0))[0]] = 1 #where map AND data exist
-                
-                fit[j].mastermapmask = np.zeros_like(fit[j].mastermapFI,dtype=int)*0 #initialize mask for where mask exists 
-                fit[j].mastermapmask[np.where(np.isfinite(fit[j].mastermapFI))[0]] = 1 #where *MAP* exist ==1
-                
-                fit[j].mastermapFI = fit[j].mastermapFI/np.nanmean(fit[j].mastermapFI)
-                        
-                #####
-                #
-                # plt.figure(999,figsize=(8,8))
-                # plt.clf()
-                # a = plt.axes([0.11,0.10,0.75,0.80])
-                # vmin=np.nanmin(fit[j].mastermapFI)
-                # vmax=np.nanmax(fit[j].mastermapFI)
-                #
-                # plt.imshow((fit[j].mastermapFI*fit[j].mastermapmask).reshape(len(ygrid),len(xgrid)),
-                #     extent=(min(xgrid)+(fit[j].xuc[0] - fit[j].x[0]),max(xgrid)+(fit[j].xuc[0] - fit[j].x[0]),min(ygrid)+(fit[j].yuc[0] - fit[j].y[0]),max(ygrid)++(fit[j].yuc[0] - fit[j].y[0])),
-                #     cmap='terrain',vmin=vmin,vmax=vmax,aspect='equal',origin='lower')
-                # #
-                # a = plt.axes([0.90,0.10,0.01,0.8], frameon=False)
-                # a.yaxis.set_visible(False)
-                # a.xaxis.set_visible(False)
-                # a = plt.imshow([[vmin,vmax],[vmin,vmax]], cmap=plt.cm.terrain, aspect='auto', visible=False)
-                # plt.colorbar(a, fraction=3.0)
-                # #
-                # plt.savefig(event[j].modeldir+"/"+event[j].eventname+"-INITIAL_MAP.png")
-                # plt.close(999)
-                
+                # print(len(fit[j].y[fit[j].isclipmask]),len(fit[j].x[fit[j].isclipmask]),len(fit[j].flux),len(fit[j].mastermapFIF),' USED:', len(np.where(~np.isnan(fit[j].mastermapFIFuc))[0]))
+                # print(len(fit[j].y),len(fit[j].x),len(fit[j].fluxuc),len(fit[j].mastermapFIFuc),' USED:', len(np.where(~np.isnan(fit[j].mastermapFIF))[0]))
+                # print(len)
                             
                 # COMBINE MODEL PARAMETERS INTO ONE LIST               
                 fit[j].posflux  = [fit[j].y[fit[j].isclipmask], 
@@ -705,9 +808,8 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
                                    fit[j].griddist,
                                    fit[j].xygrid[0].shape,
                                    event[j].params.issmoothing,
-                                   fit[j].mastermapFI,
-                                   fit[j].mastermapmask,
-                                   fit[j].mastermapdata]
+                                   fit[j].mastermapFIF,
+                                   fit[j].mastermapovrF]
                 fit[j].posfluxuc= [fit[j].y,
                                    fit[j].x,
                                    fit[j].fluxuc,
@@ -719,9 +821,8 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
                                    fit[j].griddistuc,
                                    fit[j].xygrid[0].shape,
                                    event[j].params.issmoothing,
-                                   fit[j].mastermapFI,
-                                   fit[j].mastermapmask,
-                                   fit[j].mastermapdata]
+                                   fit[j].mastermapFIFuc,
+                                   fit[j].mastermapovrFuc]
             
             if functype[i] == 'ballardip':
                 print("Computing intrapixel effect")
@@ -808,7 +909,71 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
             elif functype[i] == 'ramp':
                 funcx.  append(fit[j].timeunit)
                 funcxuc.append(fit[j].timeunituc)
-                fit[j].etc.append([])
+                #fit[j].etc.append([])
+                if fit[j].model[k] == 'linramp_paor':
+                    #need to create lists of indicies for each AOR. max is 5
+                    nclip_pa_g = np.zeros_like(event[0].nexpid,dtype=int)*0
+                    nclip_pa_c = np.zeros_like(event[0].nexpid,dtype=int)*0
+                    aor_inds = event[0].nexpid*64
+                    #determine how many in good clip were in each aor
+                    aor_mask_g = np.ones_like(event[0].good[0,:],dtype=int)*event[0].good[0,:]
+                    for ai in range(len(event[0].nexpid)):
+                        aor_low = np.nansum(event[0].nexpid[:ai])
+                        nclip_pa_g[ai] += int(len(np.where(aor_mask_g[int(aor_low*64) : int((aor_low+event[0].nexpid[ai])*64)] == 0)[0]))
+                        print(ai, aor_low, (aor_low+event[0].nexpid[ai])*64, nclip_pa_g[ai]) 
+                    #determine how many in clipmask were in each aor
+                    aor_mask_c = np.ones_like(fit[j].clipmask,dtype=int)*fit[j].clipmask
+                    for ai in range(len(event[0].nexpid)):
+                        aor_low = np.nansum((event[0].nexpid*64-nclip_pa_g)[:ai])
+                        nclip_pa_c[ai] += int(len(np.where(aor_mask_c[int(aor_low) : int(aor_low+(event[0].nexpid[ai]*64)-nclip_pa_g[ai])] == 0)[0]))
+                        print(ai, aor_low, aor_low+(event[0].nexpid[ai]*64)-nclip_pa_g[ai], nclip_pa_c[ai], nclip_pa_g[ai]) 
+                    
+                    nclip_pa=nclip_pa_g+nclip_pa_c
+                    aor_ints = np.linspace(0,len(fit[j].isclipmask)-1,len(fit[j].isclipmask),dtype=int)
+                    aor_intsuc = np.linspace(0,len(fit[j].fluxuc)-1,len(fit[j].fluxuc),dtype=int)
+                    
+                    aor0_mask   = aor_ints[0:int(event[0].nexpid[0]*64-nclip_pa[0])]
+                    aor0_maskuc = aor_intsuc[0:int(event[0].nexpid[0]*64-nclip_pa_g[0])]
+                    aor1_mask = []
+                    aor2_mask = []
+                    aor3_mask = []
+                    aor4_mask = []
+                    
+                    aor1_maskuc = []
+                    aor2_maskuc = []
+                    aor3_maskuc = []
+                    aor4_maskuc = []
+                    print(aor0_mask,aor0_maskuc)
+                    if len(event[0].nexpid)>1:
+                        ai=1
+                        aor_low     = np.nansum((event[0].nexpid*64-nclip_pa)[:ai])
+                        aor1_mask   = aor_ints[aor_low:aor_low+int(event[0].nexpid[ai]*64-nclip_pa[ai])]
+                        aor_low     = np.nansum((event[0].nexpid*64-nclip_pa_g)[:ai])
+                        aor1_maskuc = aor_intsuc[aor_low:aor_low+int(event[0].nexpid[ai]*64-nclip_pa_g[ai])]
+                        print(aor1_mask,aor1_maskuc)
+                        if len(event[0].nexpid)>2:
+                            ai=2
+                            aor_low     = np.nansum((event[0].nexpid*64-nclip_pa)[:ai])
+                            aor2_mask   = aor_ints[aor_low:aor_low+int(event[0].nexpid[ai]*64-nclip_pa[ai])]
+                            aor_low     = np.nansum((event[0].nexpid*64-nclip_pa_g)[:ai])
+                            aor2_maskuc = aor_intsuc[aor_low:aor_low+int(event[0].nexpid[ai]*64-nclip_pa_g[ai])]
+                            print(aor2_mask,aor2_maskuc)
+                            if len(event[0].nexpid)>3:
+                                ai=3
+                                aor_low     = np.nansum((event[0].nexpid*64-nclip_pa)[:ai])
+                                aor3_mask   = aor_ints[aor_low:aor_low+int(event[0].nexpid[ai]*64-nclip_pa[ai])]
+                                aor_low     = np.nansum((event[0].nexpid*64-nclip_pa_g)[:ai])
+                                aor3_maskuc = aor_intsuc[aor_low:aor_low+int(event[0].nexpid[ai]*64-nclip_pa_g[ai])]
+                                if len(event[0].nexpid)>4:
+                                    ai=4
+                                    aor_low     = np.nansum((event[0].nexpid*64-nclip_pa)[:ai])
+                                    aor4_mask   = aor_ints[aor_low:aor_low+int(event[0].nexpid[ai]*64-nclip_pa[ai])]
+                                    aor_low     = np.nansum((event[0].nexpid*64-nclip_pa_g)[:ai])
+                                    aor4_maskuc = aor_intsuc[aor_low:aor_low+int(event[0].nexpid[ai]*64-nclip_pa_g[ai])]
+                    
+                    fit[j].etc.append(np.array([[aor0_mask, aor1_mask, aor2_mask, aor3_mask, aor4_mask],[aor0_maskuc, aor1_maskuc, aor2_maskuc, aor3_maskuc, aor4_maskuc]]))
+                else:
+                   fit[j].etc.append([]) 
             elif functype[i] == 'sinusoidal':
                 funcx.  append(fit[j].timeunit)
                 funcxuc.append(fit[j].timeunituc)
@@ -1591,8 +1756,8 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
             elif functype[i] == 'noise':
                 pass
             elif functype[i] == 'ramp':
-                fit[j].bestramp    *= myfuncs[i](bestp[iparams[i]], funcx[i])
-                fit[j].bestrampuc  *= myfuncs[i](bestp[iparams[i]], funcxuc[i])
+                fit[j].bestramp    *= myfuncs[i](bestp[iparams[i]], funcx[i], fit[j].etc[k])
+                fit[j].bestrampuc  *= myfuncs[i](bestp[iparams[i]], funcxuc[i], fit[j].etc[k])
             elif functype[i] == 'sinusoidal':
                 fit[j].bestsin     *= myfuncs[i](bestp[iparams[i]], funcx[i])
                 fit[j].bestsinuc   *= myfuncs[i](bestp[iparams[i]], funcxuc[i])
