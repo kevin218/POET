@@ -9,6 +9,10 @@ import err_fasym_c as ctr
 import imageedit   as ie
 import psf_fit     as pf
 import gaussian    as g
+try:
+    import least_asymmetry.least_asymmetry.asym as la
+except:
+    print("Failed to import least_asymmetry centroiding module.")
 
 def centerdriver(method, data, guess, trim, radius, size,
                  mask=None, uncd=None, fitbg=1, maskstar=True,
@@ -26,7 +30,7 @@ def centerdriver(method, data, guess, trim, radius, size,
   guess:  2 elements 1D array
           y, x initial guess position of the target.
   trim:   integer
-          Semi-lenght of the box around the target that will be trimmed.
+          Semi-length of the box around the target that will be trimmed.
   radius: float
           least asymmetry parameter. See err_fasym_c.
   size:   float
@@ -89,11 +93,13 @@ def centerdriver(method, data, guess, trim, radius, size,
   elif method == 'col':
     y, x = ctr.col(img)
   elif method == 'lag':
-    y, x = ctr.actr(img, loc, asym_rad=radius,
-                    asym_size=size, method='gaus')
+    [y, x], asym = la.actr(img, loc, asym_rad=radius,
+                           asym_size=size, method='gaus')
+    #y, x = ctr.actr(img, loc, asym_rad=radius,
+    #                asym_size=size, method='gaus')
   elif method == 'lac':
-    y, x = ctr.actr(img, loc, asym_rad=radius,
-                    asym_size=size, method='col')
+    [y, x], asym = la.actr(img, loc, asym_rad=radius,
+                           asym_size=size, method='col')
   elif method == 'bpf' or method == 'ipf':
     y,x, flux, sky = pf.spitzer_fit(img, msk, weights, psf, psfctr, expand,
                                     method)

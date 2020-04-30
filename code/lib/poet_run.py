@@ -71,6 +71,8 @@ def poetRestore(filedir='..', topdir=None, clip=None):
             event[i].juldat     = event[i].juldat[:,start:end]
             event[i].bjdutc     = event[i].bjdutc[:,start:end]
             event[i].bjdtdb     = event[i].bjdtdb[:,start:end]
+            if hasattr(event[i], 'apdata'):
+                event[i].apdata = event[i].apdata[start:end]
     #Create and populate ancil directory, if it doesn't already exist
     if os.path.isdir(ancildir) == False:
         os.mkdir(ancildir, 775)
@@ -259,7 +261,7 @@ def p6model(event=None, newdir=True, filedir='..', topdir=None, clip=None, idl=F
                 else:
                     wavelet = 'None'
                     
-                snrkeys = 'depth', 'depth2', 'depth3', 'trrprs', 'trrprs2', 'trqrprs', 'trq2rprs', 'rprs', 'rprs2', 'fpfs'
+                snrkeys = 'depth', 'depth2', 'depth3', 'trrprs', 'trrprs2', 'trqrprs', 'trq2rprs', 'rprs', 'rprs2', 'fpfs', 'btrprs', 'berprs'
                 for snrkey in snrkeys:
                     if hasattr(event[j].fit[i].i, snrkey):
                         snr   = event[j].fit[i].bestp  [getattr(event[j].fit[i].i, snrkey)] / \

@@ -1080,6 +1080,31 @@ def setupmodel(model, ind):
         myfuncs.append(mc.lambertian_phase)
         saveext.append('lbp')
         functype.append('sinusoidal')
+    elif model[i] == 'lambertian_ecc':
+        #DEFINE INDICES
+        ind.lbpt0 = ind.size
+        ind.lbpper = ind.size + 1
+        ind.lbpcosi = ind.size + 2
+        ind.lbplo0 = ind.size + 3
+        ind.lbpampl = ind.size + 4
+        ind.lbpc = ind.size + 5
+        ind.lbpmidpt = ind.size + 6
+        ind.lbpt14 = ind.size + 7
+        ind.lbpt12 = ind.size + 8
+        ind.size += 9
+        #DEFINE NAMES
+        parname.insert(ind.lbpt0, 'Lambertian, t0')
+        parname.insert(ind.lbpper, 'Lambertian, per')
+        parname.insert(ind.lbpcosi,'Lambertian, cosi')
+        parname.insert(ind.lbplo0, 'Lambertian, lo0')
+        parname.insert(ind.lbpampl,'Lambertian, ampl')
+        parname.insert(ind.lbpc,    'Lambertian, Constant Term')
+        parname.insert(ind.lbpmidpt,'Lambertian, Ecl. Midpt')
+        parname.insert(ind.lbpt14,  'Lambertian, Ecl. Width')
+        parname.insert(ind.lbpt12,  'Lambertian, Ecl. Ingress')
+        myfuncs.append(mc.lambertian_ecc)
+        saveext.append('lbe')
+        functype.append('sinusoidal')
     elif model[i] == 'spiderman_zhang':
         #DEFINE INDICES
         ind.t0 = ind.size
@@ -2541,7 +2566,6 @@ def linramp_paor(rampparams, x, etc = []):
    x3    = rampparams[13]
    x4    = rampparams[14]
 
-   #print(len(etc[0,0]),len(etc[0,1]),len(etc[0,2]),len(etc[0,3]),len(etc[0,4]))
    clip = (np.nansum([len(etc[0,0]),len(etc[0,1]),len(etc[0,2]),len(etc[0,3]),len(etc[0,4])]))
    if len(x) == clip:
        aorI0 = etc[0,0]
@@ -2555,16 +2579,6 @@ def linramp_paor(rampparams, x, etc = []):
        aorI2 = etc[1,2]
        aorI3 = etc[1,3]
        aorI4 = etc[1,4]
-
-   # t01 = x[aorI0[-1]]
-   # t12 = x[aorI1[-1]]
-   # #t23 = x[aorI2[-1]]
-   # #t34 = x[aorI3[-1]]
-   #
-   # b1 = (a0-a1)*t01 - a0*x0 + a1*x1 + b0
-   # b2 = (a1-a2)*t12 - a1*x1 + a2*x2 + b1
-   # b3 = 0.0#(a2-a3)*t23 - a2*x2 + a3*x3 + b2
-   # b4 = 0.0#(a3-a4)*t34 - a3*x3 + a4*x4 + b3
 
    r0 = (a0*(x[aorI0]-x0) + b0) 
    r1 = (a1*(x[aorI1]-x1) + b1) 
