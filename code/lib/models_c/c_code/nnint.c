@@ -143,8 +143,8 @@ static PyObject *nnint(PyObject *self, PyObject *args, PyObject *keywds)
   #pragma omp parallel for
   for(i=0;i<dims[0];i++)
     {
-      temp_int = IND2_int(binloc,0,i);
-      IND(output,i) = IND(binflux,temp_int);
+			temp_int = IND2_int(binloc,0,i);
+		  IND(output,i) = IND(binflux,temp_int);
     }
   
   if(PyObject_IsTrue(retbinflux) == 0 && PyObject_IsTrue(retbinstd) == 0)

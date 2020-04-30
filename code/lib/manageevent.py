@@ -147,7 +147,7 @@ def loadevent(filename, load=[], loadfilename=None):
   """
   from astropy.io import fits
   handle = open(filename + '.dat', 'rb')
-  event = pickle.load(handle)
+  event = pickle.load(handle, encoding='latin1')
   handle.close()
 
   if loadfilename == None:

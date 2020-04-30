@@ -45,7 +45,7 @@ def spiderman_sph(params, t, etc = []):
   2019-02-24	update interpolation, add to github version 
   TODO          add response function, nlayers to etc
    """
-   p = spiderman.ModelParams(brightness_model =  'spherical', thermal = True, stellar_model = 'blackbody')
+   p = spiderman.ModelParams(brightness_model =  'spherical', stellar_model = 'blackbody')
    p.nlayers = 5
 
    p.t0    	    = params[0]
@@ -64,17 +64,19 @@ def spiderman_sph(params, t, etc = []):
    p.degree 	    = int(params[13])
    p.la0	    = params[14]
    p.lo0	    = params[15]
-   sph0	    = params[16]
-   sph1	    = params[17]
-   sph2	    = params[18]
-   sph3	    = params[19]
+#   sph0        = params[16]
+#   sph1        = params[17]
+#   sph2        = params[18]
+#   sph3        = params[19]
+#   sph0      = params[16:int(16+p.degree**2)]
    p.n_layers = 5
+   
 
    sph = []
    for i in range(0, p.degree**2): sph.append(params[16+i])
    p.sph = sph
 
-   npoints = int(params[20])
+   npoints = int(params[-1])
 
  
    #p.filter = "/Users/lkreidberg/Desktop/Util/Throughput/spitzer_irac_ch2.txt"

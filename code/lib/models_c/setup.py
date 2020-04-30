@@ -14,7 +14,7 @@ files = list(filter(lambda x: not re.search('[.#].+[.]c$',x),files))
 # files.remove(".svn")
 
 ext_mod = []
-inc = [get_include()]
+inc = [get_include(),'/Users/mayem1/Homebrew/opt/libomp/lib/','/Users/mayem1/Homebrew/opt/libomp/include/']
 
 for idx,fname in enumerate(files):
     if system() == 'Linux':

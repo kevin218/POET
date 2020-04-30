@@ -148,6 +148,90 @@ def normlc(event, fit, fignum, savefile=None, istitle=True, j=0, interclip=None)
     if savefile != None:
         plt.savefig(savefile)
     return
+
+def Znormlc(event, fit, fignum, savefile=None, istitle=True, j=0, interclip=None):
+    plt.rcParams.update({'legend.fontsize':13})
+    plt.figure(fignum, figsize=(8,6))
+    plt.clf()
+    # Normalized subplot
+    a = plt.axes([0.15,0.35,0.8,0.55])
+    a.yaxis.set_major_formatter(plt.matplotlib.ticker.FormatStrFormatter('%0.4f'))
+    if istitle == True:
+        plt.suptitle(event.eventname + ' Zoomed Normalized Binned Data With Best Fit',size=16)
+        plt.title(fit.model, size=10)
+    elif istitle == False:
+        pass
+    else:
+        plt.suptitle(istitle, size=16)
+    #### calc amp and offset
+    con=np.nanmean((fit.bestecl*fit.bestsin)/(fit.normbestfit))
+    zrenorm=1.0
+    if 'mandelecl' in fit.model:
+        zper=fit.bestp[(np.where(np.array(fit.parname)=='Period'))[0][0]]
+        zt_ecl=fit.bestp[(np.where(np.array(fit.parname)=='Eclipse Phase'))[0][0]]
+        zrenorm=(fit.normbestfit)[np.argmin(np.abs(fit.timeunit-zt_ecl))]
+        zmax=np.argmax(fit.bestsin)
+        zmin=np.argmin(fit.bestsin)
+        
+        zoff=360.*(fit.timeunit[zmax]-zt_ecl)/zper
+        zoff=np.nanmin([np.abs(zoff-360.),np.abs(zoff)])
+        zamp=0.5*(fit.bestsin[zmax]-fit.bestsin[zmin])/zrenorm
+    else:
+        zrenorm=1.0
+        zoff=0.0
+        zoff=0.0
+        zamp=0.0
+    #####
+    plt.errorbar(fit.abscissauc,fit.normbinfluxuc/zrenorm,fit.normbinsduc,fmt='ko',mfc='none',ms=8,lw=1, label='Binned Data', zorder=1)
+    plt.plot(fit.timeunit, fit.normbestfit/zrenorm,ls='-', label='Best Fit', lw=4, c='hotpink',zorder=3)
+    plt.plot(fit.timeunit, fit.bestsin/zrenorm,ls='-', lw=2, c='crimson',zorder=4)
+    #plt.plot(fit.timeunit, fit.bestsin,ls='-', label='Phase Only', lw=2, c='darkred',zorder=4)
+    plt.axhline(y=1.0,ls='--',c='darkslategrey',lw=2)
+    plt.axvline(x=fit.timeunit[np.argmax(fit.bestsin)],ls='--',c='darkslategrey',lw=1)
+    if interclip != None:
+        for i in range(len(interclip)):
+            ind0 = np.argmin(np.abs(fit.timeunit-fit.timeunituc[interclip[i][0]]))
+            ind1 = np.argmin(np.abs(fit.timeunit-fit.timeunituc[interclip[i][1]]))
+            #ind0 = ind1-1
+            plt.plot([fit.timeunit[ind0],fit.timeunit[ind1]],
+                     [fit.normbestfit[ind0]/zrenorm,fit.normbestfit[ind1]/zrenorm], '-w', lw=3, zorder=5)
+    if 'mmbilinint' in fit.model:
+        map_inds = np.where(fit.mastermapovrF == 0)[0]
+        plttime = np.copy(fit.timeunit)
+        plttime[map_inds] = np.nan
+        plt.plot(plttime, np.ones_like(fit.timeunit), '-', color = 'crimson', alpha = 0.3, lw = 20, zorder  = 0)
+    #plt.plot(fit.tuall[interclip[i][0]:interclip[i][1]], np.ones(interclip[i][1]-interclip[i][0]), '-w', lw=3)
+    plt.setp(a.get_xticklabels(), visible = False)
+    plt.yticks(size=13)
+    plt.ylabel('Normalized Flux',size=14)
+    plt.legend(loc='upper left')
+    xmin, xmax = plt.xlim()
+    plt.ylim(ymin=0.99700)
+    plt.figtext(0.93,0.43,'BIC: '+str(np.round(fit.bic,2)),ha='right',va='center',fontproperties='bold',fontsize=15)
+    plt.figtext(0.93,0.38,'SDNR [ppm]: '+str(np.round(fit.sdnr*10**6.,2)),ha='right',va='center',fontproperties='bold',fontsize=15)
+    plt.figtext(0.17,0.43,'Hotspot: '+str(np.round(zoff,2))+' $^{\circ}$',ha='left',va='center',fontproperties='bold',fontsize=15)
+    plt.figtext(0.17,0.38,'Amplitude [ppm]: '+str(np.round(zamp*10**6.,2)),ha='left',va='center',fontproperties='bold',fontsize=15)
+    plt.axes([0.15,0.1,0.8,0.2])
+    # Residuals subplot
+    #fit.bestlinear  = np.polyfit(fit.timeunit, fit.residuals, 1)
+    #fit.binresfit   = fit.bestlinear[0]*fit.abscissa + fit.bestlinear[1]
+    #plt.errorbar(fit.binphase,fit.binres,fit.binresstd,fmt='ko',ms=4,linewidth=1)
+    flatline = np.zeros(len(fit.abscissa))
+        #plt.errorbar(fit.abscissa,fit.binres/fit.mflux,fit.binresstd/fit.mflux,fmt='ko',ms=4,lw=1)
+    if hasattr(fit, 'normbinresuc'):
+        #plt.plot(fit.abscissa,fit.normbinres,'ko',ms=4)
+        plt.errorbar(fit.abscissauc,fit.normbinresuc-1.,fit.normbinsduc,fmt='ko',ms=4)
+    else:
+        plt.plot(fit.abscissa,fit.binres/fit.mflux,'ko',ms=4)
+    plt.plot(fit.abscissa, flatline,'k-',lw=2)
+    plt.xlim(xmin,xmax)
+    plt.xticks(size=13)
+    plt.yticks(size=13)
+    plt.xlabel(fit.xlabel,size=14)
+    plt.ylabel('Residuals',size=14)
+    if savefile != None:
+        plt.savefig(savefile)
+    return
     
 # Trace plots
 def trace(event, fit, fignum, savefile=None, allparams=None, parname=None, iparams=None, stepsize=None, istitle=True):
@@ -367,16 +451,46 @@ def ipprojections(event, fit, fignum, savefile=None, istitle=True):
     yround = fit.yuc[0] - fit.y[0]
     xround = fit.xuc[0] - fit.x[0]
     plt.subplot(1,2,1)
-    plt.errorbar(yround+fit.binyy, fit.binyflux, fit.binyflstd, fmt='ro', label='Binned Flux', zorder=1)
-    plt.plot(yround+fit.binyy, fit.binybestip, 'k-', lw=2, label='BLISS Map', zorder=3)
+    plt.errorbar(yround+fit.binyy, fit.binyflux/fit.binybestgw, fit.binyflstd, fmt='ro', label='Binned Flux', zorder=1)
+    plt.plot(yround+fit.binyy, fit.binybestip/fit.binybestgw, 'k-', lw=2, label='BLISS Map', zorder=3)
     plt.xlabel('Pixel Postion in y', size=14)
     plt.ylabel('Normalized Flux', size=14)
     plt.xticks(rotation=90)
     plt.legend(loc='best')
     plt.subplot(1,2,2)
-    plt.errorbar(xround+fit.binxx, fit.binxflux, fit.binxflstd, fmt='bo', label='Binned Flux', zorder=1)
-    plt.plot(xround+fit.binxx, fit.binxbestip, 'k-', lw=2, label='BLISS Map', zorder=3)
+    plt.errorbar(xround+fit.binxx, fit.binxflux/fit.binxbestgw, fit.binxflstd, fmt='bo', label='Binned Flux', zorder=1)
+    plt.plot(xround+fit.binxx, fit.binxbestip/fit.binxbestgw, 'k-', lw=2, label='BLISS Map', zorder=3)
     plt.xlabel('Pixel Postion in x', size=14)
+    plt.xticks(rotation=90)
+    #a = plt.ylabel('Normalized Flux', size=14)
+    a = plt.legend(loc='best')
+    plt.subplots_adjust(left=0.11,right=0.97,bottom=0.20,top=0.90,wspace=0.20)
+    if savefile != None:
+        plt.savefig(savefile)
+    return
+
+# Projections of position sensitivity along x and y
+def ipprojections_GWo(event, fit, fignum, savefile=None, istitle=True):
+    plt.rcParams.update({'legend.fontsize':11})
+    plt.figure(fignum, figsize=(8,4))
+    plt.clf()
+    if istitle:
+        a = plt.suptitle(event.eventname + ' Projections of Gaussian Half-Width Fits', size=16)
+    yround = fit.syuc[0] - fit.sy[0]
+    xround = fit.sxuc[0] - fit.sx[0]
+    sxbestbm = fit.binsxbestbm
+    sybestbm = fit.binsybestbm
+    plt.subplot(1,2,1)
+    plt.errorbar(yround+fit.binsyy, fit.binsyflux/sybestbm, fit.binsyflstd, fmt='ro', label='Binned Flux - BM', zorder=1)
+    plt.plot(yround+fit.binsyy, fit.binsybestgw, 'k-', lw=2, label='cubicgw y-fit', zorder=3)
+    plt.xlabel('Gaussian Width in y', size=14)
+    plt.ylabel('Normalized Flux', size=14)
+    plt.xticks(rotation=90)
+    plt.legend(loc='best')
+    plt.subplot(1,2,2)
+    plt.errorbar(xround+fit.binsxx, fit.binsxflux/sxbestbm, fit.binsxflstd, fmt='bo', label='Binned Flux - BM', zorder=1)
+    plt.plot(xround+fit.binsxx, fit.binsxbestgw, 'k-', lw=2, label='cubicgw x-fit', zorder=3)
+    plt.xlabel('Gaussian Width in x', size=14)
     plt.xticks(rotation=90)
     #a = plt.ylabel('Normalized Flux', size=14)
     a = plt.legend(loc='best')
@@ -387,7 +501,7 @@ def ipprojections(event, fit, fignum, savefile=None, istitle=True):
 
 # BLISS map
 def blissmap(event, fit, fignum, savefile=None, istitle=True, minnumpts=1, srcest=None):
-    palette   = plt.matplotlib.colors.LinearSegmentedColormap('jet3',plt.cm.datad['jet'],16384)
+    palette   = plt.cm.terrain#plt.matplotlib.colors.LinearSegmentedColormap('jet3',plt.cm.datad['jet'],16384)
     palette.set_under(alpha=0.0, color='w')
     # Determine size of non-zero region
     vmin = fit.binipflux[np.where(fit.binipflux > 0)].min()
@@ -413,8 +527,11 @@ def blissmap(event, fit, fignum, savefile=None, istitle=True, minnumpts=1, srces
         interp = 'bilinear'
     #MAP
     a = plt.axes([0.11,0.10,0.75,0.80])
+    if 'mmbilinint' in fit.model
+        plt.imshow(fit.mastermapFI.reshape(fit.xygrid[0].shape)[iymin:iymax+1,ixmin:ixmax+1], cmap=plt.cm.Greys, vmin=vmin, vmax=vmax, origin='lower',
+               extent=(xmin,xmax,ymin,ymax), aspect='auto', interpolation=interp,alpha=0.3,zorder=0)
     plt.imshow(fit.binipflux[iymin:iymax+1,ixmin:ixmax+1], cmap=palette, vmin=vmin, vmax=vmax, origin='lower', 
-               extent=(xmin,xmax,ymin,ymax), aspect='auto', interpolation=interp)
+               extent=(xmin,xmax,ymin,ymax), aspect='auto',zorder=1)#, interpolation=interp)
     plt.ylabel('Pixel Position in y', size=14)
     plt.xlabel('Pixel Position in x', size=14)
     #print(xmin,xmax,ymin,ymax)
@@ -442,7 +559,7 @@ def blissmap(event, fit, fignum, savefile=None, istitle=True, minnumpts=1, srces
     a = plt.axes([0.90,0.10,0.01,0.8], frameon=False)
     a.yaxis.set_visible(False)
     a.xaxis.set_visible(False)
-    a = plt.imshow([[vmin,vmax],[vmin,vmax]], cmap=plt.cm.jet, aspect='auto', visible=False)
+    a = plt.imshow([[vmin,vmax],[vmin,vmax]], cmap=plt.cm.terrain, aspect='auto', visible=False)
     plt.colorbar(a, fraction=3.0)
     if savefile != None:
         plt.savefig(savefile)
