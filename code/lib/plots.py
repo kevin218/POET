@@ -527,7 +527,7 @@ def blissmap(event, fit, fignum, savefile=None, istitle=True, minnumpts=1, srces
         interp = 'bilinear'
     #MAP
     a = plt.axes([0.11,0.10,0.75,0.80])
-    if 'mmbilinint' in fit.model
+    if 'mmbilinint' in fit.model:
         plt.imshow(fit.mastermapFI.reshape(fit.xygrid[0].shape)[iymin:iymax+1,ixmin:ixmax+1], cmap=plt.cm.Greys, vmin=vmin, vmax=vmax, origin='lower',
                extent=(xmin,xmax,ymin,ymax), aspect='auto', interpolation=interp,alpha=0.3,zorder=0)
     plt.imshow(fit.binipflux[iymin:iymax+1,ixmin:ixmax+1], cmap=palette, vmin=vmin, vmax=vmax, origin='lower', 
