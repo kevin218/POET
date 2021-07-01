@@ -43,31 +43,35 @@ def linear(mu, u):
   return 1 - u*(1-mu)
 
 
-def log(mu, (u, v)):
+def log(mu, foo):
   """
   This routine calculates I(mu)/I(mu=1) with a logarithmic LD law.
   """
+  u, v = foo
   return 1 - u*(1-mu) - v*mu*np.log(mu)
 
 
-def quad(mu, (u, v)):
+def quad(mu, foo):
   """
   This routine calculates I(mu)/I(mu=1) with a quadratic LD law.
   """
+  u, v = foo
   return 1 - u*(1-mu) - v*(1-mu)**2.0
 
 
-def cubic(mu, (u, v)):
+def cubic(mu, foo):
   """
   This routine calculates I(mu)/I(mu=1) with a cubic LD law.
   """
+  u, v = foo
   return 1 - u*(1-mu) - v*(1-mu)**3.0
 
 
-def nl(mu, (c0, c1, c2, c3)):
+def nl(mu, foo):
   """
   This routine calculates I(mu)/I(mu=1) with a non-linear LD law.
   """
+  c0, c1, c2, c3 = foo
   return 1 - c0*(1-mu**0.5) - c1*(1-mu) - c2*(1-mu**1.5) - c3*(1-mu**2)
 
 

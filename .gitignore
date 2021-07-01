@@ -7,10 +7,5 @@ __pycashe__
 */*/*/*.pyc
 */*/*/*/*.pyc
 */*/*/*/*/*.pyc
-*/*/*.py~
-*/*/*/*/.py~
-*/*/*/*/*.py~
-*/*/*/*/*/*.py~
-*/*.pcf~
-*/*/*.sh~
-lib/models_c/ext_func/
+code/lib/models_c/ext_func/
+*~

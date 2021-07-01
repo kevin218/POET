@@ -252,7 +252,8 @@ def hist2d(event, fit, fignum, savefile=None, allparams=None, parname=None, ipar
         nonfixedpars = range(allparams.shape[0])
         parname   = np.array(parname)[iparams]
     #palette = plt.matplotlib.colors.LinearSegmentedColormap('jet2',plt.cm.datad['jet'],65536)
-    palette = plt.matplotlib.colors.LinearSegmentedColormap('YlOrRd2',plt.cm.datad['YlOrRd'],65536)
+    #palette = plt.matplotlib.colors.LinearSegmentedColormap('YlOrRd2',plt.cm.datad['YlOrRd'],65536)
+    palette = plt.get_cmap('plasma')
     palette.set_under(color='w')
     plt.figure(fignum, figsize=(8,8))
     plt.clf()
@@ -290,7 +291,7 @@ def hist2d(event, fit, fignum, savefile=None, allparams=None, parname=None, ipar
                 vmin = np.min(hist2d[np.where(hist2d > 0)])
                 #largerhist = np.zeros((22,22))
                 #largerhist[1:-1,1:-1] = hist2d
-                a = plt.imshow(hist2d.T,extent=(xedges[0],xedges[-1],yedges[0],yedges[-1]), #cmap=palette, 
+                a = plt.imshow(hist2d.T,extent=(xedges[0],xedges[-1],yedges[0],yedges[-1]),cmap=palette, 
                                vmin=vmin, aspect='auto', origin='lower') #,interpolation='bicubic')
             h += 1
             n +=1
@@ -300,7 +301,7 @@ def hist2d(event, fit, fignum, savefile=None, allparams=None, parname=None, ipar
         a = plt.subplot(numfp-1, numfp-1, numfp-1, frameon=False)
         a.yaxis.set_visible(False)
         a.xaxis.set_visible(False)
-        a = plt.imshow([[0,1],[0,0]], cmap=plt.cm.YlOrRd, visible=False)
+        a = plt.imshow([[0,1],[0,0]], cmap=palette, visible=False)
         a = plt.text(1.4, 0.5, 'Normalized Point Density', rotation='vertical', ha='center', va='center')
         a = plt.colorbar()
     else:
@@ -329,6 +330,7 @@ def histograms(event, fit, fignum, savefile=None, allparams=None, parname=None, 
     j          = 1
     numfp      = len(nonfixedpars)
     histheight = np.min((int(4*np.ceil(numfp/3.)),8))
+    palette = plt.get_cmap('plasma')
     if histheight == 4:
         bottom = 0.23
         hspace = 0.40
@@ -350,7 +352,7 @@ def histograms(event, fit, fignum, savefile=None, allparams=None, parname=None, 
         plt.yticks(size=12)
         #plt.axvline(x=fit.meanp[i,0])
         plt.xlabel(parname[i], size=14)
-        a  = plt.hist(allparams[i,0::int(stepsize)], 20, density=False, label=str(fit.meanp[i,0]))
+        a  = plt.hist(allparams[i,0::int(stepsize)], 20, density=False, label=str(fit.meanp[i,0]),color=palette(0.1))
         j += 1
     plt.subplots_adjust(left=0.07,right=0.95,bottom=bottom,top=0.95,hspace=hspace,wspace=0.25)
     if savefile != None:

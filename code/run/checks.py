@@ -14,7 +14,7 @@ event = me.loadevent('evtname_ini', load=['data','uncd','bdmskd'])
 event = me.loadevent('evtname_bpm', load=['data','uncd','mask'])
 event = me.loadevent('evtname_den', load=['data','uncd','mask'])
 event = me.loadevent('evtname_ctr', load=['data','uncd','mask'])
-event = me.loadevent('gj436bo11_pht')
+event = me.loadevent('evtname_pht')
 
 # Check visually the centering results:
 import frameviewer as fv
