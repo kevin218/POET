@@ -596,6 +596,44 @@ def setupmodel(model, ind):
         myfuncs.append(linramp)
         saveext.append('ln')
         functype.append('ramp')
+    elif model[i] == 'linramp_paor':
+        #DEFINE INDICES
+        ind.lina0     = ind.size
+        ind.lina1     = ind.size + 1
+        ind.lina2     = ind.size + 2
+        ind.lina3     = ind.size + 3
+        ind.lina4     = ind.size + 4
+        ind.linb0     = ind.size + 5
+        ind.linb1     = ind.size + 6
+        ind.linb2     = ind.size + 7
+        ind.linb3     = ind.size + 8
+        ind.linb4     = ind.size + 9
+        ind.lint0     = ind.size + 10
+        ind.lint1     = ind.size + 11
+        ind.lint2     = ind.size + 12
+        ind.lint3     = ind.size + 13
+        ind.lint4     = ind.size + 14
+        ind.size    += 15
+        #DEFINE NAMES
+        parname.insert(ind.lina0,    'Ramp, Linear Term, AOR 0')
+        parname.insert(ind.lina1,    'Ramp, Linear Term, AOR 1')
+        parname.insert(ind.lina2,    'Ramp, Linear Term, AOR 2')
+        parname.insert(ind.lina3,    'Ramp, Linear Term, AOR 3')
+        parname.insert(ind.lina4,    'Ramp, Linear Term, AOR 4')
+        parname.insert(ind.linb0,    'Ramp, Constant Term, AOR 0')
+        parname.insert(ind.linb1,    'Ramp, Constant Term, AOR 1')
+        parname.insert(ind.linb2,    'Ramp, Constant Term, AOR 2')
+        parname.insert(ind.linb3,    'Ramp, Constant Term, AOR 3')
+        parname.insert(ind.linb4,    'Ramp, Constant Term, AOR 4')
+        parname.insert(ind.lint0,   'Ramp, Phase Offset, AOR 0')
+        parname.insert(ind.lint1,   'Ramp, Phase Offset, AOR 1')
+        parname.insert(ind.lint2,   'Ramp, Phase Offset, AOR 2')
+        parname.insert(ind.lint3,   'Ramp, Phase Offset, AOR 3')
+        parname.insert(ind.lint4,   'Ramp, Phase Offset, AOR 4')
+           #DEFINE RAMP MODEL
+        myfuncs.append(linramp_paor)
+        saveext.append('lnpaor')
+        functype.append('ramp')
     elif model[i] == 'logramp':
         #DEFINE INDICES
         ind.logt0    = ind.size
@@ -753,6 +791,65 @@ def setupmodel(model, ind):
            #DEFINE RAMP MODEL
         myfuncs.append(sincos2)
         saveext.append('sc2')
+        functype.append('sinusoidal')
+    elif model[i] == 'sincos3':
+        #DEFINE INDICES
+        ind.sc3c1a  = ind.size
+        ind.sc3c1o  = ind.size + 1
+        ind.sc3c2a  = ind.size + 2
+        ind.sc3c2o  = ind.size + 3
+        ind.sc3s1a  = ind.size + 4
+        ind.sc3s1o  = ind.size + 5
+        ind.sc3s2a  = ind.size + 6
+        ind.sc3s2o  = ind.size + 7
+        ind.sc3p    = ind.size + 8
+        ind.sc3c    = ind.size + 9
+        ind.sc3midpt= ind.size + 10
+        ind.sc3t14  = ind.size + 11
+        ind.sc3t12  = ind.size + 12
+        ind.size   += 13
+        #DEFINE NAMES
+        parname.insert(ind.sc3c1a,  'Cosine 1, Amplitude')
+        parname.insert(ind.sc3c1o,  'Cosine 1, Phase Offset')
+        parname.insert(ind.sc3c2a,  'Cosine 2, Amplitude')
+        parname.insert(ind.sc3c2o,  'Cosine 2, Phase Offset')
+        parname.insert(ind.sc3s1a,  'Sine 1, Amplitude')
+        parname.insert(ind.sc3s1o,  'Sine 1, Phase Offset')
+        parname.insert(ind.sc3s2a,  'Sine 1, Amplitude')
+        parname.insert(ind.sc3s2o,  'Sine 1, Phase Offset')
+        parname.insert(ind.sc3p,    'Sin/Cos, Period')
+        parname.insert(ind.sc3c,    'Sin/Cos, Constant Term')
+        parname.insert(ind.sc3midpt,'Sin/Cos, Ecl. Midpt')
+        parname.insert(ind.sc3t14,  'Sin/Cos, Ecl. Width')
+        parname.insert(ind.sc3t12,  'Sin/Cos, Ecl. Ingress')
+        #DEFINE RAMP MODEL
+        myfuncs.append(sincos2)
+        saveext.append('sc3')
+        functype.append('sinusoidal')
+    elif model[i] == 'lambertian_phase':
+        #DEFINE INDICES
+        ind.lbpt0 = ind.size
+        ind.lbpper = ind.size + 1
+        ind.lbpcosi = ind.size + 2
+        ind.lbplo0 = ind.size + 3
+        ind.lbpampl = ind.size + 4
+        ind.lbpc = ind.size + 5
+        ind.lbpmidpt = ind.size + 6
+        ind.lbpt14 = ind.size + 7
+        ind.lbpt12 = ind.size + 8
+        ind.size += 9
+        #DEFINE NAMES
+        parname.insert(ind.lbpt0, 'Lambertian, t0')
+        parname.insert(ind.lbpper, 'Lambertian, per')
+        parname.insert(ind,lbpcosi,'Lambertian, cosi')
+        parname.insert(ind.lbplo0, 'Lambertian, lo0')
+        parname.insert(ind.lbpampl,'Lambertian, ampl')
+        parname.insert(ind.lbpc,    'Lambertian, Constant Term')
+        parname.insert(ind.lbpmidpt,'Lambertian, Ecl. Midpt')
+        parname.insert(ind.lbpt14,  'Lambertian, Ecl. Width')
+        parname.insert(ind.lbpt12,  'Lambertian, Ecl. Ingress')
+        myfuncs.append(mc.lambertian_phase)
+        saveext.append('lbp')
         functype.append('sinusoidal')
     elif model[i] == 'rotation':
         #DEFINE INDICES
@@ -989,6 +1086,16 @@ def setupmodel(model, ind):
         parname.insert(ind.blip,   'Interpolation, min # pts')
         #DEFINE INTRA-PIXEL MODEL
         myfuncs.append(bilinint)
+        saveext.append('bli')
+        functype.append('ipmap')
+    elif model[i] == 'mm_bilinint':
+        #DEFINE INDICES
+        ind.blip   = ind.size
+        ind.size  += 1
+        #DEFINE NAMES
+        parname.insert(ind.blip,   'Interpolation, min # pts')
+        #DEFINE INTRA-PIXEL MODEL
+        myfuncs.append(mm_bilinint)
         saveext.append('bli')
         functype.append('ipmap')
     elif model[i] == 'ipspline':
@@ -2066,6 +2173,7 @@ def linramp(rampparams, x, etc = []):
    x0    = rampparams[2]
 
    return a*(x-x0) + b
+   
 
 def logramp(rampparams, x, etc = []):
     """
@@ -2361,6 +2469,7 @@ def sincos2(rampparams, t, etc = []):
     flux[iecl] = c1a*np.cos(2*pi*(midpt-c1o)/p) + c2a*np.cos(4*pi*(midpt-c2o)/p) + s1a*np.sin(2*pi*(midpt-s1o)/p) + s2a*np.sin(4*pi*(midpt-s2o)/p) + c
 
     return flux
+
 
 
 def quadip(ipparams, position, etc = []):
@@ -2752,7 +2861,7 @@ def nnint(ipparams, posflux, etc = [], retbinflux = False, retbinstd = False):
     """
     #ystep, xstep = ipparams
     y, x, flux, wbfipmask, binfluxmask, kernel, [ny, nx, sy, sx], [binlocnni, binlocbli], \
-    [dy1, dy2, dx1, dx2], [ysize, xsize], issmoothing = posflux
+    [dy1, dy2, dx1, dx2], [ysize, xsize], issmoothing, mastermapF,mastermapdF = posflux
     output  = np.zeros(flux.size)
     binflux = np.zeros(len(wbfipmask))
     binstd  = np.zeros(len(wbfipmask))
@@ -2840,9 +2949,8 @@ def bilinint(ipparams, posflux, etc = [], retbinflux = False, retbinstd = False)
     2010-07-07  Kevin
                 Added wbfipmask
     """
-
     y, x, flux, wbfipmask, binfluxmask, kernel, [ny, nx, sy, sx], [binlocnni, binlocbli], \
-    [dy1, dy2, dx1, dx2], [ysize, xsize], issmoothing = posflux
+    [dy1, dy2, dx1, dx2], [ysize, xsize], issmoothing, mastermapF,mastermapdF  = posflux
     binflux = np.zeros(len(wbfipmask))
     binstd  = np.zeros(len(wbfipmask))
     ipflux  = flux / etc
@@ -2858,7 +2966,6 @@ def bilinint(ipparams, posflux, etc = [], retbinflux = False, retbinstd = False)
         for i in wbfm[0]:
             binflux[i] = np.mean(ipflux[wbfipmask[i]])
         binflux /= np.mean(binflux[wbfm])
-
     #Perform smoothing
     if issmoothing == True:
         binflux = smoothing.smoothing(np.reshape(binflux,    (ysize,xsize)), (ny,nx), (sy,sx),
@@ -2875,6 +2982,100 @@ def bilinint(ipparams, posflux, etc = [], retbinflux = False, retbinstd = False)
         return [output, binflux]
     else:
         return [output, binstd]
+        
+def mmbilinint(ipparams, posflux, etc = [], retbinflux = False, retbinstd = False):
+    """
+  This function fits the intra-pixel sensitivity effect using bilinear interpolation to fit mean binned flux vs position.
+
+    Parameters
+    ----------
+    ipparams :  tuple
+                unused
+    y :         1D array, size = # of measurements
+                Pixel position along y
+    x :         1D array, size = # of measurements
+                Pixel position along x
+    flux :      1D array, size = # of measurements
+                Observed flux at each position
+    wherebinflux :  1D array, size = # of bins
+                    Measurement number assigned to each bin
+    gridpt :    1D array, size = # of measurements
+                Bin number in which each measurement is assigned
+    dy1 :       1D array, size = # of measurements
+                (y - y1)/(y2 - y1)
+    dy2 :       1D array, size = # of measurements
+                (y2 - y)/(y2 - y1)
+    dx1 :       1D array, size = # of measurements
+                (x - x1)/(x2 - x1)
+    dx2 :       1D array, size = # of measurements
+                (x2 - x)/(x2 - x1)
+    ysize :     int
+                Number of bins along y direction
+    xsize :     int
+                Number of bins along x direction
+    smoothing:  boolean
+                Turns smoothing on/off
+
+    Returns
+    -------
+    output :    1D array, size = # of measurements
+                Normalized intrapixel-corrected flux multiplier
+
+    Optional
+    --------
+    binflux :   1D array, size = # of bins
+                Binned Flux values
+
+    Notes
+    -----
+    When there are insufficient points for bilinear interpolation, nearest-neighbor interpolation is used.  The code that handles this is in p6models.py.
+
+    Examples
+    --------
+    None
+
+    Revisions
+    ---------
+    2010-06-11  Kevin Stevenson, UCF
+                kevin218@knights.ucf.edu
+                Original version
+    2010-07-07  Kevin
+                Added wbfipmask
+    """
+    y, x, flux, wbfipmask, binfluxmask, kernel, [ny, nx, sy, sx], [binlocnni, binlocbli], \
+    [dy1, dy2, dx1, dx2], [ysize, xsize], issmoothing, mastermapF , mastermapdF  = posflux
+    binflux = np.zeros(len(wbfipmask))
+    binstd  = np.zeros(len(wbfipmask))
+    ipflux  = flux / etc
+    wbfm    = np.where(binfluxmask == 1)
+    if retbinstd == True:
+        for i in wbfm[0]:
+            binflux[i] = np.mean(ipflux[wbfipmask[i]])
+            binstd[i]  = np.std(ipflux[wbfipmask[i]])
+        meanbinflux = np.mean(binflux[wbfm])
+        binflux    /= meanbinflux
+        binstd     /= meanbinflux
+    else:
+        for i in wbfm[0]:
+            binflux[i] = np.mean(ipflux[wbfipmask[i]])
+        binflux /= np.mean(binflux[wbfm])
+    #Perform smoothing
+    if issmoothing == True:
+        binflux = smoothing.smoothing(np.reshape(binflux,    (ysize,xsize)), (ny,nx), (sy,sx),
+                                      np.reshape(binfluxmask,(ysize,xsize)), gk=kernel).flatten()
+    #Calculate ip-corrected flux using bilinear interpolation
+    output = binflux[binlocbli      ]*dy2*dx2 + binflux[binlocbli      +1]*dy2*dx1 + \
+             binflux[binlocbli+xsize]*dy1*dx2 + binflux[binlocbli+xsize+1]*dy1*dx1
+    #Return fit with or without binned flux
+    if retbinflux == False and retbinstd == False:
+        return output
+    elif retbinflux == True and retbinstd == True:
+        return [output, binflux, binstd]
+    elif retbinflux == True:
+        return [output, binflux]
+    else:
+        return [output, binstd]
+
 
 def fixipmapping(ipparams, posflux, etc = [], retbinflux = False, retbinstd = False):
     """

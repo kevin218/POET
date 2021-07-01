@@ -6,8 +6,14 @@ import os, sys
 sys.path.append(os.getcwd() + '/py_func')
 sys.path.append(os.getcwd().replace('models_c',''))
 
-if "/home/kevin/Documents/esp01/code/lib/python" in sys.path:
-    sys.path.remove("/home/kevin/Documents/esp01/code/lib/python")
+if "/Users/mayem1/Documents/Code/POET/code/lib/python" in sys.path:
+    sys.path.remove("/Users/mayem1/Documents/Code/POET/code/lib/python")
+    
+# def trace(frame, event, arg):
+#     print("%s, %s:%d" % (event, frame.f_code.co_filename, frame.f_lineno))
+#     return trace
+#
+# sys.settrace(trace)
 
 os.environ['OMP_NUM_THREADS']='1'
 import models_c as mc
@@ -123,10 +129,13 @@ kernel           = np.zeros((ysize, xsize))
 tup1             = [0, 0, 0.0, 0.0]
 issmoothing      = False
 
+mastermapF       = np.ones(nobj, dtype=int)
+mastermapdF      = np.zeros(nobj, dtype=int)
+
 ### bilinint()
 posflux = [y, x, aplev, wbfipmask, binfluxmask, kernel, \
           tup1, binloc, griddist,  \
-          xygrid[0].shape, issmoothing]
+          xygrid[0].shape, issmoothing,mastermapF,mastermapdF]
 try:
     yp = mp.bilinint(ipparams, posflux, etc)
     yc = mc.bilinint(ipparams, posflux, etc)
@@ -137,6 +146,21 @@ try:
         print("Bilinint:   FAIL", np.np.nansum(abs(yp-yc)/yp))
 except:
     print("Bilinint:   FAIL to load")
+    
+### bilinint_mm()
+posflux = [y, x, aplev, wbfipmask, binfluxmask, kernel, \
+          tup1, binloc, griddist,  \
+          xygrid[0].shape, issmoothing,mastermapF,mastermapdF]
+try:
+    yp = mp.mmbilinint(ipparams, posflux, etc)
+    yc = mc.mmbilinint(ipparams, posflux, etc)
+    
+    if np.allclose(yp, yc):
+        print("Bilinint_mm:   PASS")
+    else:
+        print("Bilinint_mm:   FAIL", np.np.nansum(abs(yp-yc)/yp))
+except:
+    print("Bilinint_mm:   FAIL to load")
 
 ### expramp()
 rampparams = np.array((goal, m, t0))
@@ -277,7 +301,6 @@ else:
 try:
     ### nnint()
     # Variables in 'posflux', 'ipparams' in bilinint()
-
     yp  = mp.nnint(ipparams, posflux, etc)
     yc = mc.nnint(ipparams, posflux, etc)
     #print(yp-yc)

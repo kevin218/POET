@@ -32,18 +32,15 @@ def lambertian_phase(rampparams, t, etc = []):
     t14     = rampparams[7]
     t12     = rampparams[8]
     pi      = np.pi
-
+    
     incl = np.arccos(cosi)
     offs = lo0*np.pi/180.
     z_an = np.arccos(-1.0*np.sin(incl)*np.cos(2.*np.pi*(offs+(t-t0)/p)))
-
+    
     flux = ampl*(np.sin(z_an)+(np.pi-z_an)*np.cos(z_an))/np.pi + c
-
+    
     #Flatten sin/cos during eclipse
     iecl = np.where(np.bitwise_or((t-midpt)%p >= p-(t14-t12)/2.,(t-midpt)%p <= (t14-t12)/2.))
-    #print(iecl)
-    #flux[iecl] = np.mean(flux[iecl])
     z_an_in=np.arccos(-1.0*np.sin(incl)*np.cos(2.*np.pi*(offs+(midpt-t0)/p)))
     flux[iecl] = ampl*(np.sin(z_an_in)+(np.pi-z_an_in)*np.cos(z_an_in))/np.pi + c
-
     return flux

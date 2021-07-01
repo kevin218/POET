@@ -246,7 +246,11 @@ def poet_dataread(event, type=0, log=None):
       fp.expid [pos, be:en] = expid
       fp.dce   [pos, be:en] = dcenum
       fp.subarn[pos, be:en] = salist
-      fp.bmjd  [pos, be:en] = bcdhead['BMJD_OBS'] + framtime*(sadind+0.5)/86400.
+      ## emay 2020/3/31: some 1frame/pointing AORS missing the BMJD_OBS key
+      try:
+          fp.bmjd  [pos, be:en] = bcdhead['BMJD_OBS'] + framtime*(sadind+0.5)/86400.
+      except:
+          pass
       # ccampo 2011/3/18: changed to UTC from SCLK to avoid timing inconsistencies
       try:
         fp.time[pos, be:en] = bcdhead['UTCS_OBS'] + framtime*(sadind+0.5)

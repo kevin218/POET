@@ -15,6 +15,7 @@ mv logramp*.so logramp.so
 mv lqramp*.so lqramp.so
 mv mandelecl*.so mandelecl.so
 mv mandeltr*.so mandeltr.so
+mv mmbilinint*.so mmbilinint.so
 mv nnint*.so nnint.so
 mv occultquad*.so occultquad.so
 mv quadip*.so quadip.so

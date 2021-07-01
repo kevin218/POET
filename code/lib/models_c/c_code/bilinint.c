@@ -64,6 +64,8 @@ static PyObject *bilinint(PyObject *self, PyObject *args, PyObject *keywds)
   int dis = binfluxmask->dimensions[0];
   int i,j,arsize,temp_int,counter;
   double temp_mean,temp_std,meanbinflux;
+  
+  
 
   //need to make a lock to deal with the meanbinflux variable
   omp_lock_t lck;
@@ -106,7 +108,8 @@ static PyObject *bilinint(PyObject *self, PyObject *args, PyObject *keywds)
               omp_set_lock(&lck);
               meanbinflux += temp_mean;
               counter += 1;
-              omp_unset_lock(&lck);
+			  			omp_unset_lock(&lck);
+			  
             }
           else
             {
@@ -124,7 +127,8 @@ static PyObject *bilinint(PyObject *self, PyObject *args, PyObject *keywds)
               omp_set_lock(&lck);
               meanbinflux += temp_mean;
               counter     += 1;
-              omp_unset_lock(&lck);
+			  			omp_unset_lock(&lck);
+			  
             }
         }
       else
@@ -134,7 +138,7 @@ static PyObject *bilinint(PyObject *self, PyObject *args, PyObject *keywds)
         }
     }
   meanbinflux /= (double) counter;
-
+  
   #pragma omp parallel for
   for(i=0;i<dims[0];i++)
     {
@@ -175,18 +179,20 @@ static PyObject *bilinint(PyObject *self, PyObject *args, PyObject *keywds)
   int xsize =  (int) PyInt_AS_LONG(PyTuple_GetItem(tup2,1));
   int t_int_x, t_int_x_one;
   dims[0] = binloc->dimensions[1];
-
+  
   #pragma omp parallel for private(temp_int,t_int_one,t_int_x,t_int_x_one)
   for(i=0;i<dims[0];i++)
     {
-      temp_int = IND2_int(binloc,1,i);
-      t_int_one = temp_int +1;
-      t_int_x   = temp_int+xsize;
-      t_int_x_one = t_int_x +1;
-      IND(output,i) = IND(binflux,temp_int)*IND2(dydx,1,i)*IND2(dydx,3,i)+\
-        IND(binflux,t_int_one)*IND2(dydx,1,i)*IND2(dydx,2,i)+        \
-        IND(binflux,t_int_x)*IND2(dydx,0,i)*IND2(dydx,3,i)+        \
-        IND(binflux,t_int_x_one)*IND2(dydx,0,i)*IND2(dydx,2,i);
+	  	  temp_int = IND2_int(binloc,1,i);
+	  	  t_int_one = temp_int +1;
+	  	  t_int_x   = temp_int+xsize;
+	  	  t_int_x_one = t_int_x +1;
+				
+	  	  IND(output,i) = IND(binflux,temp_int)*IND2(dydx,1,i)*IND2(dydx,3,i)+\
+	  	    IND(binflux,t_int_one)*IND2(dydx,1,i)*IND2(dydx,2,i)+        \
+	  	    IND(binflux,t_int_x)*IND2(dydx,0,i)*IND2(dydx,3,i)+        \
+	  	    IND(binflux,t_int_x_one)*IND2(dydx,0,i)*IND2(dydx,2,i);
+	  	 	
     }
 
   //  y,x,flux,wbfipmask,binfluxmask,kernel,tup1,binloc,dydx,tup2,issmoothing

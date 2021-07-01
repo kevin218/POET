@@ -741,6 +741,44 @@ def setupmodel(model, ind):
         myfuncs.append(mc.linramp)
         saveext.append('ln')
         functype.append('ramp')
+    elif model[i] == 'linramp_paor':
+        #DEFINE INDICES
+        ind.lina0     = ind.size
+        ind.lina1     = ind.size + 1
+        ind.lina2     = ind.size + 2
+        ind.lina3     = ind.size + 3
+        ind.lina4     = ind.size + 4
+        ind.linb0     = ind.size + 5
+        ind.linb1     = ind.size + 6
+        ind.linb2     = ind.size + 7
+        ind.linb3     = ind.size + 8
+        ind.linb4     = ind.size + 9
+        ind.lint0     = ind.size + 10
+        ind.lint1     = ind.size + 11
+        ind.lint2     = ind.size + 12
+        ind.lint3     = ind.size + 13
+        ind.lint4     = ind.size + 14
+        ind.size    += 15
+        #DEFINE NAMES
+        parname.insert(ind.lina0,    'Ramp, Linear Term, AOR 0')
+        parname.insert(ind.lina1,    'Ramp, Linear Term, AOR 1')
+        parname.insert(ind.lina2,    'Ramp, Linear Term, AOR 2')
+        parname.insert(ind.lina3,    'Ramp, Linear Term, AOR 3')
+        parname.insert(ind.lina4,    'Ramp, Linear Term, AOR 4')
+        parname.insert(ind.linb0,    'Ramp, Constant Term, AOR 0')
+        parname.insert(ind.linb1,    'Ramp, Constant Term, AOR 1')
+        parname.insert(ind.linb2,    'Ramp, Constant Term, AOR 2')
+        parname.insert(ind.linb3,    'Ramp, Constant Term, AOR 3')
+        parname.insert(ind.linb4,    'Ramp, Constant Term, AOR 4')
+        parname.insert(ind.lint0,   'Ramp, Phase Offset, AOR 0')
+        parname.insert(ind.lint1,   'Ramp, Phase Offset, AOR 1')
+        parname.insert(ind.lint2,   'Ramp, Phase Offset, AOR 2')
+        parname.insert(ind.lint3,   'Ramp, Phase Offset, AOR 3')
+        parname.insert(ind.lint4,   'Ramp, Phase Offset, AOR 4')
+           #DEFINE RAMP MODEL
+        myfuncs.append(linramp_paor)
+        saveext.append('ln')
+        functype.append('ramp')
     elif model[i] == 'quadramp':
         #DEFINE INDICES
         ind.qrr3    = ind.size
@@ -956,7 +994,7 @@ def setupmodel(model, ind):
         parname.insert(ind.sc3t14,  'Sin/Cos, Ecl. Width')
         parname.insert(ind.sc3t12,  'Sin/Cos, Ecl. Ingress')
         #DEFINE RAMP MODEL
-        myfuncs.append(sincos2)
+        myfuncs.append(mc.sincos2)
         saveext.append('sc3')
         functype.append('sinusoidal')
     elif model[i] == 'cosine8':
@@ -1158,6 +1196,66 @@ def setupmodel(model, ind):
         #DEFINE RAMP MODEL
         myfuncs.append(mc.spiderman_sph)
         saveext.append('spsh')
+        functype.append('sinusoidal')
+    elif model[i] == 'spiderman_sph3':
+        #DEFINE INDICES
+        ind.t0 = ind.size
+        ind.per = ind.size + 1
+        ind.a_abs = ind.size + 2
+        ind.cosi = ind.size + 3
+        ind.ecc = ind.size + 4
+        ind.w = ind.size + 5
+        ind.rp = ind.size + 6
+        ind.a = ind.size + 7
+        ind.p_u1 = ind.size + 8
+        ind.p_u2 = ind.size + 9
+        ind.T_s = ind.size + 10
+        ind.l1 = ind.size + 11
+        ind.l2 = ind.size + 12
+        ind.degree = ind.size + 13
+        ind.la0 = ind.size + 14
+        ind.lo0 = ind.size + 15
+        ind.sph0 = ind.size + 16
+        ind.sph1 = ind.size + 17
+        ind.sph2 = ind.size + 18
+        ind.sph3 = ind.size + 19
+        ind.sph4 = ind.size + 20
+        ind.sph5 = ind.size + 21
+        ind.sph6 = ind.size + 22
+        ind.sph7 = ind.size + 23
+        ind.sph8 = ind.size + 24
+        ind.npoints = ind.size + 25
+        ind.size   += 26
+        #DEFINE NAMES
+        parname.insert(ind.t0,  't0')
+        parname.insert(ind.per,  'per')
+        parname.insert(ind.a_abs,  'a_abs')
+        parname.insert(ind.cosi,  'cosi')
+        parname.insert(ind.ecc,  'ecc')
+        parname.insert(ind.w,  'w')
+        parname.insert(ind.rp,  'rp')
+        parname.insert(ind.a,  'a')
+        parname.insert(ind.p_u1,  'p_u1')
+        parname.insert(ind.p_u2,  'p_u2')
+        parname.insert(ind.T_s,  'T_s')
+        parname.insert(ind.l1,  'l1')
+        parname.insert(ind.l2,  'l2')
+        parname.insert(ind.degree, 'degree')
+        parname.insert(ind.la0, 'la0')
+        parname.insert(ind.lo0, 'lo0')
+        parname.insert(ind.sph0, 'sph0')
+        parname.insert(ind.sph1, 'sph1')
+        parname.insert(ind.sph2, 'sph2')
+        parname.insert(ind.sph3, 'sph3')
+        parname.insert(ind.sph4, 'sph4')
+        parname.insert(ind.sph5, 'sph5')
+        parname.insert(ind.sph6, 'sph6')
+        parname.insert(ind.sph7, 'sph7')
+        parname.insert(ind.sph8, 'sph8')
+        parname.insert(ind.npoints,  'npoints')
+        #DEFINE RAMP MODEL
+        myfuncs.append(mc.spiderman_sph)
+        saveext.append('sph3')
         functype.append('sinusoidal')
     elif model[i] == 'spiderman_spot':
         #DEFINE INDICES
@@ -1475,7 +1573,8 @@ def setupmodel(model, ind):
         ind.ty2    = ind.size + 4
         ind.ty3    = ind.size + 5
         ind.tc     = ind.size + 6
-        ind.size  += 7
+        ind.ts0    = ind.size + 7
+        ind.size  += 8
         #DEFINE NAMES
         parname.insert(ind.tx1,    'PRF Width, Linear Term in x')
         parname.insert(ind.tx2,    'PRF Width, Quadratic Term in x')
@@ -1484,9 +1583,58 @@ def setupmodel(model, ind):
         parname.insert(ind.ty2,    'PRF Width, Quadratic Term in y')
         parname.insert(ind.ty3,    'PRF Width, Cubic Term in y')
         parname.insert(ind.tc,     'PRF Width, Constant Term')
+        parname.insert(ind.ts0,    'PRF Width, Offset Term')
         #DEFINE INTRA-PIXEL MODEL
         myfuncs.append(mc.cubicgw)
         saveext.append('3gw')
+        functype.append('ippoly')
+    elif model[i] == 'cubicgw2':
+        #DEFINE INDICES
+        ind.tx1    = ind.size
+        ind.tx2    = ind.size + 1
+        ind.tx3    = ind.size + 2
+        ind.ty1    = ind.size + 3
+        ind.ty2    = ind.size + 4
+        ind.ty3    = ind.size + 5
+        ind.tc     = ind.size + 6
+        ind.ts0    = ind.size + 7
+        ind.size  += 8
+        #DEFINE NAMES
+        parname.insert(ind.tx1,    'PRF Width, Linear Term in x')
+        parname.insert(ind.tx2,    'PRF Width, Quadratic Term in x')
+        parname.insert(ind.tx3,    'PRF Width, Cubic Term in x')
+        parname.insert(ind.ty1,    'PRF Width, Linear Term in y')
+        parname.insert(ind.ty2,    'PRF Width, Quadratic Term in y')
+        parname.insert(ind.ty3,    'PRF Width, Cubic Term in y')
+        parname.insert(ind.tc,     'PRF Width, Constant Term')
+        parname.insert(ind.ts0,    'PRF Width, Offset Term')
+        #DEFINE INTRA-PIXEL MODEL
+        myfuncs.append(mc.cubicgw)
+        saveext.append('3gw2')
+        functype.append('ippoly')
+    elif model[i] == 'cubicgw3':
+        #DEFINE INDICES
+        ind.tx1    = ind.size
+        ind.tx2    = ind.size + 1
+        ind.tx3    = ind.size + 2
+        ind.ty1    = ind.size + 3
+        ind.ty2    = ind.size + 4
+        ind.ty3    = ind.size + 5
+        ind.tc     = ind.size + 6
+        ind.ts0    = ind.size + 7
+        ind.size  += 8
+        #DEFINE NAMES
+        parname.insert(ind.tx1,    'PRF Width, Linear Term in x')
+        parname.insert(ind.tx2,    'PRF Width, Quadratic Term in x')
+        parname.insert(ind.tx3,    'PRF Width, Cubic Term in x')
+        parname.insert(ind.ty1,    'PRF Width, Linear Term in y')
+        parname.insert(ind.ty2,    'PRF Width, Quadratic Term in y')
+        parname.insert(ind.ty3,    'PRF Width, Cubic Term in y')
+        parname.insert(ind.tc,     'PRF Width, Constant Term')
+        parname.insert(ind.ts0,    'PRF Width, Offset Term')
+        #DEFINE INTRA-PIXEL MODEL
+        myfuncs.append(mc.cubicgw)
+        saveext.append('3gw3')
         functype.append('ippoly')
     elif model[i] == 'ballardip':
         #DEFINE INDICES
@@ -1530,6 +1678,16 @@ def setupmodel(model, ind):
         parname.insert(ind.blip,   'Interpolation, min # pts')
         #DEFINE INTRA-PIXEL MODEL
         myfuncs.append(mc.bilinint)
+        saveext.append('bli')
+        functype.append('ipmap')
+    elif model[i] == 'mmbilinint':
+        #DEFINE INDICES
+        ind.blip   = ind.size
+        ind.size  += 1
+        #DEFINE NAMES
+        parname.insert(ind.blip,   'Interpolation, min # pts')
+        #DEFINE INTRA-PIXEL MODEL
+        myfuncs.append(mc.mmbilinint)
         saveext.append('bli')
         functype.append('ipmap')
     elif model[i] == 'pnnint':
@@ -2368,7 +2526,69 @@ def linramp(rampparams, x, etc = []):
    x0    = rampparams[2]
 
    return ne.evaluate('a*(x-x0) + b')
+'''
+def linramp_paor(rampparams, x, etc = []):
+   """
+  This function creates a model that fits a ramp using a linear polynomial per aor.
+  Currently, max aors is 5
 
+  Parameters
+  ----------
+    x0/x1/x2/x3/x4: time offset
+    a0/a1/a2/a3/a4: coefficient of first term
+    b0/b1/b2/b3/b4: constant
+    x: Array of time/phase points
+    
+    aorI0/aorI1/aorI2/aorI3/aorI4: indicies for each AOR
+
+  Returns
+  -------
+    This function returns the flux values for the ramp models
+
+  Revisions
+  ---------
+  2019-12-10 Erin May
+   """
+
+   a0    = rampparams[0]
+   a1    = rampparams[1]
+   a2    = rampparams[2]
+   a3    = rampparams[3]
+   a4    = rampparams[4]
+   b0    = rampparams[5]
+   b1    = rampparams[6]
+   b2    = rampparams[7]
+   b3    = rampparams[8]
+   b4    = rampparams[9]
+   x0    = rampparams[10]
+   x1    = rampparams[11]
+   x2    = rampparams[12]
+   x3    = rampparams[13]
+   x4    = rampparams[14]
+
+   clip = (np.nansum([len(etc[0,0]),len(etc[0,1]),len(etc[0,2]),len(etc[0,3]),len(etc[0,4])]))
+   if len(x) == clip:
+       aorI0 = etc[0,0]
+       aorI1 = etc[0,1]
+       aorI2 = etc[0,2]
+       aorI3 = etc[0,3]
+       aorI4 = etc[0,4]
+   else:
+       aorI0 = etc[1,0]
+       aorI1 = etc[1,1]
+       aorI2 = etc[1,2]
+       aorI3 = etc[1,3]
+       aorI4 = etc[1,4]
+
+   r0 = (a0*(x[aorI0]-x0) + b0) 
+   r1 = (a1*(x[aorI1]-x1) + b1) 
+   r2 = (a2*(x[aorI2]-x2) + b2) 
+   r3 = (a3*(x[aorI3]-x3) + b3) 
+   r4 = (a4*(x[aorI4]-x4) + b4) 
+
+   return np.concatenate((r0,r1,r2,r3,r4))
+
+'''
 def logramp(rampparams, x, etc = []):
    """
   This function creates a model that fits a ramp using a 4th-order natural log polynomial.
