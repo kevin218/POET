@@ -44,7 +44,7 @@ from python_models import setupmodel
 def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
     """
     This function runs Markov Chain Monte Carlo model fitting using the Metropolis-Hastings algorithm
-    
+
     Parameters
     ----------
     event       : list
@@ -53,11 +53,11 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
         Iteration number for runs with multiple models
     printout    : object
         File object for directing print statements
-    
+
     Returns
     -------
     None
-    
+
     """
     #When allplots=False: the correlation and histogram figures are not produced.
     #When normflux=Flase: flux is not normalized w.r.t. each position's median value.
@@ -117,14 +117,14 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
             pass
         else:
             event[j].params.nbins = int(sum(event[j].good))
-    
+
     for j in range(numevents):
         fit.append(readeventhdf.fits())
         event[j].fit.append(fit[j])
         fit[j].model   = event[j].params.model[num]
         if hasattr(event[j].params, 'blocks'):
             fit[j].blocks = event[j].params.blocks[num]
-        
+
         #UPDATE event.params
         event[j].params.numit    = np.copy(numit)
         event[j].params.chi2flag = chi2flag
@@ -137,7 +137,7 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
         if hasattr(event[j].params, 'newortho') == False:
             event[j].params.newortho = False
         event[j].isortho = False
-        
+
         #READ IN DATA
         fit[j].mflux = np.mean(event[j].aplev[np.where(event[j].good == 1)])
         #NORMALIZE FLUX AT EACH POSITION IF USING > 1 POSITION
@@ -154,7 +154,7 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
         else:
             fit[j].fluxuc   = event[j].aplev[np.where(event[j].good == 1)]
             fit[j].sigmauc  = event[j].aperr[np.where(event[j].good == 1)]
-        
+
         fit[j].phaseuc  = event[j].phase [np.where(event[j].good == 1)]
         fit[j].yuc      = event[j].y     [np.where(event[j].good == 1)]
         fit[j].xuc      = event[j].x     [np.where(event[j].good == 1)]
@@ -176,7 +176,7 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
         #    fit[j].P_hatuc  = event[j].fp.P_hat[np.where(event[j].good == 1)]
         if hasattr(event[j], 'apdata'):
             fit[j].apdatauc = event[j].apdata[np.where(event[j].good[0] == 1)]
-        
+
         #SORT DATA BY bjdutcuc IF USING > 1 POSITION
         if event[j].npos > 1:
             isort           = np.argsort(fit[j].bjdutcuc)
@@ -196,7 +196,7 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
                 fit[j].apdatauc = fit[j].apdatauc[isort]
             #if hasattr(event[j].fp, 'P_hat'):
             #    fit[j].P_hatuc  = fit[j].P_hatuc[isort]
-        
+
         #OBTAIN INITIAL MODEL PARAMETERS
         nummodels[j] = len(fit[j].model)
         if event[j].params.modelfile == None:
@@ -204,7 +204,7 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
         elif event[j].params.modelfile.__class__ == str:
             modelfile = event[j].ancildir + event[j].params.modelfile
         elif len(event[j].params.modelfile) == len(event[j].params.model):
-            modelfile = event[j].ancildir + event[j].params.modelfile[num] 
+            modelfile = event[j].ancildir + event[j].params.modelfile[num]
         else:
             modelfile = event[j].ancildir + event[j].params.modelfile[0]
         parlist.append(pe.read(modelfile, fit[j].model, event[j]))
@@ -219,14 +219,14 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
                             np.ones(numipxk*numipyk)*pars[2][0],
                             np.ones(numipxk*numipyk)*pars[3][0]]
                 pars     = temppars
-            
+
             params     = np.concatenate((params,   pars[0]),0)
             pmin       = np.concatenate((pmin,     pars[1]),0)
             pmax       = np.concatenate((pmax,     pars[2]),0)
             stepsize   = np.concatenate((stepsize, pars[3]),0)
             numparams  = np.concatenate((numparams, [numparams[-1] + len(pars[0])]),0)
             iparams.append(list(range(pcounter,pcounter+len(pars[0]))))
-            
+
             #CHECK FOR SHARED PARAMETERS, MAKE APPROPRIATE CHANGES TO PARAMETER VALUES AND LIMITS
             for k in range(len(pars[0])):
                 if pars[3][k] < 0:
@@ -234,9 +234,9 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
                     pmin   [pcounter+k] = pmin   [int(-pars[3][k]-1)]
                     pmax   [pcounter+k] = pmax   [int(-pars[3][k]-1)]
                     iparams[-1][k]      = int(-pars[3][k]-1)
-            
+
             pcounter += len(pars[0])
-        
+
         #SETUP MODELS BY DECLARING FUNCTIONS, FUNCTION TYPES, PARAMETER NAMES, INDICES & SAVE EXTENSIONS
         func, funct, fit[j].parname, fit[j].i, fit[j].saveext = setupmodel(fit[j].model, fit[j].i)
         myfuncs  = np.concatenate(( myfuncs, func), 0)
@@ -248,7 +248,7 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
         if np.where(funct == 'gp') != (nummodels[j] - 1):
             print("ERROR: Gaussian process model must be the last model listed.")
             return
-    
+
     #NEED TO RESTART FOR LOOP HERE!
     cummodels    = [0]      #Cumulative list of number of models
     funcx        = []
@@ -265,7 +265,7 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
         print(fit[j].model, file=printout)
         cummodels.append(int(cummodels[j] + nummodels[j]))
         fit[j].nump       = numparams[cummodels[j+1]] - numparams[cummodels[j]]
-        
+
         #CHECK FOR PRIORS, ASSIGN INDICES AND priorvals=[MEAN,LOW,HIGH] TO fit
         fit[j].ipriors   = []
         fit[j].priorvals = []
@@ -280,7 +280,7 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
                 i += 1
             fit[j].priorvals = event[j].params.priorvals
         isprior = np.concatenate((isprior, fit[j].isprior),0)
-        
+
         #SPECIFY INDICES OF FREE AND NONPRIOR PARAMETERS
         fit[j].ifreepars    = np.array(np.where(stepsize[numparams[cummodels[j]]:numparams[cummodels[j+1]]] > 0)).flatten()
         ifreepars = np.concatenate((ifreepars, fit[j].ifreepars + numparams[cummodels[j]]),0)
@@ -288,7 +288,7 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
         nonfixedpars = np.concatenate((nonfixedpars, fit[j].nonfixedpars + numparams[cummodels[j]]),0)
         fit[j].numfreepars = fit[j].ifreepars.size
         maxnumfp = np.max((maxnumfp, fit[j].numfreepars))
-        
+
         #DETERMINE THE CENTROID LOCATION RELATIVE TO THE CENTER OF PIXEL
         #RECORD IN WHICH QUADRANT THE CENTER OF LIGHT FALLS
         fit[j].nobjuc   = fit[j].fluxuc.size
@@ -319,7 +319,7 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
                     fit[j].numq[2]    += 1
         print("Number of frames per pixel quadrant:", file=printout)
         print(fit[j].numq, file=printout)
-        
+
         #CLIP FIRST AND LAST FEW PTS OF DATA
         if len(event[j].params.preclip) == len(event[j].params.model):
             preclip     = event[j].params.preclip[num]
@@ -329,7 +329,7 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
             postclip    = fit[j].nobjuc - event[j].params.postclip[num]
         else:
             postclip    = fit[j].nobjuc - event[j].params.postclip[0]
-        
+
         #DEFINE clipmask WHERE 1 IS KEPT AND 0 IS CLIPPED
         fit[j].clipmask = np.zeros(fit[j].nobjuc)
         fit[j].clipmask[preclip:postclip] = 1
@@ -345,14 +345,14 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
             ipclip = event[j].params.ipclip
             for i in range(len(ipclip)):
                 fit[j].ipmaskuc[ipclip[i][0]:ipclip[i][1]] = 0
-        
+
         #DEFINE INTRAPIXEL MASK, (y,x) POSITION & NUMBER OF POINTS AFTER CLIPPING
         fit[j].ipmask   = np.copy(fit[j].ipmaskuc[np.where(fit[j].clipmask)])
-        fit[j].position = np.array([fit[j].y[np.where(fit[j].clipmask)], 
-                                    fit[j].x[np.where(fit[j].clipmask)], 
+        fit[j].position = np.array([fit[j].y[np.where(fit[j].clipmask)],
+                                    fit[j].x[np.where(fit[j].clipmask)],
                                     fit[j].quadrant[np.where(fit[j].clipmask)]])
         fit[j].nobj     = fit[j].position[0].size
-        
+
         #CALCULATE minnumptsmask = 1 FOR AT LEAST minnumpts IN EACH BIN
         fit[j].minnumptsmask = np.ones(fit[j].nobj, dtype=int)
         for i in range(cummodels[j],cummodels[j+1]):
@@ -360,7 +360,7 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
                 #Read bin sizes
                 if len(event[j].params.ystep) == len(event[j].params.model):
                     ystep = event[j].params.ystep[num]
-                    xstep = event[j].params.xstep[num] 
+                    xstep = event[j].params.xstep[num]
                 else:
                     ystep = event[j].params.ystep[0]
                     xstep = event[j].params.xstep[0]
@@ -406,15 +406,15 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
         #FINDME: may not need with new pipeline.
         if hasattr(event[j], 'apdata'):
             fit[j].apdata   = np.copy(fit[j].apdatauc[fit[j].isclipmask])
-        fit[j].position     = np.array([fit[j].y[fit[j].isclipmask], 
-                                        fit[j].x[fit[j].isclipmask], 
+        fit[j].position     = np.array([fit[j].y[fit[j].isclipmask],
+                                        fit[j].x[fit[j].isclipmask],
                                         fit[j].quadrant[fit[j].isclipmask]])
-        fit[j].gausswidth   = np.array([fit[j].sy[fit[j].isclipmask], 
+        fit[j].gausswidth   = np.array([fit[j].sy[fit[j].isclipmask],
                                         fit[j].sx[fit[j].isclipmask]])
         fit[j].nobj         = fit[j].flux.size
         fit[j].positionuc   = np.array([fit[j].y, fit[j].x, fit[j].quadrant])
         fit[j].gausswidthuc = np.array([fit[j].sy, fit[j].sx])
-        
+
         #DETERMINE BIN LOCATION FOR EACH POSITION
         fit[j].isipmapping = False
         fit[j].numknots = 0
@@ -432,10 +432,10 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
                 #Read bin sizes
                 if len(event[j].params.ystep) == len(event[j].params.model):
                     ystep = event[j].params.ystep[num]
-                    xstep = event[j].params.xstep[num] 
+                    xstep = event[j].params.xstep[num]
                 else:
                     ystep = event[j].params.ystep[0]
-                    xstep = event[j].params.xstep[0]  
+                    xstep = event[j].params.xstep[0]
                 #yfactor  = 0.2/ystep
                 #xfactor  = 0.2/xstep
                 yfactor  = 10.
@@ -504,7 +504,7 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
                         else:
                             fit[j].wherebinfluxuc.append([])
                             fit[j].wbfipmaskuc.append([])
-                
+
                 #Check for points not associated with a bin
                 isnobins    = np.where(fit[j].binloc  [0] == -1)[0]
                 isnobinsuc  = np.where(fit[j].binlocuc[0] == -1)[0]
@@ -516,13 +516,13 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
                 #Read smoothing paramters
                 if len(event[j].params.nx) == len(event[j].params.model):
                     ny = event[j].params.ny[num]
-                    nx = event[j].params.nx[num] 
+                    nx = event[j].params.nx[num]
                 else:
                     ny = event[j].params.ny[0]
-                    nx = event[j].params.nx[0] 
+                    nx = event[j].params.nx[0]
                 if len(event[j].params.sx) == len(event[j].params.model):
                     sy = event[j].params.sy[num]
-                    sx = event[j].params.sx[num] 
+                    sx = event[j].params.sx[num]
                 else:
                     sy = event[j].params.sy[0]
                     sx = event[j].params.sx[0]
@@ -538,26 +538,26 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
 
                 fit[j].binfluxmask   = fit[j].binfluxmask  .flatten()
                 fit[j].binfluxmaskuc = fit[j].binfluxmaskuc.flatten()
-                
+
                 ###bin master bliss map onto grid locations. emay 10/24/2019
                 if 'mmbilinint' in fit[j].model:
                     print('Binning Master Map onto Grid...')
-                
+
                     mholddir   = (event[0].hordir).split('/')
                     mapdir     = '/'.join(mholddir[:mholddir.index('horizons')])
                     mapfile    = open(event[0].topdir+mapdir+'/mastermaps/ch'+str(event[0].photchan)+'_'+event[0].photdir+'_master_map.npz','rb')
                     masterload = pickle.load(mapfile)
                     mastermapF,mastermapX,mastermapY = masterload
                     map_nnan_inds = np.where(~np.isnan(mastermapF))
-                    
+
                     mastermapX = mastermapX[map_nnan_inds]
                     mastermapY = mastermapY[map_nnan_inds]
                     mastermapF = mastermapF[map_nnan_inds]
-                    
+
                     fit[j].wbfipmask_mm   = []
                     fit[j].binfluxmask_mm = np.zeros((ysize,xsize),dtype=int)
                     # binloc_mm      = np.zeros((2, len(mastermapF)),   dtype=int) - 1
-                    
+
                     for m in range(ysize):
                         yhold=ygrid[m]
                         yhold+=(fit[j].yuc[0] - fit[j].y[0])
@@ -566,31 +566,31 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
                             xhold=xgrid[n]
                             xhold+=(fit[j].xuc[0] - fit[j].x[0])
                             wbf_mm = wbftemp_mm[np.where(np.abs(mastermapX[wbftemp_mm]-xhold)-xstep/2. <= 1e-16)[0]]
-                            
+
                             if len(wbf_mm) >= minnumptsM:
                                 fit[j].binfluxmask_mm[m,n]=1.
                                 #fit[j].wbfipmask_mm.append(wbf_mm)
                                 fit[j].wbfipmask_mm.  append(wbf_mm)
                             else:
                                 fit[j].wbfipmask_mm.append([])
-                        
-                    
+
+
                     fit[j].mastermapFI = np.ones(len(fit[j].wbfipmask_mm))*np.nan
                     wbfm_mm = np.where(fit[j].binfluxmask_mm.flatten() == 1)[0]
                     for m in wbfm_mm:
                         fit[j].mastermapFI[m] = np.mean(mastermapF[fit[j].wbfipmask_mm[m]])
-                    
-                    del mastermapF,mastermapX,mastermapY  
+
+                    del mastermapF,mastermapX,mastermapY
                     mapfile.close()
-                
-                       
+
+
                 else:  #if not using, nan arrays to ignore map
                     fit[j].mastermapFI = np.ones_like(fit[j].xygrid[0].flatten())*np.nan
-        
-                
+
+
                 fit[j].mastermapovr = np.zeros_like(fit[j].mastermapFI,dtype=int)*0 #initialize mask for above indexes
                 fit[j].mastermapovr[np.where(np.isfinite(fit[j].mastermapFI) & (fit[j].binfluxmask != 0))[0]] = 1 #where map AND data exist
-                
+
                 if 'mmbilinint' in fit[j].model:
                     plt.figure(1,figsize=(8,8))
                     plt.clf()
@@ -615,7 +615,7 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
 
                     plt.savefig(event[j].modeldir+"/"+event[j].eventname+"-fig8000.png")
                     plt.close(1)
-                
+
                 #####
 
                 #DETERMINE DISTANCES TO FOUR NEAREST GRID POINTS
@@ -752,11 +752,11 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
                                     fit[j].griddistuc[1, wherexy] = np.array((ygrid[m+1]-fit[j].y[wherexy])/ystep)
                                     fit[j].griddistuc[2, wherexy] = np.array((fit[j].x[wherexy]-xgrid[n])  /xstep)
                                     fit[j].griddistuc[3, wherexy] = np.array((xgrid[n+1]-fit[j].x[wherexy])/xstep)
-                
+
                 ### bilinear interpolation of MM onto data points is done here
                 if 'mmbilinint' in fit[j].model:
                     binlocbli_mm         = fit[j].binloc[1,:]
-                    [dy1, dy2, dx1, dx2] = fit[j].griddist 
+                    [dy1, dy2, dx1, dx2] = fit[j].griddist
                     [ysize, xsize]       = fit[j].xygrid[0].shape
                     map_mask             = np.ones_like(dy1)*1
                     map_mask[np.where(dy1 ==0)[0]] = np.nan
@@ -767,7 +767,7 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
                                            fit[j].mastermapFI[binlocbli_mm+xsize]*dy1*dx2 + fit[j].mastermapFI[binlocbli_mm+xsize+1]*dy1*dx1
                     fit[j].mastermapFIF *= map_mask
                     fit[j].mastermapFIF /= np.nanmean(fit[j].mastermapFIF)
-                    
+
                     #again for unclipped
                     binlocbli_mm         = fit[j].binlocuc[1,:]
                     [dy1, dy2, dx1, dx2] = fit[j].griddistuc
@@ -781,24 +781,24 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
                                            fit[j].mastermapFI[binlocbli_mm+xsize]*dy1*dx2 + fit[j].mastermapFI[binlocbli_mm+xsize+1]*dy1*dx1
                     fit[j].mastermapFIFuc *= map_mask
                     fit[j].mastermapFIFuc /= np.nanmean(fit[j].mastermapFIFuc)
-                     
+
                 else:
                     fit[j].mastermapFIF    = np.zeros_like(fit[j].binloc[1,:])*np.nan
                     fit[j].mastermapFIFuc  = np.zeros_like(fit[j].binlocuc[1,:])*np.nan
-                 
+
                 fit[j].mastermapovrF  = np.zeros_like(fit[j].mastermapFIF,dtype=int)*0
                 fit[j].mastermapovrF[np.where(~np.isnan(fit[j].mastermapFIF))[0]] = 1  #where map and data overlap
-                   
+
                 fit[j].mastermapovrFuc  = np.zeros_like(fit[j].mastermapFIFuc,dtype=int)*0
                 fit[j].mastermapovrFuc[np.where(~np.isnan(fit[j].mastermapFIFuc))[0]] = 1  #where map and data overlap
-                
+
                 # print(len(fit[j].y[fit[j].isclipmask]),len(fit[j].x[fit[j].isclipmask]),len(fit[j].flux),len(fit[j].mastermapFIF),' USED:', len(np.where(~np.isnan(fit[j].mastermapFIF))[0]))
                 # print(len(fit[j].y),len(fit[j].x),len(fit[j].fluxuc),len(fit[j].mastermapFIFuc),' USED:', len(np.where(~np.isnan(fit[j].mastermapFIFuc))[0]))
                 # print(len)
-                            
-                # COMBINE MODEL PARAMETERS INTO ONE LIST               
-                fit[j].posflux  = [fit[j].y[fit[j].isclipmask], 
-                                   fit[j].x[fit[j].isclipmask], 
+
+                # COMBINE MODEL PARAMETERS INTO ONE LIST
+                fit[j].posflux  = [fit[j].y[fit[j].isclipmask],
+                                   fit[j].x[fit[j].isclipmask],
                                    fit[j].flux,
                                    fit[j].wbfipmask,
                                    fit[j].binfluxmask,
@@ -823,7 +823,7 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
                                    event[j].params.issmoothing,
                                    fit[j].mastermapFIFuc,
                                    fit[j].mastermapovrFuc]
-            
+
             if functype[i] == 'ballardip':
                 print("Computing intrapixel effect")
                 ipparams = [params[fit[j].i.sigmay], params[fit[j].i.sigmax], int(params[fit[j].i.nbins])]
@@ -858,7 +858,7 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
                                         sum(np.exp(-0.5*((xuc-binx)/event[j].xprecision)**2) * \
                                             np.exp(-0.5*((yuc-biny)/event[j].yprecision)**2)*s)
                 '''
-    
+
     #RESTART FOR LOOP HERE
     inonprior  = np.where(np.bitwise_and(stepsize > 0,isprior == 0))[0] #Indices of non-prior parameters
     iortholist = []                                                     #List of variable indices to orthogonalize
@@ -878,11 +878,11 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
             fit[j].timeunituc = fit[j].phaseuc
             event[j].params.timeunit = 'orbits'
             event[j].params.tuoffset = 0.0
-        
+
         # Initialize ortho variables
         if hasattr(event[j].params, 'ortholist'):
             if len(event[j].params.ortholist) == len(event[j].params.model):
-                ortholist = event[j].params.ortholist[num] 
+                ortholist = event[j].params.ortholist[num]
             else:
                 ortholist = event[j].params.ortholist[0]
         else:
@@ -893,10 +893,10 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
         fit[j].origin     = np.zeros(diminvtrans)               #Origin of coordinate system, initialized to 0
         fit[j].orthosigma = np.ones(diminvtrans)                #Normalizing uncertainties, initialized to 1
         iortholist.append([])
-        
+
         #ASSIGN INDEPENDENT VARIABLE AND EXTRA PARAMETERS FOR EACH MODEL TYPE
         k = 0
-        fit[j].etc = []  
+        fit[j].etc = []
         fit[j].isprfwidth  = False
         for i in range(cummodels[j],cummodels[j+1]):
             if   functype[i] == 'ecl/tr':
@@ -920,25 +920,25 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
                     for ai in range(len(event[0].nexpid)):
                         aor_low = np.nansum(event[0].nexpid[:ai])
                         nclip_pa_g[ai] += int(len(np.where(aor_mask_g[int(aor_low*64) : int((aor_low+event[0].nexpid[ai])*64)] == 0)[0]))
-                        print(ai, aor_low, (aor_low+event[0].nexpid[ai])*64, nclip_pa_g[ai]) 
+                        print(ai, aor_low, (aor_low+event[0].nexpid[ai])*64, nclip_pa_g[ai])
                     #determine how many in clipmask were in each aor
                     aor_mask_c = np.ones_like(fit[j].clipmask,dtype=int)*fit[j].clipmask
                     for ai in range(len(event[0].nexpid)):
                         aor_low = np.nansum((event[0].nexpid*64-nclip_pa_g)[:ai])
                         nclip_pa_c[ai] += int(len(np.where(aor_mask_c[int(aor_low) : int(aor_low+(event[0].nexpid[ai]*64)-nclip_pa_g[ai])] == 0)[0]))
-                        print(ai, aor_low, aor_low+(event[0].nexpid[ai]*64)-nclip_pa_g[ai], nclip_pa_c[ai], nclip_pa_g[ai]) 
-                    
+                        print(ai, aor_low, aor_low+(event[0].nexpid[ai]*64)-nclip_pa_g[ai], nclip_pa_c[ai], nclip_pa_g[ai])
+
                     nclip_pa=nclip_pa_g+nclip_pa_c
                     aor_ints = np.linspace(0,len(fit[j].isclipmask)-1,len(fit[j].isclipmask),dtype=int)
                     aor_intsuc = np.linspace(0,len(fit[j].fluxuc)-1,len(fit[j].fluxuc),dtype=int)
-                    
+
                     aor0_mask   = aor_ints[0:int(event[0].nexpid[0]*64-nclip_pa[0])]
                     aor0_maskuc = aor_intsuc[0:int(event[0].nexpid[0]*64-nclip_pa_g[0])]
                     aor1_mask = []
                     aor2_mask = []
                     aor3_mask = []
                     aor4_mask = []
-                    
+
                     aor1_maskuc = []
                     aor2_maskuc = []
                     aor3_maskuc = []
@@ -970,10 +970,10 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
                                     aor4_mask   = aor_ints[aor_low:aor_low+int(event[0].nexpid[ai]*64-nclip_pa[ai])]
                                     aor_low     = np.nansum((event[0].nexpid*64-nclip_pa_g)[:ai])
                                     aor4_maskuc = aor_intsuc[aor_low:aor_low+int(event[0].nexpid[ai]*64-nclip_pa_g[ai])]
-                    
+
                     fit[j].etc.append(np.array([[aor0_mask, aor1_mask, aor2_mask, aor3_mask, aor4_mask],[aor0_maskuc, aor1_maskuc, aor2_maskuc, aor3_maskuc, aor4_maskuc]]))
                 else:
-                   fit[j].etc.append([]) 
+                   fit[j].etc.append([])
             elif functype[i] == 'sinusoidal':
                 funcx.  append(fit[j].timeunit)
                 funcxuc.append(fit[j].timeunituc)
@@ -998,7 +998,7 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
                     funcxuc.append(fit[j].positionuc)
                     #CREATE KNOTS FOR IPSPLINE
                     fit[j].etc.append(np.meshgrid(
-                                  np.linspace(fit[j].position[1].min(),fit[j].position[1].max(),numipxk), 
+                                  np.linspace(fit[j].position[1].min(),fit[j].position[1].max(),numipxk),
                                   np.linspace(fit[j].position[0].min(),fit[j].position[0].max(),numipyk)))
                 elif fit[j].model[k] == 'posfluxlinip' or fit[j].model[k] == 'linip':
                     fit[j].wherepos   = []
@@ -1091,11 +1091,11 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
                 fit[j].etc.append([fit[j].origin,fit[j].orthosigma])
                 # Set orthogonal parameter names
                 fit[j].opname   = np.copy(fit[j].parname)
-                fit[j].opname[fit[j].iortholist] = opname[:diminvtrans]                  
-            
+                fit[j].opname[fit[j].iortholist] = opname[:diminvtrans]
+
             text   += fit[j].model[k] + " "
             k      += 1
-    
+
     for j in range(numevents):
         fit[j].good      = event[j].good
         fit[j].isgood    = np.where(event[j].good)[0]
@@ -1107,7 +1107,7 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
         # Construct reference star spectroscopic light curves
         # Fot Spitzer, this will default to no reference star.
         nasc.refStarSpecLC2(event, fit, tonight)
-    
+
     #RESTART FOR LOOP HERE
     flux      = []
     phase     = []
@@ -1120,7 +1120,7 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
         bjdutc.append(fit[j].bjdutc)
         bjdtdb.append(fit[j].bjdtdb)
         sigma. append(fit[j].sigma)
-    
+
     #****LEAST-SQUARES FIT*****
     if leastsq == True:
         import scipy.optimize as op
@@ -1173,7 +1173,7 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
                         #plt.pause(1)
                         residuals = np.concatenate((residuals,[np.sqrt(fit[j].nobj)*(params[fit[j].ipriors[i]] - pbar[i])/psigma[i]]),axis=0)
             return residuals
-        
+
         #Function for minimizer
         def fminfunc(freepars):
             params[inonprior] = freepars
@@ -1196,8 +1196,8 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
                     elif functype[i] == 'ballardip':
                         fit[j].ballardip = myfuncs[i](params[iparams[i]], funcx[i] , etc=[fit0])
                         fit0 *= fit[j].ballardip
-                    elif hasattr(fit[j], 'timebins') and (functype[i] == 'ecl/tr' 
-                                                      or  functype[i] == 'ramp' 
+                    elif hasattr(fit[j], 'timebins') and (functype[i] == 'ecl/tr'
+                                                      or  functype[i] == 'ramp'
                                                       or  functype[i] == 'sinusoidal'):
                         # Average over high-resolution model
                         hiresmodel = myfuncs[i](params[iparams[i]], funcx[i], fit[j].etc[k])
@@ -1215,10 +1215,10 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
                 logL += noisefunc(noisepars, fit0 - flux[j], etc)
                 #residuals = np.concatenate((residuals,(fit0 - flux[j])),axis=0)
             return logL
-        
+
         def constraint(x):
             return 1
-        
+
         if isnoise == True:
             # Perform minimization using a truncated Newton algorithm
             print("Minimizing log-likelihood while considering correlated noise.")
@@ -1227,7 +1227,7 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
             #print(output)
             output = op.fmin_cobyla(fminfunc, params[inonprior], constraint, rhobeg=stepsize[inonprior], rhoend=stepsize[inonprior]/1000.)
             params[inonprior] = output
-        else:        
+        else:
             print("Calculating least-squares fit.")
             output, cov_x, infodict, mesg, err = op.leastsq(modelfunc, params[ifreepars], args=(params, sigma), \
                  factor=100, ftol=1e-16, xtol=1e-16, gtol=1e-16, diag=1./stepsize[ifreepars], full_output=True)
@@ -1249,7 +1249,7 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
     #**************************
     # Setup is finished.
     #**************************
-    
+
     #CREATE MODEL USING INITIAL VALUES
     saveext = ''
     #if 'ipmap' in functype:
@@ -1276,7 +1276,7 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
                 fit[j].ipconf    = np.sqrt(fit[j].numpts)*(fit[j].binipflux)/fit[j].binipstd
                 fit[j].ipconf[np.where(np.isnan(fit[j].ipconf))] = 0
                 fit[j].ipconf[np.where(np.isinf(fit[j].ipconf))] = 0
-                
+
                 numsteps = len(event[j].params.sssteps)-1
                 ipmean   = np.zeros(numsteps)
                 ipstd    = np.zeros(numsteps)
@@ -1290,7 +1290,7 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
                         ipstd [k] = np.std(fit[j].ipconf[instep])
                         ipmin [k] = np.min(fit[j].ipconf[instep])
                         ipmax [k] = np.max(fit[j].ipconf[instep])
-                
+
                 #PLOT CONFIDENCE vs. NUMBER OF POINTS PER BIN
                 #ERROR BARS ARE MINIMUM AND MAXIMUM, NOT STANDARD DEVIATION
                 '''
@@ -1323,14 +1323,14 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
             else:
                 fit[j].fit0 *= myfuncs[i](params[iparams[i]], funcx[i], fit[j].etc[k])
             k += 1
-    
+
     # Transform parameters in ortholist to orthogonal parameters
     orthop = np.copy(params)
     for j in range(numevents):
         if event[j].isortho == True and event[j].params.newortho == False:
             orthop[iortholist[j]] = mc.orthoTrans(params[iortholist[j]], fit[j].trans, \
                                                  [fit[j].origin, fit[j].orthosigma])
-    
+
     # Build starting parameters for multiple chains
     totnump = len(params)
     nchains = event[0].params.nchains[0]
@@ -1368,7 +1368,7 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
             orthops[1:,p] = startpts
     else:
         orthops = orthop
-    
+
     #RUN BURN IN OF MCMC MODEL FITTING ROUTINE
     print('MARK: ' + time.ctime() + ' : Start burn-in of mcmc model', file=printout)
     print('Number of iterations: ' + str(int(numit[0])), file=printout)
@@ -1385,7 +1385,7 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
         allparams, bestop, numaccept, numit[0] = demc.demc(flux, orthops, pmin, pmax, stepsize, numit[0], \
                  sigma, numparams, cummodels, functype, myfuncs, funcx, iortholist, nights, fit, isGR=False, gamma=gamma)
     print('MARK: ' + time.ctime() + ' : End burn-in of mcmc model', file=printout)
-    
+
     bestp = np.copy(bestop)
     for j in range(numevents):
         # Transform parameters in ortholist to original parameters
@@ -1409,9 +1409,9 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
                 fit[j].bestfit  *= fit[j].bestspl
                 fit[j].bestfituc*= fit[j].bestspluc
             elif functype[i] == 'ipmap':
-                fit[j].bestmip,   fit[j].binipflux   = myfuncs[i](bestp[iparams[i]], funcx  [i], 
+                fit[j].bestmip,   fit[j].binipflux   = myfuncs[i](bestp[iparams[i]], funcx  [i],
                                                                   fit[j].bestfit,   retbinflux=True)
-                fit[j].bestmipuc, fit[j].binipfluxuc = myfuncs[i](bestp[iparams[i]], funcxuc[i], 
+                fit[j].bestmipuc, fit[j].binipfluxuc = myfuncs[i](bestp[iparams[i]], funcxuc[i],
                                                                   fit[j].bestfituc, retbinflux=True)
                 fit[j].bestmipuc[fit[j].isclipmask] = fit[j].bestmip
                 fit[j].bestfit  *= fit[j].bestmip
@@ -1436,13 +1436,13 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
                 fit[j].bestfit    *= myfuncs[i](bestp[iparams[i]], funcx  [i], fit[j].etc[k])
                 fit[j].bestfituc  *= myfuncs[i](bestp[iparams[i]], funcxuc[i], fit[j].etc[k])
             k += 1
-    
+
     for j in range(numevents):
         fit[j].redchisq = sum((fit[j].bestfit - fit[j].flux)**2 / fit[j].sigma**2) / \
                               (fit[j].nobj - fit[j].numfreepars)
         print("Reduced Chi^2: " + str(fit[j].redchisq), file=printout)
         fit[j].arate    = 100.0 * numaccept / numit[0]
-    
+
     print("Acceptance rate = " + str(fit[j].arate) + "%")
     print("Acceptance rate = " + str(fit[j].arate) + "%", file=printout)
     print("Best Parameters:", file=printout)
@@ -1456,7 +1456,7 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
                 plt.close(fignum)
             else:
                 plt.pause(0.01)
-    
+
     #BIN DATA
     for j in range(numevents):
         fit[j].binfluxuc  = np.zeros(nbins[j])
@@ -1485,7 +1485,7 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
             fit[j].binbjdtdb[i]  = np.median(fit[j].bjdtdb[start:end])
             fit[j].binfit0[i]    = np.mean(fit[j].fit0[start:end])
             fit[j].binbestfit[i] = np.mean(fit[j].bestfit[start:end])
-    
+
     #MODIFY sigma SUCH THAT REDUCED CHI-SQUARED = 1
     #SPITZER OVER-ESTIMATES ERRORS
     newsigma = []
@@ -1497,7 +1497,7 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
             fit[j].newsigma   = np.copy(fit[j].sigma)
             fit[j].newsigmauc = np.copy(fit[j].sigmauc)
         newsigma.append(fit[j].newsigma)
-    
+
     #NEW LEAST-SQUARES FIT USING MODIFIED sigma VALUES
     if leastsq == True:
         if isnoise == True:
@@ -1540,7 +1540,7 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
                     funcx  .append([fit[j].bestmip,   fit[j].binipflux,   np.zeros(len(fit[j].wbfipmask  ))])
                     funcxuc.append([fit[j].bestmipuc, fit[j].binipfluxuc, np.zeros(len(fit[j].wbfipmaskuc))])
                     myfuncs[i] = mc.fixipmapping
-    
+
     #Set isoptimize to False in Gaussian Process
     for j in range(numevents):
         k = 0
@@ -1548,7 +1548,7 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
             if functype[i] == 'gp':
                 fit[j].etc[k][2:5] = [False, None, None]
             k += 1
-    
+
     # Transfor
     # Transform parameters in ortholist to orthogonal parameters
     bestop = np.copy(bestp)
@@ -1556,7 +1556,7 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
         if event[j].isortho == True and event[j].params.newortho == False:
             bestop[iortholist[j]] = mc.orthoTrans(bestp[iortholist[j]], fit[j].trans, \
                                                  [fit[j].origin, fit[j].orthosigma])
-    
+
     # Build starting parameters for multiple chains
     nchains = event[0].params.nchains[1]
     if nchains > 1:
@@ -1593,7 +1593,7 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
             #bestops[1:,p] += np.random.normal(0,stepsize[p]/1.,nchains-1)
     else:
         bestops = bestop
-    
+
     #RUN MCMC FITTING ROUTINE FOR ANALYSIS
     print('MARK: ' + time.ctime() + ' : Start full mcmc model', file=printout)
     print('Max number of iterations: ' + str(int(numit[1])), file=printout)
@@ -1615,7 +1615,7 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
         #         newsigma, numparams, cummodels, functype, myfuncs, funcx, iortholist, nights, fit, isGR=True, gamma=gamma)
     print('MARK: ' + time.ctime() + ' : End full mcmc model', file=printout)
     print('Completed ' + str(int(numit[1])) + ' iterations.', file=printout)
-    
+
     bestp     = np.copy(bestop)
     allparams = np.copy(allorthop)
     for j in range(numevents):
@@ -1628,7 +1628,7 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
                                                    [fit[j].origin, fit[j].orthosigma])
             allparams[iortholist[j]] = mc.orthoInvTrans(allorthop[iortholist[j]], fit[j].invtrans, \
                                                    [fit[j].origin, fit[j].orthosigma])
-    
+
     # ccampo: checks best parameters against minimizer output to make sure they are the same.
     if leastsq == True:
         if np.all(np.abs(output - bestp[ifreepars]) <= 1e-8) == True:
@@ -1641,7 +1641,7 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
             print(bestp[ifreepars], file=printout)
             print("DIFFERENCES:", file=printout)
             print(bestp[ifreepars] - output, file=printout)
-            
+
             if isnoise == True:
                 # Perform minimization using a truncated Newton algorithm
                 print("Doing a last minimizing with final MCMC values.")
@@ -1652,8 +1652,8 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
                 print(output)
                 bestp[inonprior] = output
             else:
-                print("Doing a last least-squares fit with final MCMC values...")                 
-                # ccampo added 8-24-2010 to allow new errors          
+                print("Doing a last least-squares fit with final MCMC values...")
+                # ccampo added 8-24-2010 to allow new errors
                 # ccampo changed params to bestp
                 output, err = op.leastsq(modelfunc, bestp[ifreepars], args=(bestp, newsigma), factor=100, \
                                          ftol=1e-16, xtol=1e-16, gtol=1e-16, diag=1./stepsize[ifreepars])
@@ -1670,7 +1670,7 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
         # ccampo: adding fit.minimizerp variable
         for j in range(numevents):
             fit[j].minimizerp = output
-    
+
     #RECORD BEST MODELS FOR EACH MODEL TYPE
     for j in range(numevents):
         fit[j].allparams  = allparams[numparams[cummodels[j]]:numparams[cummodels[j+1]]]
@@ -1705,7 +1705,7 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
             if fit[j].model[k] != 'ipspline':
                 parlist[j][k][2][0] = bestp[iparams[i]]
             k += 1
-        
+
         #COMPUTE SEPARATE BEST ECLIPSE, RAMP & INTRA-PIXEL MODELS AND BEST PARAMETERS
         fit[j].bestecl      = np.ones(fit[j].nobj)
         fit[j].bestramp     = np.ones(fit[j].nobj)
@@ -1814,24 +1814,24 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
                 fit[j].bestgpuc    *= myfuncs[i](bestp[iparams[i]], funcxuc[i], [fit[j].fluxuc/fit[j].bestfitgpuc, fit[j].newsigmauc, False, None, None])
                 fit[j].bestpgp      = bestp[iparams[i]]
             k += 1
-        
+
         #UPDATE INITIAL PARAMETERS
         if event[j].params.modelfile == None:
             modelfile = event[j].initvalsfile
         elif event[j].params.modelfile.__class__ == str:
             modelfile = event[j].ancildir + event[j].params.modelfile
         elif len(event[j].params.modelfile) == len(event[j].params.model):
-            modelfile = event[j].ancildir + event[j].params.modelfile[num] 
+            modelfile = event[j].ancildir + event[j].params.modelfile[num]
         else:
             modelfile = event[j].ancildir + event[j].params.modelfile[0]
         pe.write(modelfile, parlist[j])
         ier = os.system("cp %s %s/." % (modelfile, event[j].modeldir))
-        
+
         # Calculate acceptance rate
         fit[j].arate      = 100.0 * numaccept / numit[1]
         print("Acceptance rate = " + str(fit[j].arate) + "%")
         print("Acceptance rate = " + str(fit[j].arate) + "%", file=printout)
-    
+
     print("Calculating autocorrelation of free parameters.")
     maxstepsize = 1
     for j in range(numevents):
@@ -1842,7 +1842,7 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
         for i in fit[j].nonfixedpars:
             # Calculate autocorrelation
             meanapi  = np.mean(fit[j].allparams[i])
-            autocorr = np.correlate(fit[j].allparams[i,:acsize]-meanapi, 
+            autocorr = np.correlate(fit[j].allparams[i,:acsize]-meanapi,
                                     fit[j].allparams[i,:acsize]-meanapi, mode='full')
             fit[j].autocorr[k] = (autocorr[int(autocorr.size/2):] / autocorr.max())
             # Don't calculate effective sample size for fixed priors during residual permutation calculation
@@ -1862,7 +1862,7 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
             event[j].params.stepsize = fit[j].stepsize
             print(event[j].eventname, "new stepsize:", event[j].params.stepsize, file=printout)
         maxstepsize = int(np.max((maxstepsize, event[j].params.stepsize)))
-    
+
     # Compute transformation matrix and plot orthogonal parameter correlations
     for j in range(numevents):
         if event[j].params.newortho == True:
@@ -1881,7 +1881,7 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
             fit[j].orthosigma = fit[j].ortho.sigma
             print(event[j].eventname + " inverse transformation matrix:",file=printout)
             print(fit[j].invtrans,file=printout)
-            
+
             # Update best-fit orthogonal parameters
             #fit[j].origin = np.copy(neworigin)
             fit[j].bestop[fit[j].iortholist] = mc.orthoTrans(fit[j].bestp[fit[j].iortholist], fit[j].trans, \
@@ -1890,12 +1890,12 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
                                                             [fit[j].origin, fit[j].orthosigma])
             print(event[j].eventname + " best parameters after orthogonalization:",file=printout)
             print(fit[j].bestop,file=printout)
-            
+
             # Correlation plot of original parameters
             fignum   = 6000+num*numfigs+j*100
             savefile = event[j].modeldir +"/"+ event[j].eventname +"-fig"+ str(fignum) +"-"+ fit[j].saveext +".png"
             plots.hist2d(event[j], fit[j], fignum, savefile, allparams=orthodata, iparams=fit[j].iortholist)
-            
+
             # Correlation plot of transformed parameters
             fignum   = 6010+num*numfigs+j*100
             savefile = event[j].modeldir +"/"+ event[j].eventname +"-fig"+ str(fignum) +"-"+ fit[j].saveext +".png"
@@ -1910,7 +1910,7 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
                     fit[j].etc[k] = fit[j].origin
                 k += 1
             '''
-    
+
     #Calculate mean, median and standard deviation of output parameters
     totnump           = len(params)
     medianp           = np.zeros((totnump, 2))
@@ -1919,7 +1919,7 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
     medianp[:, 1]     = np.std   (allparams[:,::maxstepsize],axis=1)
     meanp[:, 0]       = np.mean  (allparams[:,::maxstepsize],axis=1)
     meanp[:, 1]       = np.copy  (medianp[:, 1])
-    
+
     #NEED TO RESTART FOR LOOP HERE!
     rampp             = np.copy(bestp)
     for j in range(numevents):
@@ -1949,7 +1949,7 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
                 fit[j].medianfit *= myfuncs[i](medianp[iparams[i],0], funcx[i], fit[j].etc[k])
                 fit[j].meanfit   *= myfuncs[i](meanp  [iparams[i],0], funcx[i], fit[j].etc[k])
             k += 1
-        
+
         #COMPUTE RESIDUALS AND REDUCED CHI^2
         fit[j].residuals   =      fit[j].flux - fit[j].bestfit
         fit[j].redchisq    = sum((fit[j].residuals)**2 / fit[j].newsigma**2) /   \
@@ -1961,11 +1961,11 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
         print("Best Parameters:", file=printout)
         print(fit[j].bestp, file=printout)
         print("Reduced Chi^2: " + str(fit[j].redchisq), file=printout)
-        
+
         #COMPUTE BAYESIAN INFORMATION CRITERION (BIC)
         #fit[j].bic = fit[j].nobj*np.log(sum(fit[j].residuals**2)/fit[j].nobj) + \
         #             fit[j].numfreepars*np.log(fit[j].nobj) #OLD VERSION - DO NOT USE
-        
+
         #Residuals are nomalized by dividing by the variance of the residuals from:
         #the previous model fit from the same channel, or
         #from itself if this is the first model of this channel.
@@ -1986,7 +1986,7 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
             fit[j].aic = 0
             fit[j].bic = 0
             print("Error computing AIC/BIC. Likely cause is a shape mismatch due to different number of knots.")
-        
+
         #Create unclipped ramp with eclipse
         fit[j].rampuc2    = np.ones(fit[j].nobjuc)
         k = 0
@@ -2002,7 +2002,7 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
             else:
                 fit[j].rampuc2 *= myfuncs[i](rampp[iparams[i]], funcxuc[i], fit[j].etc[k])
             k += 1
-        
+
     #NEED TO RESTART FOR LOOP HERE!
     for j in range(numevents):
         #Create data without the eclipse
@@ -2060,21 +2060,21 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
                 fit[j].ramp    *= myfuncs[i](rampp[iparams[i]], funcx  [i], fit[j].etc[k])
                 fit[j].rampuc  *= myfuncs[i](rampp[iparams[i]], funcxuc[i], fit[j].etc[k])
             k += 1
-        
+
         # normalize data
         fit[j].normflux      = (fit[j].flux       / fit[j].ramp).flatten()
         fit[j].normsigma     = (fit[j].newsigma   / fit[j].ramp).flatten()
         fit[j].normmeanfit   = (fit[j].meanfit    / fit[j].ramp).flatten()
         fit[j].normmedianfit = (fit[j].medianfit  / fit[j].ramp).flatten()
-        fit[j].normbestfit   = (fit[j].bestfit    / fit[j].ramp).flatten()             
+        fit[j].normbestfit   = (fit[j].bestfit    / fit[j].ramp).flatten()
         fit[j].normfluxuc    = (fit[j].fluxuc     / fit[j].rampuc).flatten()
         fit[j].normsigmauc   = (fit[j].newsigmauc / fit[j].rampuc).flatten()
         fit[j].normresuc     = (fit[j].fluxuc     / fit[j].rampuc2).flatten()
         fit[j].normresiduals = (fit[j].residuals  / fit[j].ramp.mean()).flatten()
-        
+
         #COMPUTE SDNR
         fit[j].sdnr = np.std(fit[j].normresiduals)
-        
+
         #SORT flux BY x, y AND radial POSITIONS
         yy      = np.sort(fit[j].position[0])
         xx      = np.sort(fit[j].position[1])
@@ -2104,12 +2104,12 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
                    fit[j].bestvs/fit[j].bestff)[np.argsort(fit[j].sx[np.where(fit[j].clipmask)])]
 
 
-        
+
         #SORT flux BY frmvis
         fvsort = np.sort(fit[j].frmvis)
         vsflux = (fit[j].flux / fit[j].bestecl / fit[j].bestramp / fit[j].bestsin / fit[j].bestip / \
                   fit[j].bestpos / fit[j].bestff / fit[j].bestmip)[np.argsort(fit[j].frmvis)]
-        
+
         #BIN DATA USING WEIGHTED AVERAGE
         fit[j].binmeanfit    = np.zeros(nbins[j])
         fit[j].binmedianfit  = np.zeros(nbins[j])
@@ -2239,14 +2239,14 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
             fit[j].binybipstd[i]   = np.std(ybestiprng) / np.sqrt(ybestiprng.size)
             fit[j].binres[i]       = np.mean(fit[j].residuals[start:end])
             fit[j].binresstd[i]    = np.sqrt(1 / sum(1/fit[j].residuals[start:end]**2))
-        
+
         fit[j].normbinres   = fit[j].normbinflux/fit[j].normbinbest - 1.
         #fit[j].normbinresuc = fit[j].binrampuc2/fit[j].normbinbest - 1.
         '''
         #Create savefile for ipPlotting.py
         savefile = event[j].modeldir + "/d-" + event[j].eventname + "-ip-" + fit[j].saveext + ".npz"
-        np.savez(savefile, x=fit[j].position[1], y=fit[j].position[0], 
-                 flux=fit[j].flux/fit[j].bestecl/fit[j].bestramp/fit[j].bestsin/fit[j].bestpos/fit[j].bestvs, 
+        np.savez(savefile, x=fit[j].position[1], y=fit[j].position[0],
+                 flux=fit[j].flux/fit[j].bestecl/fit[j].bestramp/fit[j].bestsin/fit[j].bestpos/fit[j].bestvs,
                  bestpip=fit[j].bestpip, ydiv=event[j].params.ydiv, xdiv=event[j].params.xdiv)
         '''
 
@@ -2263,7 +2263,7 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
         bic +=   numfreepars*np.log(nobj)
         print("AIC for joint model fit = " + str(aic), file=printout)
         print("BIC for joint model fit = " + str(bic), file=printout)
-    
+
     #Assign abscissa time unit (orbits or days)
     for j in range(numevents):
         if event[j].params.timeunit == 'orbits':
@@ -2294,7 +2294,7 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
             fit[j].abscissa   = fit[j].binbjdutc   - event[j].params.tuoffset
             fit[j].abscissauc = fit[j].binbjdutcuc - event[j].params.tuoffset
             fit[j].xlabel     = 'BJD - ' + str(event[j].params.tuoffset)
-    
+
     print('Producing figures.')
     #PLOT BINNED DATA AND BEST FIT
     if allplots > 1:
@@ -2323,35 +2323,35 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
             else:
                 interclip = None
             plots.Znormlc(event[j], fit[j], fignum, savefile, j=j, interclip=interclip)
-    
+
     if allplots > 3:
         #allparams TRACE PARAMETER VALUES FOR ALL STEPS
         for j in range(numevents):
             fignum   = 6003+num*numfigs+j*100
             savefile = event[j].modeldir+"/"+event[j].eventname+"-fig"+str(fignum)+"-"+ fit[j].saveext+".png"
             plots.trace(event[j], fit[j], fignum, savefile)
-        
+
         #allorthop TRACE PARAMETER VALUES FOR ALL STEPS
         for j in range(numevents):
             if event[j].isortho == True and event[j].params.newortho == False:
                 fignum   = 6013+num*numfigs+j*100
                 savefile = event[j].modeldir+"/"+event[j].eventname+"-fig"+str(fignum)+"-"+ fit[j].saveext+".png"
                 plots.trace(event[j], fit[j], fignum, savefile=savefile, allparams=fit[j].allorthop, parname=fit[j].opname)
-        
+
     if allplots > 4:
         #allparams AUTOCORRELATION PLOT
         for j in range(numevents):
             fignum   = 6004+num*numfigs+j*100
             savefile = event[j].modeldir+"/"+event[j].eventname+"-fig"+str(fignum)+"-"+ fit[j].saveext+".png"
             plots.autocorr(event[j], fit[j], fignum, savefile)
-        
+
         #allorthop AUTOCORRELATION PLOT
         for j in range(numevents):
             if event[j].isortho == True and event[j].params.newortho == False:
                 fignum   = 6014+num*numfigs+j*100
                 savefile = event[j].modeldir+"/"+event[j].eventname+"-fig"+str(fignum)+"-"+ fit[j].saveext+".png"
                 plots.autocorr(event[j], fit[j], fignum, savefile=savefile, allparams=fit[j].allorthop, parname=fit[j].opname)
-        
+
         #allparams CORRELATION PLOTS WITH 2D HISTOGRAMS
         for j in range(numevents):
             fignum   = 6005+num*numfigs+j*100
@@ -2360,33 +2360,33 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
                 plots.hist2d(event[j], fit[j], fignum, savefile=savefile)
             except:
                 print("Failed to create Figure " + str(fignum))
-        
+
         #allorthop CORRELATION PLOTS WITH 2D HISTOGRAMS
         for j in range(numevents):
             if event[j].isortho == True and event[j].params.newortho == False:
                 fignum   = 6015+num*numfigs+j*100
                 savefile = event[j].modeldir+"/"+event[j].eventname+"-fig"+str(fignum)+"-"+ fit[j].saveext+".png"
                 plots.hist2d(event[j], fit[j], fignum, savefile=savefile, allparams=fit[j].allorthop, parname=fit[j].opname)
-        
+
         #allparams 1D HISTOGRAMS
         for j in range(numevents):
             fignum   = 6006+num*numfigs+j*100
             savefile = event[j].modeldir+"/"+event[j].eventname+"-fig"+str(fignum)+"-"+ fit[j].saveext+".png"
             plots.histograms(event[j], fit[j], fignum, savefile)
-        
+
         #allorthop 1D HISTOGRAMS
         for j in range(numevents):
             if event[j].isortho == True and event[j].params.newortho == False:
                 fignum   = 6016+num*numfigs+j*100
                 savefile = event[j].modeldir+"/"+event[j].eventname+"-fig"+str(fignum)+"-"+ fit[j].saveext+".png"
                 plots.histograms(event[j], fit[j], fignum, savefile=savefile, allparams=fit[j].allorthop, parname=fit[j].opname)
-        
+
         #Plot projections of position sensitivity along x and y
         for j in range(numevents):
             fignum   = 6007+num*numfigs+j*100
             savefile = event[j].modeldir+"/"+event[j].eventname+"-fig"+str(fignum)+"-"+ fit[j].saveext+".png"
             plots.ipprojections(event[j], fit[j], fignum, savefile=savefile)
-        
+
         #BLISS MAP
         for j in range(numevents):
             if fit[j].isipmapping:
@@ -2405,7 +2405,7 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
                 fignum   = 6009+num*numfigs+j*100
                 savefile = event[j].modeldir+"/"+event[j].eventname+"-fig"+str(fignum)+"-"+ fit[j].saveext+".png"
                 plots.pointingHist(event[j], fit[j], fignum, savefile=savefile, minnumpts=minnumpts)
-        
+
         #PRF WIDTH
         for j in range(numevents):
             if fit[j].isprfwidth:
@@ -2418,7 +2418,7 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
                 fignum   = 6089+num*numfigs+j*100
                 savefile = event[j].modeldir+"/"+event[j].eventname+"-fig"+str(fignum)+"-"+ fit[j].saveext+".png"
                 plots.ipprojections_GWo(event[j], fit[j], fignum, savefile=savefile)
-        
+
         #PLOT RMS vs. BIN SIZE
         for j in range(numevents):
             if hasattr(event[j].params, 'rmsbins'):
@@ -2435,14 +2435,14 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
                 plots.rmsplot(event[j], fit[j], fignum, savefile=savefile)
             except:
                 print("Failed to create Figure " + str(fignum))
-        
+
         #PLOT VISIT SENSITIVITY AND MODEL
         if 'vissen' in functype:
             numvsmodels = 0
             for i in functype:
                 if i == 'vissen':
                     numvsmodels += 1
-            
+
             plt.figure(612+num*numfigs)
             plt.clf()
             a = plt.suptitle(obj + ' Visit # vs. Sensitivity', size=16)
@@ -2460,14 +2460,14 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
                         a = plt.xlabel('Visit Number')
                         a = plt.legend(loc='best')
                         a.fontsize=8
-            
+
             plt.savefig(event[j].modeldir + "/" + obj + "-fig" + str(num*numfigs+1608) + "-" + saveext + ".png")
-    
+
     if isinteractive == False:
         plt.close('all')
     else:
         plt.pause(0.01)     #Executes draw command for figures
-    
+
     if hasattr(event[0].params, 'savedata') and event[0].params.savedata == False:
         pass
     else:
@@ -2480,13 +2480,12 @@ def rundmc(event, num=0, printout=sys.stdout, isinteractive=True):
             np.save(pid, fit[j].allparams)
             pid.close()
             del fit[j].allparams, fit[j].allorthop
-            
+
             if event[j].params.newortho == True:
                 # Write ortho save file
                 fit[j].orthofile = "d-" + event[j].eventname + '-ortho-' + fit[j].saveext + '.npz'
                 pid  = open(fit[j].orthofile, 'w')
                 np.savez(pid, invtrans=fit[j].invtrans, trans=fit[j].trans, origin=fit[j].origin, sigma=fit[j].orthosigma)
                 pid.close()
-    
-    return
 
+    return

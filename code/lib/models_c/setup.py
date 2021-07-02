@@ -14,7 +14,8 @@ files = list(filter(lambda x: not re.search('[.#].+[.]c$',x),files))
 # files.remove(".svn")
 
 ext_mod = []
-inc = [get_include(),'/Users/mayem1/Homebrew/opt/libomp/lib/','/Users/mayem1/Homebrew/opt/libomp/include/']
+#inc = [get_include(),'/Users/mayem1/Homebrew/opt/libomp/lib/','/Users/mayem1/Homebrew/opt/libomp/include/']
+inc = [get_include(),'/usr/local/Cellar/libomp/11.0.0/lib/','/usr/local/Cellar/libomp/11.0.0/include/']
 
 for idx,fname in enumerate(files):
     if system() == 'Linux':
@@ -26,7 +27,7 @@ for idx,fname in enumerate(files):
         exec('mod{}=Extension("{}",sources=["c_code/{}"],include_dirs=inc)'.format(idx, fname.rstrip('.c'), fname))
     elif system() == 'Windows':
         raise Exception('This package has not been tested on Windows; please edit the setup.py appropriately.')
-    
+
     exec('ext_mod.append(mod'+str(idx)+')')
 
 setup(name='models_c',version='1.0',description='Models in c for mcmc', ext_modules = ext_mod)
