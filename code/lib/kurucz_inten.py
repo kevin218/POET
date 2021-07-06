@@ -449,7 +449,7 @@ def interp(inten, grav, temp, wgrav, wtemp, log=None, kf=None):
    kf = np.reshape(inten[0:ngrav * ntemp,:], (ntemp, ngrav, nwav))
    
    # calculate the indices of the parameters we want
-   temp, igrav = np.mgrid[kt[0]:kt[-1]+1:250,kg[0]:kg[-1]+0.1:0.5]
+   itemp, igrav = np.mgrid[kt[0]:kt[-1]+1:250,kg[0]:kg[-1]+0.1:0.5]
    
    if (log is not None):   
         kf = np.log(kf)
