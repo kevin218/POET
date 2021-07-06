@@ -23,7 +23,7 @@ static PyObject *mmbilinint(PyObject *self, PyObject *args, PyObject *keywds)
   //need to make some temp tuples to read in from argument list, then parse
   // a,a,a,a,a dtype=int,a,tuple[d,d,d,d],array[a,a]dtyp=int,array[a,a,a,a],tuple[int,int],bool
   PyObject *tup1, *tup2;
-  
+
   //initialize the keywords
   retbinflux = Py_False;
   retbinstd  = Py_False;
@@ -56,7 +56,7 @@ static PyObject *mmbilinint(PyObject *self, PyObject *args, PyObject *keywds)
   //create the arrays the will be returned, under various conditions
   PyArrayObject *output, *binflux, *binstd, *tempwbfip;//, *mastermapFH;
   npy_intp dims[1];
-  
+
   dims[0] = flux->dimensions[0];
   output  = (PyArrayObject *) PyArray_SimpleNew(1,dims,NPY_DOUBLE);
 
@@ -71,13 +71,13 @@ static PyObject *mmbilinint(PyObject *self, PyObject *args, PyObject *keywds)
 
   // double maskmedian;
   double dovrmean, fullmean;
-  
-  
+
+
 
   //need to make a lock to deal with the meanbinflux variable
   omp_lock_t lck;
   omp_init_lock(&lck);
-	
+
   omp_lock_t lckm;
   omp_init_lock(&lckm);
 
@@ -85,7 +85,7 @@ static PyObject *mmbilinint(PyObject *self, PyObject *args, PyObject *keywds)
   meanbinflux = 0;
 
   //remind keving to make all wbfipmask things arrays
-  // shared(lck,meanbinflux,counter) 
+  // shared(lck,meanbinflux,counter)
   #pragma omp parallel for private(j,tempwbfip,arsize,temp_mean,temp_std,temp_int)
   for(i = 0; i<dis;i++)
     {
@@ -99,11 +99,11 @@ static PyObject *mmbilinint(PyObject *self, PyObject *args, PyObject *keywds)
               temp_std  = 0;
               for(j=0;j<arsize;j++)
                 {
-                  temp_int   = IND_int(tempwbfip,j); 
+                  temp_int   = IND_int(tempwbfip,j);
                   temp_mean += (IND(flux,temp_int)/IND(etc,temp_int));
                 }
               temp_mean /= (double) arsize;
-              
+
               for(j=0;j<arsize;j++)
                 {
                   temp_int  = IND_int(tempwbfip,j);
@@ -115,7 +115,7 @@ static PyObject *mmbilinint(PyObject *self, PyObject *args, PyObject *keywds)
 
               IND(binflux,i) = temp_mean;
               IND(binstd,i)  = temp_std;
-              
+
               omp_set_lock(&lck);
               meanbinflux += temp_mean;
               counter += 1;
@@ -126,7 +126,7 @@ static PyObject *mmbilinint(PyObject *self, PyObject *args, PyObject *keywds)
 						  	//    maskcounter += 1;
 						  	// }
 			  			omp_unset_lock(&lck);
-			  
+
             }
           else
             {
@@ -144,14 +144,14 @@ static PyObject *mmbilinint(PyObject *self, PyObject *args, PyObject *keywds)
               omp_set_lock(&lck);
               meanbinflux += temp_mean;
               counter     += 1;
-							
+
 						  	//               if(IND_int(mastermapd,i) == 1)
 						  	// {
 						  	//    dovrmedian += temp_mean;
 						  	//    maskcounter += 1;
 						  	// }
 			  			omp_unset_lock(&lck);
-			  
+
             }
         }
       else
@@ -160,9 +160,9 @@ static PyObject *mmbilinint(PyObject *self, PyObject *args, PyObject *keywds)
           IND(binstd, i) = 0;
         }
     }
-		
+
   meanbinflux /= (double) counter;
- 
+
   #pragma omp parallel for
   for(i=0;i<dims[0];i++)
     {
@@ -171,7 +171,7 @@ static PyObject *mmbilinint(PyObject *self, PyObject *args, PyObject *keywds)
   	  //IND(mastermapF, i) = IND(mastermapF, i) * (dovrmedian / maskmedian) / meanbinflux;
   	  //printf(" ---> %d index with mm= %lf, mh= %lf,  and %lf, %lf \n",i, IND(mastermapF, i), IND(mastermapFH, i), dovrmedian, maskmedian );
     }
-  
+
 
   PyObject *thing1, *thing2, *reshape1, *reshape2, *arglist, *dict;
   PyArrayObject *temparr;
@@ -198,21 +198,21 @@ static PyObject *mmbilinint(PyObject *self, PyObject *args, PyObject *keywds)
       Py_XDECREF(arglist);
       Py_XDECREF(dict);
     }
-  
+
 
   //int xsize,t_int_one,t_int_x,t_int_x_one;
   int t_int_one;
   int xsize =  (int) PyInt_AS_LONG(PyTuple_GetItem(tup2,1));
   int t_int_x, t_int_x_one;
   dims[0] = binloc->dimensions[1];
-	
+
 	//calcualte overlap means of FULL arrays
-	
+
   dovrcounter = 0;
 	fullcounter = 0;
   dovrmean = 0;
 	fullmean = 0;
-	
+
 	for(i=0;i<dims[0];i++)
 	  {
 			omp_set_lock(&lckm);
@@ -225,14 +225,14 @@ static PyObject *mmbilinint(PyObject *self, PyObject *args, PyObject *keywds)
 			  }
 			omp_unset_lock(&lckm);
 	  }
-		
+
   dovrmean /= (double) dovrcounter;
   fullmean /= (double) fullcounter;
-  
+
   //printf("%lf,%d, %lf, %d, %lf \n", dovrmean, dovrcounter, fullmean, fullcounter, dovrmean/fullmean);
-  
+
   #pragma omp parallel for private(temp_int,t_int_one,t_int_x,t_int_x_one)
-  // emay modify 10/24/19 to check for and set to mastermap 
+  // emay modify 10/24/19 to check for and set to mastermap
   for(i=0;i<dims[0];i++)
     {
 	  	  temp_int = IND2_int(binloc,1,i);
@@ -252,7 +252,7 @@ static PyObject *mmbilinint(PyObject *self, PyObject *args, PyObject *keywds)
 	  	  	    IND(binflux,t_int_x)*IND2(dydx,0,i)*IND2(dydx,3,i)+        \
 	  	  	    IND(binflux,t_int_x_one)*IND2(dydx,0,i)*IND2(dydx,2,i);
 		  	}
-	  	 	
+
     }
   //  y,x,flux,wbfipmask,binfluxmask,kernel,tup1,binloc,dydx,tup2,issmoothing
 

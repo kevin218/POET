@@ -124,7 +124,7 @@ def checks(eventname, period=None, ephtime=None, cwd=None):
 
   # ccampo 3/18/2011: check which units phase should be in
   try:
-    if event.tep.ttrans.unit == "BJDTDB":
+    if (event.tep.ttrans.unit == "BJDTDB") or (event.tep.ttrans.unit == "BJD_TDB"):
         event.timestd  = "tdb"
         event.fp.phase = tp.time2phase(event.bjdtdb, event.ephtime,
                                        event.period, event.ecltype)
@@ -278,7 +278,7 @@ def checks(eventname, period=None, ephtime=None, cwd=None):
         binphase[i]  = np.mean(phase[start:end])
         binaplev[i]  = np.median(aplev[start:end])
         binapstd[i]  = np.std(aplev[start:end]) / np.sqrt(end-start)
-    
+
     # PLOT 1: flux
     plt.figure(501)
     plt.errorbar(binphase, binaplev, binapstd, fmt=fmt1[pos],
